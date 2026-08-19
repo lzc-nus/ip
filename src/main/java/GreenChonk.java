@@ -1,5 +1,7 @@
+import java.util.Scanner;
+
 /**
- * Greets the user as Green Chonk and exits.
+ * Greets the user as Green Chonk, echoes commands, and exits on {@code bye}.
  */
 public class GreenChonk {
     private static final int BANNER_WIDTH = 61;
@@ -24,8 +26,22 @@ public class GreenChonk {
         animateMessage("What can I do for you?");
         System.out.println();
         System.out.println(DIVIDER);
-        animateMessage("Bye! I'm rolling off for now. See you again soon!");
-        System.out.println(DIVIDER);
+
+        try (Scanner scanner = new Scanner(System.in)) {
+            while (scanner.hasNextLine()) {
+                String command = scanner.nextLine();
+                String trimmedCommand = command.trim();
+                if (trimmedCommand.equalsIgnoreCase("bye")) {
+                    System.out.println();
+                    System.out.println(DIVIDER);
+                    animateMessage("Bye! I'm rolling off for now. See you again soon!");
+                    System.out.println(DIVIDER);
+                    return;
+                }
+
+                System.out.println(command);
+            }
+        }
     }
 
     /**

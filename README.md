@@ -1,8 +1,8 @@
 # Green Chonk
 
-Green Chonk is a small Java chatbot prototype with a playful personality. It displays a classic ASCII banner, animates its responses with a short thinking sequence, greets the user, and exits.
+Green Chonk is a small Java chatbot prototype with a playful personality. It displays a classic ASCII banner, animates its responses with a short thinking sequence, greets the user, echoes commands, and exits when the user types bye.
 
-The current version is intentionally a startup prototype: it does not read user input or process commands yet.
+The current version echoes each command exactly as entered. The bye command ends the conversation regardless of capitalization; other commands are not processed yet.
 
 ## Requirements
 
@@ -32,11 +32,12 @@ javac -d out src/main/java/GreenChonk.java
 java -cp out GreenChonk
 ~~~
 
-The program exits after displaying its greeting and farewell. Run it in an interactive terminal to see the thinking animation overwrite the dots in place. If the output is redirected to a file or captured by a tool, the carriage-return characters may appear as separate frames instead.
+The program keeps reading commands until the user enters bye in any capitalization. Run it in an interactive terminal to see the thinking animation overwrite the dots in place. If the output is redirected to a file or captured by a tool, the carriage-return characters may appear as separate frames instead.
 
-## Example output
+## Example interaction
 
 The dots are animated in place during a real run, then resolve into centered messages:
+Lines beginning with `>` represent user input; Green Chonk does not print the `>` prompt.
 
 ~~~text
 _____________________________________________________________
@@ -45,6 +46,13 @@ _____________________________________________________________
                    Hello! I'm Green Chonk.
              Ready to chomp through your tasks!
                    What can I do for you?
+
+_____________________________________________________________
+> hello
+hello
+> status report
+status report
+> bye
 
 _____________________________________________________________
       Bye! I'm rolling off for now. See you again soon!
