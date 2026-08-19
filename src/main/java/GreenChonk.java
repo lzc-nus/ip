@@ -5,7 +5,7 @@ import java.util.Scanner;
  */
 public class GreenChonk {
     private static final int BANNER_WIDTH = 61;
-    private static final long FRAME_DELAY_MILLIS = 280;
+    private static final long FRAME_DELAY_MILLIS = 100;
     private static final int MAX_TASKS = 100;
     private static final String DIVIDER = "_".repeat(BANNER_WIDTH);
 
@@ -52,7 +52,7 @@ public class GreenChonk {
                     tasks[taskCount] = command;
                     taskCount++;
                 }
-                System.out.println(command);
+                System.out.println("Chomped this task: " + command);
             }
         }
     }
@@ -65,10 +65,11 @@ public class GreenChonk {
      */
     private static void printTasks(String[] tasks, int taskCount) {
         if (taskCount == 0) {
-            System.out.println("No tasks yet.");
+            System.out.println("Green Chonk is not carrying any tasks yet.");
             return;
         }
 
+        System.out.println("Here are the tasks Green Chonk is carrying:");
         for (int index = 0; index < taskCount; index++) {
             System.out.println((index + 1) + ". " + tasks[index]);
         }

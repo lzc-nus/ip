@@ -2,7 +2,7 @@
 
 Green Chonk is a small Java chatbot prototype with a playful personality. It displays a classic ASCII banner, animates its responses with a short thinking sequence, stores tasks in memory, and exits when the user types bye.
 
-The current version stores each ordinary line as a task and echoes it back. The list command displays all stored tasks with numbering. The bye command ends the conversation regardless of capitalization.
+The current version stores each ordinary line as a task and confirms it with a Green Chonk-themed acknowledgement. The list command displays all stored tasks with numbering. The bye command ends the conversation regardless of capitalization.
 
 ## Requirements
 
@@ -49,10 +49,11 @@ _____________________________________________________________
 
 _____________________________________________________________
 > buy milk
-buy milk
+Chomped this task: buy milk
 > finish report
-finish report
+Chomped this task: finish report
 > list
+Here are the tasks Green Chonk is carrying:
 1. buy milk
 2. finish report
 > bye
