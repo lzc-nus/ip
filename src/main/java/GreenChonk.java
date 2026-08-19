@@ -1,11 +1,12 @@
 import java.util.Scanner;
 
 /**
- * Greets the user as Green Chonk, echoes commands, and exits on {@code bye}.
+ * Greets the user as Green Chonk, stores tasks, and exits on {@code bye}.
  */
 public class GreenChonk {
     private static final int BANNER_WIDTH = 61;
     private static final long FRAME_DELAY_MILLIS = 280;
+    private static final int MAX_TASKS = 100;
     private static final String DIVIDER = "_".repeat(BANNER_WIDTH);
 
     private static final String BANNER = """
@@ -27,6 +28,9 @@ public class GreenChonk {
         System.out.println();
         System.out.println(DIVIDER);
 
+        String[] tasks = new String[MAX_TASKS];
+        int taskCount = 0;
+
         try (Scanner scanner = new Scanner(System.in)) {
             while (scanner.hasNextLine()) {
                 String command = scanner.nextLine();
@@ -39,8 +43,34 @@ public class GreenChonk {
                     return;
                 }
 
+                if (trimmedCommand.equalsIgnoreCase("list")) {
+                    printTasks(tasks, taskCount);
+                    continue;
+                }
+
+                if (taskCount < MAX_TASKS) {
+                    tasks[taskCount] = command;
+                    taskCount++;
+                }
                 System.out.println(command);
             }
+        }
+    }
+
+    /**
+     * Displays all tasks currently stored in memory.
+     *
+     * @param tasks the task storage array
+     * @param taskCount the number of tasks currently stored
+     */
+    private static void printTasks(String[] tasks, int taskCount) {
+        if (taskCount == 0) {
+            System.out.println("No tasks yet.");
+            return;
+        }
+
+        for (int index = 0; index < taskCount; index++) {
+            System.out.println((index + 1) + ". " + tasks[index]);
         }
     }
 

@@ -1,8 +1,8 @@
 # Green Chonk
 
-Green Chonk is a small Java chatbot prototype with a playful personality. It displays a classic ASCII banner, animates its responses with a short thinking sequence, greets the user, echoes commands, and exits when the user types bye.
+Green Chonk is a small Java chatbot prototype with a playful personality. It displays a classic ASCII banner, animates its responses with a short thinking sequence, stores tasks in memory, and exits when the user types bye.
 
-The current version echoes each command exactly as entered. The bye command ends the conversation regardless of capitalization; other commands are not processed yet.
+The current version stores each ordinary line as a task and echoes it back. The list command displays all stored tasks with numbering. The bye command ends the conversation regardless of capitalization.
 
 ## Requirements
 
@@ -32,7 +32,7 @@ javac -d out src/main/java/GreenChonk.java
 java -cp out GreenChonk
 ~~~
 
-The program keeps reading commands until the user enters bye in any capitalization. Run it in an interactive terminal to see the thinking animation overwrite the dots in place. If the output is redirected to a file or captured by a tool, the carriage-return characters may appear as separate frames instead.
+The program keeps reading commands until the user enters bye in any capitalization. Use list to display the tasks saved during the current run. Tasks are stored only in memory and are not written to disk. Run the program in an interactive terminal to see the thinking animation overwrite the dots in place. If the output is redirected to a file or captured by a tool, the carriage-return characters may appear as separate frames instead.
 
 ## Example interaction
 
@@ -48,10 +48,13 @@ _____________________________________________________________
                    What can I do for you?
 
 _____________________________________________________________
-> hello
-hello
-> status report
-status report
+> buy milk
+buy milk
+> finish report
+finish report
+> list
+1. buy milk
+2. finish report
 > bye
 
 _____________________________________________________________
