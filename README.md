@@ -1,25 +1,63 @@
-# Duke project template
+# Green Chonk
 
-This is a project template for a greenfield Java project. It's named after the Java mascot _Duke_. Given below are instructions on how to use it.
+Green Chonk is a small Java chatbot prototype with a playful personality. It displays a classic ASCII banner, animates its responses with a short thinking sequence, greets the user, and exits.
 
-## Setting up in Intellij
+The current version is intentionally a startup prototype: it does not read user input or process commands yet.
 
-Prerequisites: JDK 25, update Intellij to the most recent version.
+## Requirements
 
-1. Open Intellij (if you are not in the welcome screen, click `File` > `Close Project` to close the existing project first)
-1. Open the project into Intellij as follows:
-   1. Click `Open`.
-   1. Select the project directory, and click `OK`.
-   1. If there are any further prompts, accept the defaults.
-1. Configure the project to use **JDK 25** (not other versions) as explained in [here](https://www.jetbrains.com/help/idea/sdk.html#set-up-jdk).<br>
-   In the same dialog, set the **Project language level** field to the `SDK default` option.
-1. After that, locate the `src/main/java/Duke.java` file, right-click it, and choose `Run Duke.main()` (if the code editor is showing compile errors, try restarting the IDE). If the setup is correct, you should see something like the below as the output:
-   ```
-    ____        _        
-   |  _ \ _   _| | _____ 
-   | | | | | | | |/ / _ \
-   | |_| | |_| |   <  __/
-   |____/ \__,_|_|\_\___|
-   ```
+- Java Development Kit (JDK) 25
+- IntelliJ IDEA (optional)
 
-**Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
+On macOS with SDKMAN, select the required Java version before building:
+
+~~~bash
+sdk use java 25.0.3.fx-zulu
+~~~
+
+## Run in IntelliJ IDEA
+
+1. Open this project directory in IntelliJ IDEA.
+2. Configure the project SDK and language level to JDK 25.
+3. Open src/main/java/GreenChonk.java.
+4. Right-click the file and select **Run GreenChonk.main()**.
+
+## Run from a terminal
+
+From the project root:
+
+~~~bash
+mkdir -p out
+javac -d out src/main/java/GreenChonk.java
+java -cp out GreenChonk
+~~~
+
+The program exits after displaying its greeting and farewell. Run it in an interactive terminal to see the thinking animation overwrite the dots in place. If the output is redirected to a file or captured by a tool, the carriage-return characters may appear as separate frames instead.
+
+## Example output
+
+The dots are animated in place during a real run, then resolve into centered messages:
+
+~~~text
+_____________________________________________________________
+
+                 Green Chonk is waking up...
+                   Hello! I'm Green Chonk.
+             Ready to chomp through your tasks!
+                   What can I do for you?
+
+_____________________________________________________________
+      Bye! I'm rolling off for now. See you again soon!
+_____________________________________________________________
+~~~
+
+## Project structure
+
+~~~text
+src/
+└── main/
+    └── java/
+        └── GreenChonk.java
+~~~
+
+Keep Java source files under src/main/java, which is the source directory expected by the project setup.
