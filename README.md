@@ -1,8 +1,8 @@
 # Green Chonk
 
-Green Chonk is a small Java chatbot prototype with a playful personality. It displays a classic ASCII banner, animates its responses with a short thinking sequence, stores tasks in memory, and exits when the user types bye.
+Green Chonk is a small Java chatbot prototype with a playful personality. It displays a classic ASCII banner, animates its responses with a short thinking sequence, tracks typed tasks in memory, and exits when the user types bye.
 
-The current version stores each ordinary line as a task and confirms it with a Green Chonk-themed acknowledgement. The `list` command displays numbered tasks and their completion status. Use `mark NUMBER` to complete a task and `unmark NUMBER` to make it incomplete again. The `bye` command ends the conversation regardless of capitalization.
+The current version supports todos, deadlines, and events. Each type displays its own icon alongside its completion status. The `list` command displays numbered tasks, `mark NUMBER` completes a task, and `unmark NUMBER` makes it incomplete again. The `bye` command ends the conversation regardless of capitalization.
 
 ## Requirements
 
@@ -32,7 +32,7 @@ javac -d out src/main/java/*.java
 java -cp out GreenChonk
 ~~~
 
-The program keeps reading commands until the user enters `bye` in any capitalization. Use `list` to display the tasks saved during the current run, `mark NUMBER` to complete a task, and `unmark NUMBER` to reverse that status. Tasks are stored only in memory and are not written to disk. Run the program in an interactive terminal to see the thinking animation overwrite the dots in place. If the output is redirected to a file or captured by a tool, the carriage-return characters may appear as separate frames instead.
+The program keeps reading commands until the user enters `bye` in any capitalization. Add tasks with `todo DESCRIPTION`, `deadline DESCRIPTION /by DATE`, or `event DESCRIPTION /from START /to END`. Date and time values are stored as entered. Use `list` to display tasks, `mark NUMBER` to complete one, and `unmark NUMBER` to reverse that status. Tasks are stored only in memory and are not written to disk. Run the program in an interactive terminal to see the thinking animation overwrite the dots in place. If the output is redirected to a file or captured by a tool, the carriage-return characters may appear as separate frames instead.
 
 ## Example interaction
 
@@ -48,24 +48,34 @@ _____________________________________________________________
                    What can I do for you?
 
 _____________________________________________________________
-> buy milk
-Chomped this task: buy milk
-> finish report
-Chomped this task: finish report
+> todo buy milk
+Chomped this task:
+  [T][ ] buy milk
+Green Chonk is now carrying 1 task.
+> deadline finish report /by Friday 5pm
+Chomped this task:
+  [D][ ] finish report (by: Friday 5pm)
+Green Chonk is now carrying 2 tasks.
+> event project meeting /from Monday 2pm /to 4pm
+Chomped this task:
+  [E][ ] project meeting (from: Monday 2pm to: 4pm)
+Green Chonk is now carrying 3 tasks.
 > list
 Here are the tasks Green Chonk is carrying:
-1.[ ] buy milk
-2.[ ] finish report
+1.[T][ ] buy milk
+2.[D][ ] finish report (by: Friday 5pm)
+3.[E][ ] project meeting (from: Monday 2pm to: 4pm)
 > mark 2
 Nice! Green Chonk marked this task as done:
-  [X] finish report
+  [D][X] finish report (by: Friday 5pm)
 > list
 Here are the tasks Green Chonk is carrying:
-1.[ ] buy milk
-2.[X] finish report
+1.[T][ ] buy milk
+2.[D][X] finish report (by: Friday 5pm)
+3.[E][ ] project meeting (from: Monday 2pm to: 4pm)
 > unmark 2
 OK, Green Chonk marked this task as not done yet:
-  [ ] finish report
+  [D][ ] finish report (by: Friday 5pm)
 > bye
 
 _____________________________________________________________
@@ -79,8 +89,11 @@ _____________________________________________________________
 src/
 └── main/
     └── java/
+        ├── Deadline.java
+        ├── Event.java
         ├── GreenChonk.java
-        └── Task.java
+        ├── Task.java
+        └── Todo.java
 ~~~
 
 Keep Java source files under src/main/java, which is the source directory expected by the project setup.
