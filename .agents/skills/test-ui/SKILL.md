@@ -39,7 +39,7 @@ Keep one fenced `json` object in `test/ui-test-plan.md` with this shape:
 }
 ```
 
-Use complete meaningful lines for expected fragments. Keep them in output order. Include `bye` so each session terminates normally. Test valid behavior for the current increment; add malformed-input cases when the increment introduces error handling.
+Use complete meaningful lines for expected fragments. Keep them in output order. Input strings may be empty when testing a blank command, but expected fragments must not be empty. Include `bye` so each session terminates normally. Test valid behavior for the current increment; add malformed-input cases when the increment introduces error handling.
 
 ## Constraints
 

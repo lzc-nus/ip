@@ -51,8 +51,10 @@ def load_plan(plan_path: Path) -> dict:
             values = case[field]
             if not isinstance(values, list) or not values:
                 raise ValueError(f"Case {index} requires a non-empty {field} list")
-            if not all(isinstance(value, str) and value for value in values):
-                raise ValueError(f"Case {index} {field} values must be non-empty strings")
+            if not all(isinstance(value, str) for value in values):
+                raise ValueError(f"Case {index} {field} values must be strings")
+        if not all(case["expected"]):
+            raise ValueError(f"Case {index} expected values must be non-empty strings")
     return plan
 
 
