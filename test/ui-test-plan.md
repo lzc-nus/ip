@@ -7,6 +7,8 @@ Run these tests after each application code change using the project-local `test
 - Create and list all three Level 4 task types.
 - Preserve type-specific details while marking and unmarking through `Task` polymorphism.
 - Treat deadline and event date/time values as user-provided strings.
+- Reject empty and unknown commands with actionable feedback.
+- Reject incomplete task commands and invalid task numbers without changing stored tasks.
 
 ## Automated cases
 
@@ -64,9 +66,78 @@ Run these tests after each application code change using the project-local `test
         "[E][ ] orientation (from: someday to: much later)",
         "Here are the tasks Green Chonk is carrying:\n1.[D][ ] do homework (by: no idea :-p)\n2.[E][ ] orientation (from: someday to: much later)"
       ]
+    },
+    {
+      "name": "reject-empty-and-unknown-commands",
+      "aim": "Verify empty and unknown inputs report specific errors and leave the task list unchanged.",
+      "inputs": [
+        "",
+        "todo",
+        "roll away",
+        "list",
+        "bye"
+      ],
+      "expected": [
+        "Oops! Green Chonk couldn't chomp that:\n  Please enter a command. Try: todo buy milk",
+        "Oops! Green Chonk couldn't chomp that:\n  A todo needs a description. Try: todo buy milk",
+        "Oops! Green Chonk couldn't chomp that:\n  I don't recognize \"roll away\". Try todo, deadline, event, list, mark, unmark, or bye.",
+        "Green Chonk is not carrying any tasks yet."
+      ]
+    },
+    {
+      "name": "reject-incomplete-scheduled-tasks",
+      "aim": "Verify each missing deadline or event field is explained and invalid tasks are not stored.",
+      "inputs": [
+        "todo valid task",
+        "deadline submit report",
+        "deadline /by Friday",
+        "deadline submit report /by",
+        "event meeting /to 4pm",
+        "event /from 2pm /to 4pm",
+        "event meeting /from 2pm",
+        "event meeting /from /to 4pm",
+        "event meeting /from 2pm /to",
+        "list",
+        "bye"
+      ],
+      "expected": [
+        "[T][ ] valid task",
+        "A deadline needs /by followed by a date or time. Try: deadline submit report /by Friday 5pm",
+        "A deadline needs a description before /by.",
+        "A deadline needs a date or time after /by.",
+        "An event needs /from and /to. Try: event meeting /from Monday 2pm /to 4pm",
+        "An event needs a description before /from.",
+        "An event needs /to followed by an ending date or time.",
+        "An event needs a starting date or time after /from.",
+        "An event needs an ending date or time after /to.",
+        "Here are the tasks Green Chonk is carrying:\n1.[T][ ] valid task"
+      ]
+    },
+    {
+      "name": "reject-invalid-task-numbers",
+      "aim": "Verify mark and unmark reject missing, non-numeric, and out-of-range task numbers without changing task state.",
+      "inputs": [
+        "mark 1",
+        "unmark",
+        "todo keep me incomplete",
+        "mark zero",
+        "mark 0",
+        "mark 2",
+        "unmark 2",
+        "list",
+        "bye"
+      ],
+      "expected": [
+        "There are no tasks to mark yet.",
+        "Please provide a task number. Try: unmark 1",
+        "[T][ ] keep me incomplete",
+        "\"zero\" is not a valid task number. Use a whole number such as 1.",
+        "Task 0 does not exist. Choose a number from 1 to 1.",
+        "Task 2 does not exist. Choose a number from 1 to 1.",
+        "Task 2 does not exist. Choose a number from 1 to 1.",
+        "Here are the tasks Green Chonk is carrying:\n1.[T][ ] keep me incomplete"
+      ]
     }
   ]
 }
 ```
-
-Malformed commands and missing delimiters are intentionally excluded from Level 4. Add those cases when Level 5 introduces user-facing error handling.
