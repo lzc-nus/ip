@@ -33,3 +33,12 @@ Ensure that Java 25 is used when running the application or build tasks. On macO
 Use lightweight tags unless the user requests an annotated tag.
 When proposing or creating a commit message, include enough detail to explain the rationale for the change.
 Do not commit or push unless explicitly asked.
+
+## Required verification after code changes
+
+After every application code update:
+
+1. Update `test/ui-test-plan.md` when commands, output, or covered behavior changes.
+2. Invoke the project-local `test-ui` skill and resolve any failed case before considering the change complete.
+
+The UI test harness must show the console input and output for each case and stop immediately on the first failure.
