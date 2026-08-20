@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -6,13 +8,13 @@ import java.util.Scanner;
 public class GreenChonk {
     private static final int BANNER_WIDTH = 61;
     private static final long FRAME_DELAY_MILLIS = 100;
-    private static final int MAX_TASKS = 100;
     private static final String DIVIDER = "_".repeat(BANNER_WIDTH);
     private static final String TODO_COMMAND = "todo";
     private static final String DEADLINE_COMMAND = "deadline";
     private static final String EVENT_COMMAND = "event";
     private static final String MARK_COMMAND = "mark";
     private static final String UNMARK_COMMAND = "unmark";
+    private static final String DELETE_COMMAND = "delete";
     private static final String DEADLINE_SEPARATOR = "/by";
     private static final String EVENT_FROM_SEPARATOR = "/from";
     private static final String EVENT_TO_SEPARATOR = "/to";
@@ -36,8 +38,7 @@ public class GreenChonk {
         System.out.println();
         System.out.println(DIVIDER);
 
-        Task[] tasks = new Task[MAX_TASKS];
-        int taskCount = 0;
+        List<Task> tasks = new ArrayList<>();
 
         try (Scanner scanner = new Scanner(System.in)) {
             while (scanner.hasNextLine()) {
@@ -52,7 +53,7 @@ public class GreenChonk {
                 }
 
                 try {
-                    taskCount = executeCommand(trimmedCommand, tasks, taskCount);
+                    executeCommand(trimmedCommand, tasks);
                 } catch (GreenChonkException exception) {
                     printError(exception);
                 }
@@ -64,46 +65,51 @@ public class GreenChonk {
      * Executes one non-exit command.
      *
      * @param command the trimmed command entered by the user
-     * @param tasks the task storage array
-     * @param taskCount the number of tasks currently stored
-     * @return the updated number of stored tasks
+     * @param tasks the tasks currently stored
      * @throws GreenChonkException if the command is invalid
      */
-    private static int executeCommand(String command, Task[] tasks, int taskCount)
-            throws GreenChonkException {
+    private static void executeCommand(String command, List<Task> tasks) throws GreenChonkException {
         if (command.isEmpty()) {
             throw new GreenChonkException("Please enter a command. Try: todo buy milk");
         }
 
         if (command.equalsIgnoreCase("list")) {
-            printTasks(tasks, taskCount);
-            return taskCount;
+            printTasks(tasks);
+            return;
         }
 
         if (isCommand(command, MARK_COMMAND)) {
-            updateTaskStatus(command, MARK_COMMAND, tasks, taskCount, true);
-            return taskCount;
+            updateTaskStatus(command, MARK_COMMAND, tasks, true);
+            return;
         }
 
         if (isCommand(command, UNMARK_COMMAND)) {
-            updateTaskStatus(command, UNMARK_COMMAND, tasks, taskCount, false);
-            return taskCount;
+            updateTaskStatus(command, UNMARK_COMMAND, tasks, false);
+            return;
+        }
+
+        if (isCommand(command, DELETE_COMMAND)) {
+            deleteTask(command, tasks);
+            return;
         }
 
         if (isCommand(command, TODO_COMMAND)) {
-            return addTask(tasks, taskCount, parseTodo(command));
+            addTask(tasks, parseTodo(command));
+            return;
         }
 
         if (isCommand(command, DEADLINE_COMMAND)) {
-            return addTask(tasks, taskCount, parseDeadline(command));
+            addTask(tasks, parseDeadline(command));
+            return;
         }
 
         if (isCommand(command, EVENT_COMMAND)) {
-            return addTask(tasks, taskCount, parseEvent(command));
+            addTask(tasks, parseEvent(command));
+            return;
         }
 
         throw new GreenChonkException("I don't recognize \"" + command
-                + "\". Try todo, deadline, event, list, mark, unmark, or bye.");
+                + "\". Try todo, deadline, event, list, mark, unmark, delete, or bye.");
     }
 
     /**
@@ -199,22 +205,39 @@ public class GreenChonk {
      *
      * @param command the complete mark or unmark command
      * @param commandName the command word being executed
-     * @param tasks the task storage array
-     * @param taskCount the number of tasks currently stored
+     * @param tasks the tasks currently stored
      * @param isDone true to mark the task as done, or false to mark it as not done
      * @throws GreenChonkException if the task number is missing, invalid, or outside the list
      */
-    private static void updateTaskStatus(String command, String commandName, Task[] tasks,
-            int taskCount, boolean isDone) throws GreenChonkException {
-        int taskIndex = parseTaskIndex(command, commandName, taskCount);
+    private static void updateTaskStatus(String command, String commandName, List<Task> tasks,
+            boolean isDone) throws GreenChonkException {
+        int taskIndex = parseTaskIndex(command, commandName, tasks.size());
+        Task task = tasks.get(taskIndex);
         if (isDone) {
-            tasks[taskIndex].markAsDone();
+            task.markAsDone();
             System.out.println("Nice! Green Chonk marked this task as done:");
         } else {
-            tasks[taskIndex].markAsNotDone();
+            task.markAsNotDone();
             System.out.println("OK, Green Chonk marked this task as not done yet:");
         }
-        System.out.println("  " + tasks[taskIndex]);
+        System.out.println("  " + task);
+    }
+
+    /**
+     * Deletes the requested task and displays the remaining task count.
+     *
+     * @param command the complete delete command
+     * @param tasks the tasks currently stored
+     * @throws GreenChonkException if the task number is missing, invalid, or outside the list
+     */
+    private static void deleteTask(String command, List<Task> tasks) throws GreenChonkException {
+        int taskIndex = parseTaskIndex(command, DELETE_COMMAND, tasks.size());
+        Task deletedTask = tasks.remove(taskIndex);
+        int taskCount = tasks.size();
+        String taskLabel = taskCount == 1 ? "task" : "tasks";
+        System.out.println("Noted. Green Chonk removed this task:");
+        System.out.println("  " + deletedTask);
+        System.out.println("Green Chonk is now carrying " + taskCount + " " + taskLabel + ".");
     }
 
     /**
@@ -254,23 +277,16 @@ public class GreenChonk {
     /**
      * Stores a task and displays the updated task count.
      *
-     * @param tasks the task storage array
-     * @param taskCount the number of tasks currently stored
+     * @param tasks the tasks currently stored
      * @param task the task to add
-     * @return the updated number of stored tasks
      */
-    private static int addTask(Task[] tasks, int taskCount, Task task) throws GreenChonkException {
-        if (taskCount >= MAX_TASKS) {
-            throw new GreenChonkException("Green Chonk cannot carry more than " + MAX_TASKS + " tasks.");
-        }
-
-        tasks[taskCount] = task;
-        int updatedTaskCount = taskCount + 1;
-        String taskLabel = updatedTaskCount == 1 ? "task" : "tasks";
+    private static void addTask(List<Task> tasks, Task task) {
+        tasks.add(task);
+        int taskCount = tasks.size();
+        String taskLabel = taskCount == 1 ? "task" : "tasks";
         System.out.println("Chomped this task:");
         System.out.println("  " + task);
-        System.out.println("Green Chonk is now carrying " + updatedTaskCount + " " + taskLabel + ".");
-        return updatedTaskCount;
+        System.out.println("Green Chonk is now carrying " + taskCount + " " + taskLabel + ".");
     }
 
     /**
@@ -286,18 +302,17 @@ public class GreenChonk {
     /**
      * Displays all tasks currently stored in memory.
      *
-     * @param tasks the task storage array
-     * @param taskCount the number of tasks currently stored
+     * @param tasks the tasks currently stored
      */
-    private static void printTasks(Task[] tasks, int taskCount) {
-        if (taskCount == 0) {
+    private static void printTasks(List<Task> tasks) {
+        if (tasks.isEmpty()) {
             System.out.println("Green Chonk is not carrying any tasks yet.");
             return;
         }
 
         System.out.println("Here are the tasks Green Chonk is carrying:");
-        for (int index = 0; index < taskCount; index++) {
-            System.out.println((index + 1) + "." + tasks[index]);
+        for (int index = 0; index < tasks.size(); index++) {
+            System.out.println((index + 1) + "." + tasks.get(index));
         }
     }
 

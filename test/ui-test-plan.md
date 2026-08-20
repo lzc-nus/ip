@@ -9,6 +9,8 @@ Run these tests after each application code change using the project-local `test
 - Treat deadline and event date/time values as user-provided strings.
 - Reject empty and unknown commands with actionable feedback.
 - Reject incomplete task commands and invalid task numbers without changing stored tasks.
+- Delete tasks from collection storage and renumber the remaining list.
+- Reject invalid delete requests without changing stored tasks.
 
 ## Automated cases
 
@@ -80,7 +82,7 @@ Run these tests after each application code change using the project-local `test
       "expected": [
         "Oops! Green Chonk couldn't chomp that:\n  Please enter a command. Try: todo buy milk",
         "Oops! Green Chonk couldn't chomp that:\n  A todo needs a description. Try: todo buy milk",
-        "Oops! Green Chonk couldn't chomp that:\n  I don't recognize \"roll away\". Try todo, deadline, event, list, mark, unmark, or bye.",
+        "Oops! Green Chonk couldn't chomp that:\n  I don't recognize \"roll away\". Try todo, deadline, event, list, mark, unmark, delete, or bye.",
         "Green Chonk is not carrying any tasks yet."
       ]
     },
@@ -136,6 +138,54 @@ Run these tests after each application code change using the project-local `test
         "Task 2 does not exist. Choose a number from 1 to 1.",
         "Task 2 does not exist. Choose a number from 1 to 1.",
         "Here are the tasks Green Chonk is carrying:\n1.[T][ ] keep me incomplete"
+      ]
+    },
+    {
+      "name": "delete-and-renumber-tasks",
+      "aim": "Verify deleting middle, first, and last tasks removes the correct object and keeps numbering contiguous.",
+      "inputs": [
+        "todo first task",
+        "deadline second task /by Friday",
+        "event third task /from 2pm /to 4pm",
+        "mark 2",
+        "delete 2",
+        "list",
+        "delete 1",
+        "delete 1",
+        "list",
+        "bye"
+      ],
+      "expected": [
+        "Noted. Green Chonk removed this task:\n  [D][X] second task (by: Friday)\nGreen Chonk is now carrying 2 tasks.",
+        "Here are the tasks Green Chonk is carrying:\n1.[T][ ] first task\n2.[E][ ] third task (from: 2pm to: 4pm)",
+        "Noted. Green Chonk removed this task:\n  [T][ ] first task\nGreen Chonk is now carrying 1 task.",
+        "Noted. Green Chonk removed this task:\n  [E][ ] third task (from: 2pm to: 4pm)\nGreen Chonk is now carrying 0 tasks.",
+        "Green Chonk is not carrying any tasks yet."
+      ]
+    },
+    {
+      "name": "reject-invalid-delete-requests",
+      "aim": "Verify delete rejects missing, non-numeric, and out-of-range task numbers without removing a task.",
+      "inputs": [
+        "delete 1",
+        "delete",
+        "todo keep this task",
+        "delete zero",
+        "delete 0",
+        "delete -1",
+        "delete 2",
+        "list",
+        "bye"
+      ],
+      "expected": [
+        "There are no tasks to delete yet.",
+        "Please provide a task number. Try: delete 1",
+        "[T][ ] keep this task",
+        "\"zero\" is not a valid task number. Use a whole number such as 1.",
+        "Task 0 does not exist. Choose a number from 1 to 1.",
+        "Task -1 does not exist. Choose a number from 1 to 1.",
+        "Task 2 does not exist. Choose a number from 1 to 1.",
+        "Here are the tasks Green Chonk is carrying:\n1.[T][ ] keep this task"
       ]
     }
   ]

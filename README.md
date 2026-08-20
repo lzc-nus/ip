@@ -2,7 +2,7 @@
 
 Green Chonk is a small Java chatbot prototype with a playful personality. It displays a classic ASCII banner, animates its responses with a short thinking sequence, tracks typed tasks in memory, and exits when the user types bye.
 
-The current version supports todos, deadlines, and events. Each type displays its own icon alongside its completion status. The `list` command displays numbered tasks, `mark NUMBER` completes a task, and `unmark NUMBER` makes it incomplete again. Invalid commands produce a specific correction instead of terminating the program. The `bye` command ends the conversation regardless of capitalization.
+The current version supports todos, deadlines, and events. Each type displays its own icon alongside its completion status. The `list` command displays numbered tasks, `mark NUMBER` completes a task, `unmark NUMBER` makes it incomplete again, and `delete NUMBER` removes it. Invalid commands produce a specific correction instead of terminating the program. The `bye` command ends the conversation regardless of capitalization.
 
 ## Requirements
 
@@ -32,7 +32,7 @@ javac -d out src/main/java/*.java
 java -cp out GreenChonk
 ~~~
 
-The program keeps reading commands until the user enters `bye` in any capitalization. Add tasks with `todo DESCRIPTION`, `deadline DESCRIPTION /by DATE`, or `event DESCRIPTION /from START /to END`. Date and time values are stored as entered. Use `list` to display tasks, `mark NUMBER` to complete one, and `unmark NUMBER` to reverse that status. If a command is incomplete, unknown, or refers to a task that does not exist, Green Chonk explains how to correct it and continues running without changing the task list. Tasks are stored only in memory and are not written to disk. Run the program in an interactive terminal to see the thinking animation overwrite the dots in place. If the output is redirected to a file or captured by a tool, the carriage-return characters may appear as separate frames instead.
+The program keeps reading commands until the user enters `bye` in any capitalization. Add tasks with `todo DESCRIPTION`, `deadline DESCRIPTION /by DATE`, or `event DESCRIPTION /from START /to END`. Date and time values are stored as entered. Use `list` to display tasks, `mark NUMBER` to complete one, `unmark NUMBER` to reverse that status, and `delete NUMBER` to remove one. The remaining tasks are renumbered automatically. If a command is incomplete, unknown, or refers to a task that does not exist, Green Chonk explains how to correct it and continues running without changing the task list. Tasks are stored only in memory and are not written to disk. Run the program in an interactive terminal to see the thinking animation overwrite the dots in place. If the output is redirected to a file or captured by a tool, the carriage-return characters may appear as separate frames instead.
 
 ## Example interaction
 
@@ -76,12 +76,20 @@ Here are the tasks Green Chonk is carrying:
 > unmark 2
 OK, Green Chonk marked this task as not done yet:
   [D][ ] finish report (by: Friday 5pm)
+> delete 2
+Noted. Green Chonk removed this task:
+  [D][ ] finish report (by: Friday 5pm)
+Green Chonk is now carrying 2 tasks.
+> list
+Here are the tasks Green Chonk is carrying:
+1.[T][ ] buy milk
+2.[E][ ] project meeting (from: Monday 2pm to: 4pm)
 > todo
 Oops! Green Chonk couldn't chomp that:
   A todo needs a description. Try: todo buy milk
 > roll away
 Oops! Green Chonk couldn't chomp that:
-  I don't recognize "roll away". Try todo, deadline, event, list, mark, unmark, or bye.
+  I don't recognize "roll away". Try todo, deadline, event, list, mark, unmark, delete, or bye.
 > bye
 
 _____________________________________________________________
