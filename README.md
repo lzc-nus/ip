@@ -108,6 +108,7 @@ src/
         ├── GreenChonk.java
         ├── GreenChonkException.java
         ├── Task.java
+        ├── TaskStatus.java
         └── Todo.java
 ~~~
 

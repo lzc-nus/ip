@@ -79,12 +79,12 @@ public class GreenChonk {
         }
 
         if (isCommand(command, MARK_COMMAND)) {
-            updateTaskStatus(command, MARK_COMMAND, tasks, true);
+            updateTaskStatus(command, MARK_COMMAND, tasks, TaskStatus.DONE);
             return;
         }
 
         if (isCommand(command, UNMARK_COMMAND)) {
-            updateTaskStatus(command, UNMARK_COMMAND, tasks, false);
+            updateTaskStatus(command, UNMARK_COMMAND, tasks, TaskStatus.NOT_DONE);
             return;
         }
 
@@ -206,14 +206,14 @@ public class GreenChonk {
      * @param command the complete mark or unmark command
      * @param commandName the command word being executed
      * @param tasks the tasks currently stored
-     * @param isDone true to mark the task as done, or false to mark it as not done
+     * @param newStatus the completion status to apply
      * @throws GreenChonkException if the task number is missing, invalid, or outside the list
      */
     private static void updateTaskStatus(String command, String commandName, List<Task> tasks,
-            boolean isDone) throws GreenChonkException {
+            TaskStatus newStatus) throws GreenChonkException {
         int taskIndex = parseTaskIndex(command, commandName, tasks.size());
         Task task = tasks.get(taskIndex);
-        if (isDone) {
+        if (newStatus == TaskStatus.DONE) {
             task.markAsDone();
             System.out.println("Nice! Green Chonk marked this task as done:");
         } else {

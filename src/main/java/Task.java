@@ -3,7 +3,7 @@
  */
 public abstract class Task {
     private final String description;
-    private boolean isDone;
+    private TaskStatus status;
 
     /**
      * Creates an incomplete task with the given description.
@@ -12,21 +12,21 @@ public abstract class Task {
      */
     protected Task(String description) {
         this.description = description;
-        this.isDone = false;
+        this.status = TaskStatus.NOT_DONE;
     }
 
     /**
      * Marks this task as completed.
      */
     public void markAsDone() {
-        isDone = true;
+        status = TaskStatus.DONE;
     }
 
     /**
      * Marks this task as incomplete.
      */
     public void markAsNotDone() {
-        isDone = false;
+        status = TaskStatus.NOT_DONE;
     }
 
     /**
@@ -35,7 +35,7 @@ public abstract class Task {
      * @return {@code X} when completed, or a space otherwise
      */
     public String getStatusIcon() {
-        return isDone ? "X" : " ";
+        return status.getIcon();
     }
 
     /**
