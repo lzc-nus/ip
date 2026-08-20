@@ -1,7 +1,7 @@
 import java.util.Scanner;
 
 /**
- * Greets the user as Green Chonk, stores tasks, and exits on {@code bye}.
+ * Greets the user as Green Chonk, manages tasks, and exits on {@code bye}.
  */
 public class GreenChonk {
     private static final int BANNER_WIDTH = 61;
@@ -28,7 +28,7 @@ public class GreenChonk {
         System.out.println();
         System.out.println(DIVIDER);
 
-        String[] tasks = new String[MAX_TASKS];
+        Task[] tasks = new Task[MAX_TASKS];
         int taskCount = 0;
 
         try (Scanner scanner = new Scanner(System.in)) {
@@ -48,8 +48,24 @@ public class GreenChonk {
                     continue;
                 }
 
+                if (trimmedCommand.startsWith("mark ")) {
+                    int taskIndex = Integer.parseInt(trimmedCommand.substring("mark ".length()).trim()) - 1;
+                    tasks[taskIndex].markAsDone();
+                    System.out.println("Nice! Green Chonk marked this task as done:");
+                    System.out.println("  " + tasks[taskIndex]);
+                    continue;
+                }
+
+                if (trimmedCommand.startsWith("unmark ")) {
+                    int taskIndex = Integer.parseInt(trimmedCommand.substring("unmark ".length()).trim()) - 1;
+                    tasks[taskIndex].markAsNotDone();
+                    System.out.println("OK, Green Chonk marked this task as not done yet:");
+                    System.out.println("  " + tasks[taskIndex]);
+                    continue;
+                }
+
                 if (taskCount < MAX_TASKS) {
-                    tasks[taskCount] = command;
+                    tasks[taskCount] = new Task(command);
                     taskCount++;
                 }
                 System.out.println("Chomped this task: " + command);
@@ -63,7 +79,7 @@ public class GreenChonk {
      * @param tasks the task storage array
      * @param taskCount the number of tasks currently stored
      */
-    private static void printTasks(String[] tasks, int taskCount) {
+    private static void printTasks(Task[] tasks, int taskCount) {
         if (taskCount == 0) {
             System.out.println("Green Chonk is not carrying any tasks yet.");
             return;
@@ -71,7 +87,7 @@ public class GreenChonk {
 
         System.out.println("Here are the tasks Green Chonk is carrying:");
         for (int index = 0; index < taskCount; index++) {
-            System.out.println((index + 1) + ". " + tasks[index]);
+            System.out.println((index + 1) + "." + tasks[index]);
         }
     }
 
