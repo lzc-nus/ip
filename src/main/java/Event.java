@@ -48,6 +48,11 @@ public class Event extends Task {
     }
 
     @Override
+    public boolean occursOn(LocalDate date) {
+        return !date.isBefore(from) && !date.isAfter(to);
+    }
+
+    @Override
     protected String getTypeIcon() {
         return "E";
     }

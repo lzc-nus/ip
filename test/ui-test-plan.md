@@ -8,6 +8,7 @@ Run these tests after each application code change using the project-local `test
 - Preserve `LocalDate` details while marking and unmarking through `Task` polymorphism.
 - Accept valid ISO dates, including leap days, and reject invalid dates without storing a task.
 - Reject events that end before they start while allowing same-day events.
+- Find deadlines and in-progress events on a date while preserving their original task numbers.
 - Reject empty and unknown commands with actionable feedback.
 - Reject incomplete task commands and invalid task numbers without changing stored tasks.
 - Delete tasks from collection storage and renumber the remaining list.
@@ -96,7 +97,7 @@ Also seed the data file with an event whose ending date is before its starting d
       "expected": [
         "Oops! Green Chonk couldn't chomp that:\n  Please enter a command. Try: todo buy milk",
         "Oops! Green Chonk couldn't chomp that:\n  A todo needs a description. Try: todo buy milk",
-        "Oops! Green Chonk couldn't chomp that:\n  I don't recognize \"roll away\". Try todo, deadline, event, list, mark, unmark, delete, or bye.",
+        "Oops! Green Chonk couldn't chomp that:\n  I don't recognize \"roll away\". Try todo, deadline, event, list, schedule, mark, unmark, delete, or bye.",
         "Green Chonk is not carrying any tasks yet."
       ]
     },
@@ -163,6 +164,26 @@ Also seed the data file with an event whose ending date is before its starting d
         "An event's end date cannot be before its start date. Try /to 2026-12-29 or later.",
         "Chomped this task:\n  [E][ ] same-day (from: Aug 28 2026 to: Aug 28 2026)\nGreen Chonk is now carrying 1 task.",
         "Here are the tasks Green Chonk is carrying:\n1.[E][ ] same-day (from: Aug 28 2026 to: Aug 28 2026)"
+      ]
+    },
+    {
+      "name": "show-tasks-scheduled-on-date",
+      "aim": "Verify schedule finds matching deadlines and inclusive event dates, excludes todos, preserves task numbers, and handles empty or invalid queries.",
+      "inputs": [
+        "todo undated task",
+        "deadline submit report /by 2026-08-28",
+        "event conference /from 2026-08-27 /to 2026-08-29",
+        "schedule 2026-08-28",
+        "schedule 2026-08-30",
+        "schedule",
+        "schedule next Friday",
+        "bye"
+      ],
+      "expected": [
+        "Here are the tasks scheduled for 2026-08-28:\n2.[D][ ] submit report (by: Aug 28 2026)\n3.[E][ ] conference (from: Aug 27 2026 to: Aug 29 2026)",
+        "Green Chonk has no deadlines or events scheduled for 2026-08-30.",
+        "Please provide a schedule date. Try: schedule 2026-08-28",
+        "The schedule date must use yyyy-MM-dd and be valid. Try: 2026-08-28"
       ]
     },
     {

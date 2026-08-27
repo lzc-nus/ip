@@ -21,6 +21,7 @@ public class GreenChonk {
     private static final String MARK_COMMAND = "mark";
     private static final String UNMARK_COMMAND = "unmark";
     private static final String DELETE_COMMAND = "delete";
+    private static final String SCHEDULE_COMMAND = "schedule";
     private static final String DEADLINE_SEPARATOR = "/by";
     private static final String EVENT_FROM_SEPARATOR = "/from";
     private static final String EVENT_TO_SEPARATOR = "/to";
@@ -86,6 +87,11 @@ public class GreenChonk {
             return;
         }
 
+        if (isCommand(command, SCHEDULE_COMMAND)) {
+            printSchedule(command, tasks);
+            return;
+        }
+
         if (isCommand(command, MARK_COMMAND)) {
             updateTaskStatus(command, MARK_COMMAND, tasks, TaskStatus.DONE);
             return;
@@ -117,7 +123,7 @@ public class GreenChonk {
         }
 
         throw new GreenChonkException("I don't recognize \"" + command
-                + "\". Try todo, deadline, event, list, mark, unmark, delete, or bye.");
+                + "\". Try todo, deadline, event, list, schedule, mark, unmark, delete, or bye.");
     }
 
     /**
@@ -232,6 +238,36 @@ public class GreenChonk {
         } catch (DateTimeParseException exception) {
             throw new GreenChonkException("The " + dateLabel
                     + " date must use yyyy-MM-dd and be valid. Try: " + exampleDate);
+        }
+    }
+
+    /**
+     * Displays deadlines and events that occur on a requested date.
+     *
+     * @param command the complete schedule command
+     * @param tasks the tasks currently stored
+     * @throws GreenChonkException if the schedule date is missing or invalid
+     */
+    private static void printSchedule(String command, List<Task> tasks) throws GreenChonkException {
+        String dateText = command.substring(SCHEDULE_COMMAND.length()).trim();
+        if (dateText.isEmpty()) {
+            throw new GreenChonkException("Please provide a schedule date. Try: schedule 2026-08-28");
+        }
+        LocalDate date = parseDate(dateText, "schedule", "2026-08-28");
+
+        boolean hasScheduledTask = false;
+        for (int index = 0; index < tasks.size(); index++) {
+            Task task = tasks.get(index);
+            if (task.occursOn(date)) {
+                if (!hasScheduledTask) {
+                    System.out.println("Here are the tasks scheduled for " + date + ":");
+                }
+                System.out.println((index + 1) + "." + task);
+                hasScheduledTask = true;
+            }
+        }
+        if (!hasScheduledTask) {
+            System.out.println("Green Chonk has no deadlines or events scheduled for " + date + ".");
         }
     }
 
