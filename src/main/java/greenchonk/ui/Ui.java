@@ -1,5 +1,11 @@
+package greenchonk.ui;
+
 import java.time.LocalDate;
 import java.util.Scanner;
+
+import greenchonk.task.Task;
+import greenchonk.task.TaskList;
+import greenchonk.task.TaskStatus;
 
 /**
  * Handles command-line interaction between Green Chonk and the user.

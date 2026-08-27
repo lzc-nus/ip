@@ -1,3 +1,11 @@
+package greenchonk.command;
+
+import greenchonk.exception.GreenChonkException;
+import greenchonk.storage.Storage;
+import greenchonk.task.Task;
+import greenchonk.task.TaskList;
+import greenchonk.ui.Ui;
+
 /**
  * Deletes a task from the task list.
  */

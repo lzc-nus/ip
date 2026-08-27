@@ -1,3 +1,5 @@
+package greenchonk.task;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -53,7 +55,7 @@ public class Event extends Task {
     }
 
     @Override
-    protected String getTypeIcon() {
+    public String getTypeIcon() {
         return "E";
     }
 

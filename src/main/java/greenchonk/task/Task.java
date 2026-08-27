@@ -1,3 +1,5 @@
+package greenchonk.task;
+
 import java.time.LocalDate;
 
 /**
@@ -74,7 +76,7 @@ public abstract class Task {
      *
      * @return the task type symbol
      */
-    protected abstract String getTypeIcon();
+    public abstract String getTypeIcon();
 
     @Override
     public String toString() {

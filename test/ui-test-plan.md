@@ -31,7 +31,7 @@ Also seed the data file with an event whose ending date is before its starting d
 
 ```json
 {
-  "main_class": "GreenChonk",
+  "main_class": "greenchonk.GreenChonk",
   "cases": [
     {
       "name": "add-and-list-task-types",
