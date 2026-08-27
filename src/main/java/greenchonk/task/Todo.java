@@ -1,3 +1,5 @@
+package greenchonk.task;
+
 /**
  * Represents a task without an associated date or time.
  */
@@ -12,7 +14,7 @@ public class Todo extends Task {
     }
 
     @Override
-    protected String getTypeIcon() {
+    public String getTypeIcon() {
         return "T";
     }
 }

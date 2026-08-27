@@ -27,7 +27,7 @@ Keep one fenced `json` object in `test/ui-test-plan.md` with this shape:
 
 ```json
 {
-  "main_class": "GreenChonk",
+  "main_class": "greenchonk.GreenChonk",
   "cases": [
     {
       "name": "short-stable-name",

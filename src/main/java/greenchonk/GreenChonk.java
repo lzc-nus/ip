@@ -1,3 +1,12 @@
+package greenchonk;
+
+import greenchonk.command.Command;
+import greenchonk.exception.GreenChonkException;
+import greenchonk.parser.Parser;
+import greenchonk.storage.Storage;
+import greenchonk.task.TaskList;
+import greenchonk.ui.Ui;
+
 /**
  * Greets the user as Green Chonk, manages tasks, and exits on {@code bye}.
  */

@@ -1,3 +1,5 @@
+package greenchonk.task;
+
 /**
  * Represents a task's completion status and the icon used to display it.
  */

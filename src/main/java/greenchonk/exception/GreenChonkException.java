@@ -1,3 +1,5 @@
+package greenchonk.exception;
+
 /**
  * Represents an invalid command or task operation specific to Green Chonk.
  */
