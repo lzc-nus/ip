@@ -7,7 +7,7 @@ public class Todo extends Task {
     /**
      * Creates an incomplete todo with the given description.
      *
-     * @param description the todo description
+     * @param description the todo description.
      */
     public Todo(String description) {
         super(description);

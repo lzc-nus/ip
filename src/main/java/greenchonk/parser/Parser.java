@@ -37,9 +37,9 @@ public final class Parser {
     /**
      * Creates the command represented by the user's input.
      *
-     * @param input the trimmed user input
-     * @return the parsed command
-     * @throws GreenChonkException if the command or its arguments are invalid
+     * @param input the trimmed user input.
+     * @return the parsed command.
+     * @throws GreenChonkException if the command or its arguments are invalid.
      */
     public static Command parse(String input) throws GreenChonkException {
         if (input.isEmpty()) {
@@ -82,9 +82,9 @@ public final class Parser {
     /**
      * Creates a todo after validating its description.
      *
-     * @param command the complete todo command
-     * @return the parsed todo
-     * @throws GreenChonkException if the description is empty
+     * @param command the complete todo command.
+     * @return the parsed todo.
+     * @throws GreenChonkException if the description is empty.
      */
     private static Todo parseTodo(String command) throws GreenChonkException {
         String description = getArguments(command);
@@ -97,9 +97,9 @@ public final class Parser {
     /**
      * Creates a deadline after validating its description and due date.
      *
-     * @param command the complete deadline command
-     * @return the parsed deadline
-     * @throws GreenChonkException if a required deadline field is missing or invalid
+     * @param command the complete deadline command.
+     * @return the parsed deadline.
+     * @throws GreenChonkException if a required deadline field is missing or invalid.
      */
     private static Deadline parseDeadline(String command) throws GreenChonkException {
         String details = getArguments(command);
@@ -124,9 +124,9 @@ public final class Parser {
     /**
      * Creates an event after validating its description and date range.
      *
-     * @param command the complete event command
-     * @return the parsed event
-     * @throws GreenChonkException if a required event field is missing or invalid
+     * @param command the complete event command.
+     * @return the parsed event.
+     * @throws GreenChonkException if a required event field is missing or invalid.
      */
     private static Event parseEvent(String command) throws GreenChonkException {
         String details = getArguments(command);
@@ -167,9 +167,9 @@ public final class Parser {
     /**
      * Parses the requested date from a schedule command.
      *
-     * @param command the complete schedule command
-     * @return the requested schedule date
-     * @throws GreenChonkException if the schedule date is missing or invalid
+     * @param command the complete schedule command.
+     * @return the requested schedule date.
+     * @throws GreenChonkException if the schedule date is missing or invalid.
      */
     private static LocalDate parseScheduleDate(String command) throws GreenChonkException {
         String dateText = getArguments(command);

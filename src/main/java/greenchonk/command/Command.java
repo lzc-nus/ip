@@ -10,12 +10,18 @@ import greenchonk.ui.Ui;
  */
 public abstract class Command {
     /**
+     * Creates a command that can be executed by Green Chonk.
+     */
+    public Command() {
+    }
+
+    /**
      * Executes this command using the application's components.
      *
-     * @param tasks the tasks currently stored
-     * @param ui the user interface through which results are shown
-     * @param storage the storage used to persist task changes
-     * @throws GreenChonkException if the command cannot be completed
+     * @param tasks the tasks currently stored.
+     * @param ui the user interface through which results are shown.
+     * @param storage the storage used to persist task changes.
+     * @throws GreenChonkException if the command cannot be completed.
      */
     public abstract void execute(TaskList tasks, Ui ui, Storage storage)
             throws GreenChonkException;
@@ -23,7 +29,7 @@ public abstract class Command {
     /**
      * Returns whether this command ends the application.
      *
-     * @return true if this command exits the application
+     * @return true if this command exits the application.
      */
     public boolean isExit() {
         return false;
@@ -32,11 +38,11 @@ public abstract class Command {
     /**
      * Converts a user-facing task number into a valid zero-based index.
      *
-     * @param taskNumber the one-based task number entered by the user
-     * @param commandName the command word being executed
-     * @param tasks the tasks currently stored
-     * @return the corresponding zero-based task index
-     * @throws GreenChonkException if the task number does not identify a task
+     * @param taskNumber the one-based task number entered by the user.
+     * @param commandName the command word being executed.
+     * @param tasks the tasks currently stored.
+     * @return the corresponding zero-based task index.
+     * @throws GreenChonkException if the task number does not identify a task.
      */
     protected static int getTaskIndex(int taskNumber, String commandName,
             TaskList tasks) throws GreenChonkException {

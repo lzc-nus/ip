@@ -16,7 +16,7 @@ public class ScheduleCommand extends Command {
     /**
      * Creates a command that displays tasks occurring on the specified date.
      *
-     * @param date the date whose scheduled tasks should be displayed
+     * @param date the date whose scheduled tasks should be displayed.
      */
     public ScheduleCommand(LocalDate date) {
         this.date = date;

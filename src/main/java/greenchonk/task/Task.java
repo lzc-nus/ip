@@ -12,7 +12,7 @@ public abstract class Task {
     /**
      * Creates an incomplete task with the given description.
      *
-     * @param description the task description
+     * @param description the task description.
      */
     protected Task(String description) {
         this.description = description;
@@ -36,7 +36,7 @@ public abstract class Task {
     /**
      * Returns the symbol used to display this task's completion status.
      *
-     * @return {@code X} when completed, or a space otherwise
+     * @return {@code X} when completed, or a space otherwise.
      */
     public String getStatusIcon() {
         return status.getIcon();
@@ -45,7 +45,7 @@ public abstract class Task {
     /**
      * Returns whether this task has been completed.
      *
-     * @return true if the task is completed
+     * @return true if the task is completed.
      */
     public boolean isDone() {
         return status == TaskStatus.DONE;
@@ -54,7 +54,7 @@ public abstract class Task {
     /**
      * Returns this task's description.
      *
-     * @return the task description
+     * @return the task description.
      */
     public String getDescription() {
         return description;
@@ -64,8 +64,8 @@ public abstract class Task {
      * Returns whether this task is scheduled for the given date.
      * Tasks without dates are never scheduled for a particular date.
      *
-     * @param date the date to check
-     * @return true if this task occurs on the date
+     * @param date the date to check.
+     * @return true if this task occurs on the date.
      */
     public boolean occursOn(LocalDate date) {
         return false;
@@ -74,7 +74,7 @@ public abstract class Task {
     /**
      * Returns the symbol used to identify this task's type.
      *
-     * @return the task type symbol
+     * @return the task type symbol.
      */
     public abstract String getTypeIcon();
 

@@ -18,9 +18,9 @@ public class UpdateStatusCommand extends Command {
     /**
      * Creates a command that changes a task's completion status.
      *
-     * @param taskNumber the one-based task number to update
-     * @param newStatus the completion status to apply
-     * @param commandName the command word used for validation feedback
+     * @param taskNumber the one-based task number to update.
+     * @param newStatus the completion status to apply.
+     * @param commandName the command word used for validation feedback.
      */
     public UpdateStatusCommand(int taskNumber, TaskStatus newStatus,
             String commandName) {

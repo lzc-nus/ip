@@ -49,7 +49,7 @@ public class Ui {
     /**
      * Returns whether another command can be read.
      *
-     * @return true if standard input contains another line
+     * @return true if standard input contains another line.
      */
     public boolean hasNextCommand() {
         return scanner.hasNextLine();
@@ -58,7 +58,7 @@ public class Ui {
     /**
      * Reads the next command from standard input.
      *
-     * @return the command as entered by the user
+     * @return the command as entered by the user.
      */
     public String readCommand() {
         return scanner.nextLine();
@@ -77,7 +77,7 @@ public class Ui {
     /**
      * Displays a user-facing command error.
      *
-     * @param message the explanation of the error
+     * @param message the explanation of the error.
      */
     public void showError(String message) {
         System.out.println("Oops! Green Chonk couldn't chomp that:");
@@ -87,7 +87,7 @@ public class Ui {
     /**
      * Displays an error encountered while loading saved tasks.
      *
-     * @param message the explanation of the loading failure
+     * @param message the explanation of the loading failure.
      */
     public void showLoadingError(String message) {
         System.out.println("Oops! Green Chonk couldn't load saved tasks:");
@@ -97,7 +97,7 @@ public class Ui {
     /**
      * Displays the heading for tasks scheduled on a date.
      *
-     * @param date the requested schedule date
+     * @param date the requested schedule date.
      */
     public void showScheduleHeader(LocalDate date) {
         System.out.println("Here are the tasks scheduled for " + date + ":");
@@ -106,8 +106,8 @@ public class Ui {
     /**
      * Displays one task with its position in the full task list.
      *
-     * @param taskNumber the task's one-based position
-     * @param task the task to display
+     * @param taskNumber the task's one-based position.
+     * @param task the task to display.
      */
     public void showNumberedTask(int taskNumber, Task task) {
         System.out.println(taskNumber + "." + task);
@@ -116,7 +116,7 @@ public class Ui {
     /**
      * Reports that no deadline or event occurs on the requested date.
      *
-     * @param date the requested schedule date
+     * @param date the requested schedule date.
      */
     public void showEmptySchedule(LocalDate date) {
         System.out.println("Green Chonk has no deadlines or events scheduled for " + date + ".");
@@ -125,8 +125,8 @@ public class Ui {
     /**
      * Displays a task whose completion status changed.
      *
-     * @param task the updated task
-     * @param status the task's new status
+     * @param task the updated task.
+     * @param status the task's new status.
      */
     public void showTaskStatusUpdated(Task task, TaskStatus status) {
         if (status == TaskStatus.DONE) {
@@ -140,8 +140,8 @@ public class Ui {
     /**
      * Displays a deleted task and the number of remaining tasks.
      *
-     * @param task the deleted task
-     * @param remainingTaskCount the number of tasks remaining
+     * @param task the deleted task.
+     * @param remainingTaskCount the number of tasks remaining.
      */
     public void showTaskDeleted(Task task, int remainingTaskCount) {
         System.out.println("Noted. Green Chonk removed this task:");
@@ -152,8 +152,8 @@ public class Ui {
     /**
      * Displays an added task and the updated task count.
      *
-     * @param task the added task
-     * @param taskCount the updated number of tasks
+     * @param task the added task.
+     * @param taskCount the updated number of tasks.
      */
     public void showTaskAdded(Task task, int taskCount) {
         System.out.println("Chomped this task:");
@@ -164,7 +164,7 @@ public class Ui {
     /**
      * Displays all tasks in their current order.
      *
-     * @param tasks the tasks to display
+     * @param tasks the tasks to display.
      */
     public void showTaskList(TaskList tasks) {
         if (tasks.isEmpty()) {
