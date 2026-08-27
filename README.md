@@ -2,7 +2,7 @@
 
 Green Chonk is a small Java chatbot prototype with a playful personality. It displays a classic ASCII banner, animates its responses with a short thinking sequence, saves typed tasks between sessions, and exits when the user types bye.
 
-The current version supports todos, deadlines, and events. Each type displays its own icon alongside its completion status. The `list` command displays numbered tasks, `mark NUMBER` completes a task, `unmark NUMBER` makes it incomplete again, and `delete NUMBER` removes it. Invalid commands produce a specific correction instead of terminating the program. The `bye` command ends the conversation regardless of capitalization.
+The current version supports todos, deadlines, and events. Deadlines and events accept ISO calendar dates such as `2026-08-28` and display them in a friendlier form such as `Aug 28 2026`. Each task type displays its own icon alongside its completion status. The `list` command displays numbered tasks, `schedule DATE` finds deadlines and events occurring on a date, `mark NUMBER` completes a task, `unmark NUMBER` makes it incomplete again, and `delete NUMBER` removes it. Invalid commands produce a specific correction instead of terminating the program. The `bye` command ends the conversation regardless of capitalization.
 
 ## Requirements
 
@@ -32,7 +32,7 @@ javac -d out src/main/java/*.java
 java -cp out GreenChonk
 ~~~
 
-The program keeps reading commands until the user enters `bye` in any capitalization. Add tasks with `todo DESCRIPTION`, `deadline DESCRIPTION /by DATE`, or `event DESCRIPTION /from START /to END`. Date and time values are stored as entered. Use `list` to display tasks, `mark NUMBER` to complete one, `unmark NUMBER` to reverse that status, and `delete NUMBER` to remove one. The remaining tasks are renumbered automatically. If a command is incomplete, unknown, or refers to a task that does not exist, Green Chonk explains how to correct it and continues running without changing the task list. Tasks are saved automatically in `data/greenchonk.txt` whenever the list changes and restored the next time the program starts. The folder and file are created automatically on first use. Run the program in an interactive terminal to see the thinking animation overwrite the dots in place. If the output is redirected to a file or captured by a tool, the carriage-return characters may appear as separate frames instead.
+The program keeps reading commands until the user enters `bye` in any capitalization. Add tasks with `todo DESCRIPTION`, `deadline DESCRIPTION /by DATE`, or `event DESCRIPTION /from START /to END`. Enter deadline and event dates in the `yyyy-MM-dd` format; invalid calendar dates are rejected without storing a task. An event's ending date must be the same as or later than its starting date. Green Chonk displays valid dates as `MMM dd yyyy`. Use `list` to display every task or `schedule DATE` to display deadlines due and events in progress on that date. Scheduled results keep their original task numbers so they can be marked, unmarked, or deleted directly. Use `mark NUMBER` to complete a task, `unmark NUMBER` to reverse that status, and `delete NUMBER` to remove one. The remaining tasks are renumbered automatically. If a command is incomplete, unknown, or refers to a task that does not exist, Green Chonk explains how to correct it and continues running without changing the task list. Tasks and their canonical ISO dates are saved automatically in `data/greenchonk.txt` whenever the list changes and restored the next time the program starts. The folder and file are created automatically on first use. Run the program in an interactive terminal to see the thinking animation overwrite the dots in place. If the output is redirected to a file or captured by a tool, the carriage-return characters may appear as separate frames instead.
 
 ## Example interaction
 
@@ -52,38 +52,41 @@ _____________________________________________________________
 Chomped this task:
   [T][ ] buy milk
 Green Chonk is now carrying 1 task.
-> deadline finish report /by Friday 5pm
+> deadline finish report /by 2026-08-28
 Chomped this task:
-  [D][ ] finish report (by: Friday 5pm)
+  [D][ ] finish report (by: Aug 28 2026)
 Green Chonk is now carrying 2 tasks.
-> event project meeting /from Monday 2pm /to 4pm
+> event project meeting /from 2026-08-29 /to 2026-08-30
 Chomped this task:
-  [E][ ] project meeting (from: Monday 2pm to: 4pm)
+  [E][ ] project meeting (from: Aug 29 2026 to: Aug 30 2026)
 Green Chonk is now carrying 3 tasks.
 > list
 Here are the tasks Green Chonk is carrying:
 1.[T][ ] buy milk
-2.[D][ ] finish report (by: Friday 5pm)
-3.[E][ ] project meeting (from: Monday 2pm to: 4pm)
+2.[D][ ] finish report (by: Aug 28 2026)
+3.[E][ ] project meeting (from: Aug 29 2026 to: Aug 30 2026)
+> schedule 2026-08-29
+Here are the tasks scheduled for 2026-08-29:
+3.[E][ ] project meeting (from: Aug 29 2026 to: Aug 30 2026)
 > mark 2
 Nice! Green Chonk marked this task as done:
-  [D][X] finish report (by: Friday 5pm)
+  [D][X] finish report (by: Aug 28 2026)
 > list
 Here are the tasks Green Chonk is carrying:
 1.[T][ ] buy milk
-2.[D][X] finish report (by: Friday 5pm)
-3.[E][ ] project meeting (from: Monday 2pm to: 4pm)
+2.[D][X] finish report (by: Aug 28 2026)
+3.[E][ ] project meeting (from: Aug 29 2026 to: Aug 30 2026)
 > unmark 2
 OK, Green Chonk marked this task as not done yet:
-  [D][ ] finish report (by: Friday 5pm)
+  [D][ ] finish report (by: Aug 28 2026)
 > delete 2
 Noted. Green Chonk removed this task:
-  [D][ ] finish report (by: Friday 5pm)
+  [D][ ] finish report (by: Aug 28 2026)
 Green Chonk is now carrying 2 tasks.
 > list
 Here are the tasks Green Chonk is carrying:
 1.[T][ ] buy milk
-2.[E][ ] project meeting (from: Monday 2pm to: 4pm)
+2.[E][ ] project meeting (from: Aug 29 2026 to: Aug 30 2026)
 > todo
 Oops! Green Chonk couldn't chomp that:
   A todo needs a description. Try: todo buy milk

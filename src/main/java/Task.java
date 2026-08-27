@@ -1,3 +1,5 @@
+import java.time.LocalDate;
+
 /**
  * Represents a task and whether it has been completed.
  */
@@ -54,6 +56,17 @@ public abstract class Task {
      */
     public String getDescription() {
         return description;
+    }
+
+    /**
+     * Returns whether this task is scheduled for the given date.
+     * Tasks without dates are never scheduled for a particular date.
+     *
+     * @param date the date to check
+     * @return true if this task occurs on the date
+     */
+    public boolean occursOn(LocalDate date) {
+        return false;
     }
 
     /**
