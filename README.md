@@ -22,15 +22,16 @@ sdk use java 25.0.3.fx-zulu
 3. Open src/main/java/greenchonk/GreenChonk.java.
 4. Right-click the file and select **Run GreenChonk.main()**.
 
-## Run from a terminal
+## Build and run with Gradle
 
 From the project root:
 
 ~~~bash
-mkdir -p out
-find src/main/java -name "*.java" -print0 | xargs -0 javac -d out
-java -cp out greenchonk.GreenChonk
+./gradlew clean build
+./gradlew run
 ~~~
+
+The Gradle wrapper downloads the required Gradle version and project dependencies automatically on first use.
 
 The program keeps reading commands until the user enters `bye` in any capitalization. Add tasks with `todo DESCRIPTION`, `deadline DESCRIPTION /by DATE`, or `event DESCRIPTION /from START /to END`. Enter deadline and event dates in the `yyyy-MM-dd` format; invalid calendar dates are rejected without storing a task. An event's ending date must be the same as or later than its starting date. Green Chonk displays valid dates as `MMM dd yyyy`. Use `list` to display every task or `schedule DATE` to display deadlines due and events in progress on that date. Scheduled results keep their original task numbers so they can be marked, unmarked, or deleted directly. Use `mark NUMBER` to complete a task, `unmark NUMBER` to reverse that status, and `delete NUMBER` to remove one. The remaining tasks are renumbered automatically. If a command is incomplete, unknown, or refers to a task that does not exist, Green Chonk explains how to correct it and continues running without changing the task list. Tasks and their canonical ISO dates are saved automatically in `data/greenchonk.txt` whenever the list changes and restored the next time the program starts. The folder and file are created automatically on first use. Run the program in an interactive terminal to see the thinking animation overwrite the dots in place. If the output is redirected to a file or captured by a tool, the carriage-return characters may appear as separate frames instead.
 
