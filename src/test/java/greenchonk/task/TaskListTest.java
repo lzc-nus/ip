@@ -22,10 +22,10 @@ class TaskListTest {
     @Test
     void constructor_sourceListChangedAfterConstruction_taskListUnaffected() {
         Task originalTask = new Todo("original");
-        List<Task> source = new ArrayList<>(List.of(originalTask));
-        TaskList tasks = new TaskList(source);
+        List<Task> sourceTasks = new ArrayList<>(List.of(originalTask));
+        TaskList tasks = new TaskList(sourceTasks);
 
-        source.clear();
+        sourceTasks.clear();
 
         assertEquals(1, tasks.size());
         assertSame(originalTask, tasks.get(0));

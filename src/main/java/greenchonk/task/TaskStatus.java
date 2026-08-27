@@ -15,7 +15,7 @@ public enum TaskStatus {
     /**
      * Creates a completion status with its display icon.
      *
-     * @param icon the icon used to display the status
+     * @param icon the icon used to display the status.
      */
     TaskStatus(String icon) {
         this.icon = icon;
@@ -24,7 +24,7 @@ public enum TaskStatus {
     /**
      * Returns the icon used to display this status.
      *
-     * @return the status icon
+     * @return the status icon.
      */
     public String getIcon() {
         return icon;

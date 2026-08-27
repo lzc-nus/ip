@@ -19,7 +19,7 @@ public class TaskList {
     /**
      * Creates a task list containing the supplied tasks in their current order.
      *
-     * @param tasks the tasks with which to initialize the list
+     * @param tasks the tasks with which to initialize the list.
      */
     public TaskList(List<Task> tasks) {
         this.tasks = new ArrayList<>(tasks);
@@ -28,7 +28,7 @@ public class TaskList {
     /**
      * Returns the number of tasks in the list.
      *
-     * @return the task count
+     * @return the task count.
      */
     public int size() {
         return tasks.size();
@@ -37,7 +37,7 @@ public class TaskList {
     /**
      * Returns whether the list contains no tasks.
      *
-     * @return true if the list is empty
+     * @return true if the list is empty.
      */
     public boolean isEmpty() {
         return tasks.isEmpty();
@@ -46,8 +46,8 @@ public class TaskList {
     /**
      * Returns the task at the specified zero-based index.
      *
-     * @param index the task's zero-based index
-     * @return the task at the index
+     * @param index the task's zero-based index.
+     * @return the task at the index.
      */
     public Task get(int index) {
         return tasks.get(index);
@@ -56,7 +56,7 @@ public class TaskList {
     /**
      * Adds a task to the end of the list.
      *
-     * @param task the task to add
+     * @param task the task to add.
      */
     public void add(Task task) {
         tasks.add(task);
@@ -65,8 +65,8 @@ public class TaskList {
     /**
      * Inserts a task at a specified zero-based index.
      *
-     * @param index the position at which to insert the task
-     * @param task the task to insert
+     * @param index the position at which to insert the task.
+     * @param task the task to insert.
      */
     public void add(int index, Task task) {
         tasks.add(index, task);
@@ -75,8 +75,8 @@ public class TaskList {
     /**
      * Deletes and returns the task at a specified zero-based index.
      *
-     * @param index the index of the task to delete
-     * @return the deleted task
+     * @param index the index of the task to delete.
+     * @return the deleted task.
      */
     public Task delete(int index) {
         return tasks.remove(index);

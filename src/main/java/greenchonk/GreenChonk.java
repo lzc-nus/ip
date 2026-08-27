@@ -18,7 +18,7 @@ public class GreenChonk {
     /**
      * Creates Green Chonk with a command-line UI and file-backed storage.
      *
-     * @param filePath the path of the task data file
+     * @param filePath the path of the task data file.
      */
     public GreenChonk(String filePath) {
         storage = new Storage(filePath);
@@ -28,7 +28,7 @@ public class GreenChonk {
     /**
      * Starts Green Chonk with its default data file.
      *
-     * @param args command-line arguments, which are not used
+     * @param args command-line arguments, which are not used.
      */
     public static void main(String[] args) {
         new GreenChonk(DATA_FILE_PATH).run();
@@ -56,7 +56,7 @@ public class GreenChonk {
     /**
      * Loads saved tasks, creating the data directory and file on first use.
      *
-     * @return the tasks restored from disk, or an empty task list if loading fails
+     * @return the tasks restored from disk, or an empty task list if loading fails.
      */
     private TaskList loadTasks() {
         try {
@@ -66,5 +66,4 @@ public class GreenChonk {
             return new TaskList();
         }
     }
-
 }

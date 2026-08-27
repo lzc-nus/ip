@@ -27,7 +27,7 @@ public class Storage {
     /**
      * Creates storage backed by the specified file.
      *
-     * @param filePath the path of the task data file
+     * @param filePath the path of the task data file.
      */
     public Storage(String filePath) {
         dataFile = Path.of(filePath);
@@ -36,8 +36,8 @@ public class Storage {
     /**
      * Loads saved tasks, creating the data directory and file on first use.
      *
-     * @return the tasks restored from disk
-     * @throws GreenChonkException if the data file cannot be read or contains invalid data
+     * @return the tasks restored from disk.
+     * @throws GreenChonkException if the data file cannot be read or contains invalid data.
      */
     public List<Task> load() throws GreenChonkException {
         List<Task> tasks = new ArrayList<>();
@@ -63,8 +63,8 @@ public class Storage {
     /**
      * Replaces the data file contents with the current task list.
      *
-     * @param tasks the tasks to persist
-     * @throws GreenChonkException if the tasks cannot be written
+     * @param tasks the tasks to persist.
+     * @throws GreenChonkException if the tasks cannot be written.
      */
     public void save(TaskList tasks) throws GreenChonkException {
         List<String> lines = new ArrayList<>();
@@ -83,8 +83,8 @@ public class Storage {
     /**
      * Converts one task to the human-readable storage format.
      *
-     * @param task the task to serialize
-     * @return one line suitable for the data file
+     * @param task the task to serialize.
+     * @return one line suitable for the data file.
      */
     private static String serializeTask(Task task) {
         String status = task.isDone() ? "1" : "0";
@@ -103,10 +103,10 @@ public class Storage {
     /**
      * Recreates one task from a line in the data file.
      *
-     * @param line the stored task line
-     * @param lineNumber the line number used in error messages
-     * @return the restored task
-     * @throws GreenChonkException if the line does not use the expected format
+     * @param line the stored task line.
+     * @param lineNumber the line number used in error messages.
+     * @return the restored task.
+     * @throws GreenChonkException if the line does not use the expected format.
      */
     private static Task parseSavedTask(String line, int lineNumber) throws GreenChonkException {
         List<String> fields = splitDataLine(line, lineNumber);
@@ -161,10 +161,10 @@ public class Storage {
     /**
      * Parses a canonical date stored in the data file.
      *
-     * @param dateText the stored date text
-     * @param lineNumber the line number used in error messages
-     * @return the parsed date
-     * @throws GreenChonkException if the stored date is invalid
+     * @param dateText the stored date text.
+     * @param lineNumber the line number used in error messages.
+     * @return the parsed date.
+     * @throws GreenChonkException if the stored date is invalid.
      */
     private static LocalDate parseSavedDate(String dateText, int lineNumber)
             throws GreenChonkException {
@@ -178,10 +178,10 @@ public class Storage {
     /**
      * Splits a stored line while preserving escaped pipe and backslash characters.
      *
-     * @param line the stored line to split
-     * @param lineNumber the line number used in error messages
-     * @return the unescaped fields
-     * @throws GreenChonkException if the line ends with an incomplete escape
+     * @param line the stored line to split.
+     * @param lineNumber the line number used in error messages.
+     * @return the unescaped fields.
+     * @throws GreenChonkException if the line ends with an incomplete escape.
      */
     private static List<String> splitDataLine(String line, int lineNumber)
             throws GreenChonkException {
@@ -212,8 +212,8 @@ public class Storage {
     /**
      * Escapes storage delimiter characters inside a user-provided value.
      *
-     * @param value the value to escape
-     * @return a value safe to store as one field
+     * @param value the value to escape.
+     * @return a value safe to store as one field.
      */
     private static String escapeDataField(String value) {
         return value.replace("\\", "\\\\").replace("|", "\\|");
