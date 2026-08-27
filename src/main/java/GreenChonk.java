@@ -6,15 +6,11 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 /**
  * Greets the user as Green Chonk, manages tasks, and exits on {@code bye}.
  */
 public class GreenChonk {
-    private static final int BANNER_WIDTH = 61;
-    private static final long FRAME_DELAY_MILLIS = 100;
-    private static final String DIVIDER = "_".repeat(BANNER_WIDTH);
     private static final String TODO_COMMAND = "todo";
     private static final String DEADLINE_COMMAND = "deadline";
     private static final String EVENT_COMMAND = "event";
@@ -28,44 +24,38 @@ public class GreenChonk {
     private static final String DATA_SEPARATOR = " | ";
     private static final Path DATA_FILE = Path.of("data", "greenchonk.txt");
 
-    private static final String BANNER = """
-                  ____                       ____ _                 _
-                 / ___|_ __ ___  ___ _ __   / ___| |__   ___  _ __ | | __
-                | |  _| '__/ _ \\/ _ \\ '_ \\ | |   | '_ \\ / _ \\| '_ \\| |/ /
-                | |_| | | |  __/  __/ | | || |___| | | | (_) | | | |   <
-                 \\____|_|  \\___|\\___|_| |_| \\____|_| |_|\\___/|_| |_|\\_|\\_\\
-                """;
+    private final Ui ui;
+
+    /**
+     * Creates Green Chonk with a command-line user interface.
+     */
+    public GreenChonk() {
+        ui = new Ui();
+    }
 
     public static void main(String[] args) {
-        System.out.println(DIVIDER);
-        System.out.print(BANNER);
-        System.out.println();
-        animateMessage("Green Chonk is waking up...");
-        animateMessage("Hello! I'm Green Chonk.");
-        animateMessage("Ready to chomp through your tasks!");
-        animateMessage("What can I do for you?");
-        System.out.println();
-        System.out.println(DIVIDER);
+        new GreenChonk().run();
+    }
 
+    /**
+     * Runs the command loop until the user exits or input ends.
+     */
+    public void run() {
+        ui.showWelcome();
         List<Task> tasks = loadTasks();
 
-        try (Scanner scanner = new Scanner(System.in)) {
-            while (scanner.hasNextLine()) {
-                String command = scanner.nextLine();
-                String trimmedCommand = command.trim();
-                if (trimmedCommand.equalsIgnoreCase("bye")) {
-                    System.out.println();
-                    System.out.println(DIVIDER);
-                    animateMessage("Bye! I'm rolling off for now. See you again soon!");
-                    System.out.println(DIVIDER);
-                    return;
-                }
+        while (ui.hasNextCommand()) {
+            String command = ui.readCommand();
+            String trimmedCommand = command.trim();
+            if (trimmedCommand.equalsIgnoreCase("bye")) {
+                ui.showGoodbye();
+                return;
+            }
 
-                try {
-                    executeCommand(trimmedCommand, tasks);
-                } catch (GreenChonkException exception) {
-                    printError(exception);
-                }
+            try {
+                executeCommand(trimmedCommand, tasks);
+            } catch (GreenChonkException exception) {
+                ui.showError(exception.getMessage());
             }
         }
     }
@@ -77,7 +67,7 @@ public class GreenChonk {
      * @param tasks the tasks currently stored
      * @throws GreenChonkException if the command is invalid
      */
-    private static void executeCommand(String command, List<Task> tasks) throws GreenChonkException {
+    private void executeCommand(String command, List<Task> tasks) throws GreenChonkException {
         if (command.isEmpty()) {
             throw new GreenChonkException("Please enter a command. Try: todo buy milk");
         }
@@ -248,7 +238,7 @@ public class GreenChonk {
      * @param tasks the tasks currently stored
      * @throws GreenChonkException if the schedule date is missing or invalid
      */
-    private static void printSchedule(String command, List<Task> tasks) throws GreenChonkException {
+    private void printSchedule(String command, List<Task> tasks) throws GreenChonkException {
         String dateText = command.substring(SCHEDULE_COMMAND.length()).trim();
         if (dateText.isEmpty()) {
             throw new GreenChonkException("Please provide a schedule date. Try: schedule 2026-08-28");
@@ -260,14 +250,14 @@ public class GreenChonk {
             Task task = tasks.get(index);
             if (task.occursOn(date)) {
                 if (!hasScheduledTask) {
-                    System.out.println("Here are the tasks scheduled for " + date + ":");
+                    ui.showScheduleHeader(date);
                 }
-                System.out.println((index + 1) + "." + task);
+                ui.showNumberedTask(index + 1, task);
                 hasScheduledTask = true;
             }
         }
         if (!hasScheduledTask) {
-            System.out.println("Green Chonk has no deadlines or events scheduled for " + date + ".");
+            ui.showEmptySchedule(date);
         }
     }
 
@@ -280,7 +270,7 @@ public class GreenChonk {
      * @param newStatus the completion status to apply
      * @throws GreenChonkException if the task number is missing, invalid, or outside the list
      */
-    private static void updateTaskStatus(String command, String commandName, List<Task> tasks,
+    private void updateTaskStatus(String command, String commandName, List<Task> tasks,
             TaskStatus newStatus) throws GreenChonkException {
         int taskIndex = parseTaskIndex(command, commandName, tasks.size());
         Task task = tasks.get(taskIndex);
@@ -302,12 +292,7 @@ public class GreenChonk {
             throw exception;
         }
 
-        if (newStatus == TaskStatus.DONE) {
-            System.out.println("Nice! Green Chonk marked this task as done:");
-        } else {
-            System.out.println("OK, Green Chonk marked this task as not done yet:");
-        }
-        System.out.println("  " + task);
+        ui.showTaskStatusUpdated(task, newStatus);
     }
 
     /**
@@ -317,7 +302,7 @@ public class GreenChonk {
      * @param tasks the tasks currently stored
      * @throws GreenChonkException if the task number is missing, invalid, or outside the list
      */
-    private static void deleteTask(String command, List<Task> tasks) throws GreenChonkException {
+    private void deleteTask(String command, List<Task> tasks) throws GreenChonkException {
         int taskIndex = parseTaskIndex(command, DELETE_COMMAND, tasks.size());
         Task deletedTask = tasks.remove(taskIndex);
         try {
@@ -326,11 +311,7 @@ public class GreenChonk {
             tasks.add(taskIndex, deletedTask);
             throw exception;
         }
-        int taskCount = tasks.size();
-        String taskLabel = taskCount == 1 ? "task" : "tasks";
-        System.out.println("Noted. Green Chonk removed this task:");
-        System.out.println("  " + deletedTask);
-        System.out.println("Green Chonk is now carrying " + taskCount + " " + taskLabel + ".");
+        ui.showTaskDeleted(deletedTask, tasks.size());
     }
 
     /**
@@ -374,7 +355,7 @@ public class GreenChonk {
      * @param task the task to add
      * @throws GreenChonkException if the updated task list cannot be saved
      */
-    private static void addTask(List<Task> tasks, Task task) throws GreenChonkException {
+    private void addTask(List<Task> tasks, Task task) throws GreenChonkException {
         tasks.add(task);
         try {
             saveTasks(tasks);
@@ -382,11 +363,7 @@ public class GreenChonk {
             tasks.remove(tasks.size() - 1);
             throw exception;
         }
-        int taskCount = tasks.size();
-        String taskLabel = taskCount == 1 ? "task" : "tasks";
-        System.out.println("Chomped this task:");
-        System.out.println("  " + task);
-        System.out.println("Green Chonk is now carrying " + taskCount + " " + taskLabel + ".");
+        ui.showTaskAdded(task, tasks.size());
     }
 
     /**
@@ -394,7 +371,7 @@ public class GreenChonk {
      *
      * @return the tasks restored from disk, or an empty list if loading fails
      */
-    private static List<Task> loadTasks() {
+    private List<Task> loadTasks() {
         List<Task> tasks = new ArrayList<>();
         try {
             Files.createDirectories(DATA_FILE.getParent());
@@ -410,8 +387,7 @@ public class GreenChonk {
                 }
             }
         } catch (IOException | GreenChonkException exception) {
-            System.out.println("Oops! Green Chonk couldn't load saved tasks:");
-            System.out.println("  " + exception.getMessage());
+            ui.showLoadingError(exception.getMessage());
             tasks.clear();
         }
         return tasks;
@@ -579,60 +555,11 @@ public class GreenChonk {
     }
 
     /**
-     * Displays a user-facing explanation for an invalid command.
-     *
-     * @param exception the command error to display
-     */
-    private static void printError(GreenChonkException exception) {
-        System.out.println("Oops! Green Chonk couldn't chomp that:");
-        System.out.println("  " + exception.getMessage());
-    }
-
-    /**
      * Displays all tasks currently stored in memory.
      *
      * @param tasks the tasks currently stored
      */
-    private static void printTasks(List<Task> tasks) {
-        if (tasks.isEmpty()) {
-            System.out.println("Green Chonk is not carrying any tasks yet.");
-            return;
-        }
-
-        System.out.println("Here are the tasks Green Chonk is carrying:");
-        for (int index = 0; index < tasks.size(); index++) {
-            System.out.println((index + 1) + "." + tasks.get(index));
-        }
-    }
-
-    /**
-     * Prints a message after a short, centered thinking animation.
-     *
-     * @param message the message to reveal after the animation
-     */
-    private static void animateMessage(String message) {
-        for (int dotCount = 1; dotCount <= 3; dotCount++) {
-            System.out.print("\r" + center(".".repeat(dotCount)));
-            System.out.flush();
-            try {
-                Thread.sleep(FRAME_DELAY_MILLIS);
-            } catch (InterruptedException exception) {
-                Thread.currentThread().interrupt();
-                break;
-            }
-        }
-        System.out.print("\r" + center(message));
-        System.out.println();
-    }
-
-    /**
-     * Centers text using the width of the ASCII banner.
-     *
-     * @param text the text to center
-     * @return the text with leading spaces added
-     */
-    private static String center(String text) {
-        int leftPadding = Math.max(0, (BANNER_WIDTH - text.length()) / 2);
-        return " ".repeat(leftPadding) + text;
+    private void printTasks(List<Task> tasks) {
+        ui.showTaskList(tasks);
     }
 }

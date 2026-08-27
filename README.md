@@ -112,7 +112,8 @@ src/
         ├── GreenChonkException.java
         ├── Task.java
         ├── TaskStatus.java
-        └── Todo.java
+        ├── Todo.java
+        └── Ui.java
 ~~~
 
 Keep Java source files under src/main/java, which is the source directory expected by the project setup.
