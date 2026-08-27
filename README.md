@@ -43,6 +43,23 @@ Run the JUnit regression suite from the project root:
 
 The suite covers command execution and rollback, parser validation, storage round trips, and task-domain behavior.
 
+## Package as an executable JAR
+
+Create the distributable fat JAR from the project root:
+
+~~~bash
+./gradlew clean shadowJar
+~~~
+
+The generated file is `build/libs/greenchonk.jar`. To test the package as a user would receive it, copy the JAR
+into an empty folder, open a terminal in that folder, and run:
+
+~~~bash
+java -jar "greenchonk.jar"
+~~~
+
+Keep the generated JAR out of Git; Gradle can reproduce it from the committed source and build configuration.
+
 The program keeps reading commands until the user enters `bye` in any capitalization. Add tasks with `todo DESCRIPTION`, `deadline DESCRIPTION /by DATE`, or `event DESCRIPTION /from START /to END`. Enter deadline and event dates in the `yyyy-MM-dd` format; invalid calendar dates are rejected without storing a task. An event's ending date must be the same as or later than its starting date. Green Chonk displays valid dates as `MMM dd yyyy`. Use `list` to display every task or `schedule DATE` to display deadlines due and events in progress on that date. Scheduled results keep their original task numbers so they can be marked, unmarked, or deleted directly. Use `mark NUMBER` to complete a task, `unmark NUMBER` to reverse that status, and `delete NUMBER` to remove one. The remaining tasks are renumbered automatically. If a command is incomplete, unknown, or refers to a task that does not exist, Green Chonk explains how to correct it and continues running without changing the task list. Tasks and their canonical ISO dates are saved automatically in `data/greenchonk.txt` whenever the list changes and restored the next time the program starts. The folder and file are created automatically on first use. Run the program in an interactive terminal to see the thinking animation overwrite the dots in place. If the output is redirected to a file or captured by a tool, the carriage-return characters may appear as separate frames instead.
 
 ## Example interaction
