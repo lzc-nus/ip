@@ -1,3 +1,7 @@
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -18,6 +22,8 @@ public class GreenChonk {
     private static final String DEADLINE_SEPARATOR = "/by";
     private static final String EVENT_FROM_SEPARATOR = "/from";
     private static final String EVENT_TO_SEPARATOR = "/to";
+    private static final String DATA_SEPARATOR = " | ";
+    private static final Path DATA_FILE = Path.of("data", "greenchonk.txt");
 
     private static final String BANNER = """
                   ____                       ____ _                 _
@@ -38,7 +44,7 @@ public class GreenChonk {
         System.out.println();
         System.out.println(DIVIDER);
 
-        List<Task> tasks = new ArrayList<>();
+        List<Task> tasks = loadTasks();
 
         try (Scanner scanner = new Scanner(System.in)) {
             while (scanner.hasNextLine()) {
@@ -213,11 +219,27 @@ public class GreenChonk {
             TaskStatus newStatus) throws GreenChonkException {
         int taskIndex = parseTaskIndex(command, commandName, tasks.size());
         Task task = tasks.get(taskIndex);
+        boolean wasDone = task.isDone();
         if (newStatus == TaskStatus.DONE) {
             task.markAsDone();
-            System.out.println("Nice! Green Chonk marked this task as done:");
         } else {
             task.markAsNotDone();
+        }
+
+        try {
+            saveTasks(tasks);
+        } catch (GreenChonkException exception) {
+            if (wasDone) {
+                task.markAsDone();
+            } else {
+                task.markAsNotDone();
+            }
+            throw exception;
+        }
+
+        if (newStatus == TaskStatus.DONE) {
+            System.out.println("Nice! Green Chonk marked this task as done:");
+        } else {
             System.out.println("OK, Green Chonk marked this task as not done yet:");
         }
         System.out.println("  " + task);
@@ -233,6 +255,12 @@ public class GreenChonk {
     private static void deleteTask(String command, List<Task> tasks) throws GreenChonkException {
         int taskIndex = parseTaskIndex(command, DELETE_COMMAND, tasks.size());
         Task deletedTask = tasks.remove(taskIndex);
+        try {
+            saveTasks(tasks);
+        } catch (GreenChonkException exception) {
+            tasks.add(taskIndex, deletedTask);
+            throw exception;
+        }
         int taskCount = tasks.size();
         String taskLabel = taskCount == 1 ? "task" : "tasks";
         System.out.println("Noted. Green Chonk removed this task:");
@@ -279,14 +307,189 @@ public class GreenChonk {
      *
      * @param tasks the tasks currently stored
      * @param task the task to add
+     * @throws GreenChonkException if the updated task list cannot be saved
      */
-    private static void addTask(List<Task> tasks, Task task) {
+    private static void addTask(List<Task> tasks, Task task) throws GreenChonkException {
         tasks.add(task);
+        try {
+            saveTasks(tasks);
+        } catch (GreenChonkException exception) {
+            tasks.remove(tasks.size() - 1);
+            throw exception;
+        }
         int taskCount = tasks.size();
         String taskLabel = taskCount == 1 ? "task" : "tasks";
         System.out.println("Chomped this task:");
         System.out.println("  " + task);
         System.out.println("Green Chonk is now carrying " + taskCount + " " + taskLabel + ".");
+    }
+
+    /**
+     * Loads saved tasks, creating the data directory and file on first use.
+     *
+     * @return the tasks restored from disk, or an empty list if loading fails
+     */
+    private static List<Task> loadTasks() {
+        List<Task> tasks = new ArrayList<>();
+        try {
+            Files.createDirectories(DATA_FILE.getParent());
+            if (Files.notExists(DATA_FILE)) {
+                Files.createFile(DATA_FILE);
+            }
+
+            List<String> lines = Files.readAllLines(DATA_FILE, StandardCharsets.UTF_8);
+            for (int lineNumber = 1; lineNumber <= lines.size(); lineNumber++) {
+                String line = lines.get(lineNumber - 1);
+                if (!line.isBlank()) {
+                    tasks.add(parseSavedTask(line, lineNumber));
+                }
+            }
+        } catch (IOException | GreenChonkException exception) {
+            System.out.println("Oops! Green Chonk couldn't load saved tasks:");
+            System.out.println("  " + exception.getMessage());
+            tasks.clear();
+        }
+        return tasks;
+    }
+
+    /**
+     * Replaces the data file contents with the current task list.
+     *
+     * @param tasks the tasks to persist
+     * @throws GreenChonkException if the tasks cannot be written
+     */
+    private static void saveTasks(List<Task> tasks) throws GreenChonkException {
+        List<String> lines = new ArrayList<>();
+        for (Task task : tasks) {
+            lines.add(serializeTask(task));
+        }
+
+        try {
+            Files.createDirectories(DATA_FILE.getParent());
+            Files.write(DATA_FILE, lines, StandardCharsets.UTF_8);
+        } catch (IOException exception) {
+            throw new GreenChonkException("I couldn't save the task list: " + exception.getMessage());
+        }
+    }
+
+    /**
+     * Converts one task to the human-readable storage format.
+     *
+     * @param task the task to serialize
+     * @return one line suitable for the data file
+     */
+    private static String serializeTask(Task task) {
+        String status = task.isDone() ? "1" : "0";
+        String commonFields = task.getTypeIcon() + DATA_SEPARATOR + status
+                + DATA_SEPARATOR + escapeDataField(task.getDescription());
+        if (task instanceof Deadline deadline) {
+            return commonFields + DATA_SEPARATOR + escapeDataField(deadline.getBy());
+        }
+        if (task instanceof Event event) {
+            return commonFields + DATA_SEPARATOR + escapeDataField(event.getFrom())
+                    + DATA_SEPARATOR + escapeDataField(event.getTo());
+        }
+        return commonFields;
+    }
+
+    /**
+     * Recreates one task from a line in the data file.
+     *
+     * @param line the stored task line
+     * @param lineNumber the line number used in error messages
+     * @return the restored task
+     * @throws GreenChonkException if the line does not use the expected format
+     */
+    private static Task parseSavedTask(String line, int lineNumber) throws GreenChonkException {
+        List<String> fields = splitDataLine(line, lineNumber);
+        if (fields.size() < 3) {
+            throw invalidDataLine(lineNumber);
+        }
+        for (String field : fields) {
+            if (field.isEmpty()) {
+                throw invalidDataLine(lineNumber);
+            }
+        }
+
+        String type = fields.get(0);
+        String status = fields.get(1);
+        Task task;
+        switch (type) {
+            case "T":
+                if (fields.size() != 3) {
+                    throw invalidDataLine(lineNumber);
+                }
+                task = new Todo(fields.get(2));
+                break;
+            case "D":
+                if (fields.size() != 4) {
+                    throw invalidDataLine(lineNumber);
+                }
+                task = new Deadline(fields.get(2), fields.get(3));
+                break;
+            case "E":
+                if (fields.size() != 5) {
+                    throw invalidDataLine(lineNumber);
+                }
+                task = new Event(fields.get(2), fields.get(3), fields.get(4));
+                break;
+            default:
+                throw invalidDataLine(lineNumber);
+        }
+
+        if (status.equals("1")) {
+            task.markAsDone();
+        } else if (!status.equals("0")) {
+            throw invalidDataLine(lineNumber);
+        }
+        return task;
+    }
+
+    /**
+     * Splits a stored line while preserving escaped pipe and backslash characters.
+     *
+     * @param line the stored line to split
+     * @param lineNumber the line number used in error messages
+     * @return the unescaped fields
+     * @throws GreenChonkException if the line ends with an incomplete escape
+     */
+    private static List<String> splitDataLine(String line, int lineNumber) throws GreenChonkException {
+        List<String> fields = new ArrayList<>();
+        StringBuilder field = new StringBuilder();
+        boolean isEscaped = false;
+        for (int index = 0; index < line.length(); index++) {
+            char character = line.charAt(index);
+            if (isEscaped) {
+                field.append(character);
+                isEscaped = false;
+            } else if (character == '\\') {
+                isEscaped = true;
+            } else if (character == '|') {
+                fields.add(field.toString().trim());
+                field.setLength(0);
+            } else {
+                field.append(character);
+            }
+        }
+        if (isEscaped) {
+            throw invalidDataLine(lineNumber);
+        }
+        fields.add(field.toString().trim());
+        return fields;
+    }
+
+    /**
+     * Escapes storage delimiter characters inside a user-provided value.
+     *
+     * @param value the value to escape
+     * @return a value safe to store as one field
+     */
+    private static String escapeDataField(String value) {
+        return value.replace("\\", "\\\\").replace("|", "\\|");
+    }
+
+    private static GreenChonkException invalidDataLine(int lineNumber) {
+        return new GreenChonkException("The data file has an invalid task on line " + lineNumber + ".");
     }
 
     /**

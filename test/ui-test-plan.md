@@ -11,6 +11,17 @@ Run these tests after each application code change using the project-local `test
 - Reject incomplete task commands and invalid task numbers without changing stored tasks.
 - Delete tasks from collection storage and renumber the remaining list.
 - Reject invalid delete requests without changing stored tasks.
+- Create missing storage automatically, save every task-list mutation, and restore all task details and statuses.
+- Run each automated case in isolated temporary storage so saved tasks cannot leak between cases.
+
+## Persistence check
+
+In a temporary working directory, run Green Chonk twice against the same `data/greenchonk.txt`:
+
+1. Add a todo, deadline, and event; mark the deadline; delete the todo; then exit.
+2. Start Green Chonk again and run `list`.
+
+The second session must restore the marked deadline and event, including their date/time details, while the deleted todo must remain absent. The test directory and data file must not exist before the first session; this verifies first-run creation as well as loading.
 
 ## Automated cases
 

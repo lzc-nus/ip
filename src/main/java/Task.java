@@ -39,6 +39,24 @@ public abstract class Task {
     }
 
     /**
+     * Returns whether this task has been completed.
+     *
+     * @return true if the task is completed
+     */
+    public boolean isDone() {
+        return status == TaskStatus.DONE;
+    }
+
+    /**
+     * Returns this task's description.
+     *
+     * @return the task description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
      * Returns the symbol used to identify this task's type.
      *
      * @return the task type symbol

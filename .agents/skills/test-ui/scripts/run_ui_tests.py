@@ -102,12 +102,13 @@ def find_ordered_fragment(output: str, fragment: str, start: int) -> int:
     return -1 if position < 0 else position + len(fragment)
 
 
-def run_case(java: str, build_dir: Path, main_class: str, case: dict) -> bool:
+def run_case(java: str, build_dir: Path, working_dir: Path, main_class: str, case: dict) -> bool:
     """Run one interaction case, print its transcript, and check expectations."""
     user_input = "\n".join(case["inputs"]) + "\n"
     try:
         result = subprocess.run(
             [java, "-cp", str(build_dir), main_class],
+            cwd=working_dir,
             input=user_input,
             capture_output=True,
             text=True,
@@ -167,8 +168,10 @@ def main() -> int:
         with tempfile.TemporaryDirectory(prefix="green-chonk-ui-tests-") as directory:
             build_dir = Path(directory)
             compile_application(project_root, javac, build_dir)
-            for case in plan["cases"]:
-                if not run_case(java, build_dir, plan["main_class"], case):
+            for index, case in enumerate(plan["cases"], start=1):
+                working_dir = build_dir / "cases" / str(index)
+                working_dir.mkdir(parents=True)
+                if not run_case(java, build_dir, working_dir, plan["main_class"], case):
                     return 1
     except (FileNotFoundError, ValueError, RuntimeError, json.JSONDecodeError) as error:
         print(f"ERROR: {error}", file=sys.stderr)
