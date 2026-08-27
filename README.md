@@ -92,7 +92,7 @@ Oops! Green Chonk couldn't chomp that:
   A todo needs a description. Try: todo buy milk
 > roll away
 Oops! Green Chonk couldn't chomp that:
-  I don't recognize "roll away". Try todo, deadline, event, list, mark, unmark, delete, or bye.
+  I don't recognize "roll away". Try todo, deadline, event, list, schedule, mark, unmark, delete, or bye.
 > bye
 
 _____________________________________________________________
@@ -106,17 +106,24 @@ _____________________________________________________________
 src/
 └── main/
     └── java/
+        ├── AddCommand.java
+        ├── Command.java
         ├── Deadline.java
+        ├── DeleteCommand.java
         ├── Event.java
+        ├── ExitCommand.java
         ├── GreenChonk.java
         ├── GreenChonkException.java
+        ├── ListCommand.java
         ├── Parser.java
+        ├── ScheduleCommand.java
         ├── Storage.java
         ├── Task.java
         ├── TaskList.java
         ├── TaskStatus.java
         ├── Todo.java
-        └── Ui.java
+        ├── Ui.java
+        └── UpdateStatusCommand.java
 ~~~
 
 Keep Java source files under src/main/java, which is the source directory expected by the project setup.

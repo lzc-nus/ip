@@ -1,0 +1,35 @@
+import java.time.LocalDate;
+
+/**
+ * Displays deadlines and events that occur on a requested date.
+ */
+public class ScheduleCommand extends Command {
+    private final LocalDate date;
+
+    /**
+     * Creates a command that displays tasks occurring on the specified date.
+     *
+     * @param date the date whose scheduled tasks should be displayed
+     */
+    public ScheduleCommand(LocalDate date) {
+        this.date = date;
+    }
+
+    @Override
+    public void execute(TaskList tasks, Ui ui, Storage storage) {
+        boolean hasScheduledTask = false;
+        for (int index = 0; index < tasks.size(); index++) {
+            Task task = tasks.get(index);
+            if (task.occursOn(date)) {
+                if (!hasScheduledTask) {
+                    ui.showScheduleHeader(date);
+                }
+                ui.showNumberedTask(index + 1, task);
+                hasScheduledTask = true;
+            }
+        }
+        if (!hasScheduledTask) {
+            ui.showEmptySchedule(date);
+        }
+    }
+}

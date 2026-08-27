@@ -5,22 +5,63 @@ import java.time.format.DateTimeParseException;
  * Interprets user commands and validates their arguments.
  */
 public final class Parser {
+    private static final String DEADLINE_COMMAND = "deadline";
+    private static final String DELETE_COMMAND = "delete";
     private static final String DEADLINE_SEPARATOR = "/by";
+    private static final String EVENT_COMMAND = "event";
     private static final String EVENT_FROM_SEPARATOR = "/from";
     private static final String EVENT_TO_SEPARATOR = "/to";
+    private static final String MARK_COMMAND = "mark";
+    private static final String SCHEDULE_COMMAND = "schedule";
+    private static final String TODO_COMMAND = "todo";
+    private static final String UNMARK_COMMAND = "unmark";
 
     private Parser() {
     }
 
     /**
-     * Returns whether the input is a command word, optionally followed by arguments.
+     * Creates the command represented by the user's input.
      *
      * @param input the trimmed user input
-     * @param command the command word to match
-     * @return true if the input invokes the command
+     * @return the parsed command
+     * @throws GreenChonkException if the command or its arguments are invalid
      */
-    public static boolean isCommand(String input, String command) {
-        return input.equals(command) || input.startsWith(command + " ");
+    public static Command parse(String input) throws GreenChonkException {
+        if (input.isEmpty()) {
+            throw new GreenChonkException("Please enter a command. Try: todo buy milk");
+        }
+        if (input.equalsIgnoreCase("bye")) {
+            return new ExitCommand();
+        }
+        if (input.equalsIgnoreCase("list")) {
+            return new ListCommand();
+        }
+        if (isCommand(input, SCHEDULE_COMMAND)) {
+            return new ScheduleCommand(parseScheduleDate(input));
+        }
+        if (isCommand(input, MARK_COMMAND)) {
+            return new UpdateStatusCommand(parseTaskNumber(input, MARK_COMMAND),
+                    TaskStatus.DONE, MARK_COMMAND);
+        }
+        if (isCommand(input, UNMARK_COMMAND)) {
+            return new UpdateStatusCommand(parseTaskNumber(input, UNMARK_COMMAND),
+                    TaskStatus.NOT_DONE, UNMARK_COMMAND);
+        }
+        if (isCommand(input, DELETE_COMMAND)) {
+            return new DeleteCommand(parseTaskNumber(input, DELETE_COMMAND));
+        }
+        if (isCommand(input, TODO_COMMAND)) {
+            return new AddCommand(parseTodo(input));
+        }
+        if (isCommand(input, DEADLINE_COMMAND)) {
+            return new AddCommand(parseDeadline(input));
+        }
+        if (isCommand(input, EVENT_COMMAND)) {
+            return new AddCommand(parseEvent(input));
+        }
+
+        throw new GreenChonkException("I don't recognize \"" + input
+                + "\". Try todo, deadline, event, list, schedule, mark, unmark, delete, or bye.");
     }
 
     /**
@@ -30,7 +71,7 @@ public final class Parser {
      * @return the parsed todo
      * @throws GreenChonkException if the description is empty
      */
-    public static Todo parseTodo(String command) throws GreenChonkException {
+    private static Todo parseTodo(String command) throws GreenChonkException {
         String description = getArguments(command);
         if (description.isEmpty()) {
             throw new GreenChonkException("A todo needs a description. Try: todo buy milk");
@@ -45,7 +86,7 @@ public final class Parser {
      * @return the parsed deadline
      * @throws GreenChonkException if a required deadline field is missing or invalid
      */
-    public static Deadline parseDeadline(String command) throws GreenChonkException {
+    private static Deadline parseDeadline(String command) throws GreenChonkException {
         String details = getArguments(command);
         int separatorPosition = details.indexOf(DEADLINE_SEPARATOR);
         if (separatorPosition < 0) {
@@ -72,7 +113,7 @@ public final class Parser {
      * @return the parsed event
      * @throws GreenChonkException if a required event field is missing or invalid
      */
-    public static Event parseEvent(String command) throws GreenChonkException {
+    private static Event parseEvent(String command) throws GreenChonkException {
         String details = getArguments(command);
         int fromPosition = details.indexOf(EVENT_FROM_SEPARATOR);
         if (fromPosition < 0) {
@@ -115,7 +156,7 @@ public final class Parser {
      * @return the requested schedule date
      * @throws GreenChonkException if the schedule date is missing or invalid
      */
-    public static LocalDate parseScheduleDate(String command) throws GreenChonkException {
+    private static LocalDate parseScheduleDate(String command) throws GreenChonkException {
         String dateText = getArguments(command);
         if (dateText.isEmpty()) {
             throw new GreenChonkException("Please provide a schedule date. Try: schedule 2026-08-28");
@@ -123,16 +164,7 @@ public final class Parser {
         return parseDate(dateText, "schedule", "2026-08-28");
     }
 
-    /**
-     * Converts a user-facing task number into a zero-based index.
-     *
-     * @param command the complete command containing the task number
-     * @param commandName the command word being executed
-     * @param taskCount the number of tasks currently stored
-     * @return the zero-based task index
-     * @throws GreenChonkException if the task number cannot identify an existing task
-     */
-    public static int parseTaskIndex(String command, String commandName, int taskCount)
+    private static int parseTaskNumber(String command, String commandName)
             throws GreenChonkException {
         String numberText = getArguments(command);
         if (numberText.isEmpty()) {
@@ -147,14 +179,11 @@ public final class Parser {
                     + "\" is not a valid task number. Use a whole number such as 1.");
         }
 
-        if (taskCount == 0) {
-            throw new GreenChonkException("There are no tasks to " + commandName + " yet.");
-        }
-        if (taskNumber < 1 || taskNumber > taskCount) {
-            throw new GreenChonkException("Task " + taskNumber
-                    + " does not exist. Choose a number from 1 to " + taskCount + ".");
-        }
-        return taskNumber - 1;
+        return taskNumber;
+    }
+
+    private static boolean isCommand(String input, String command) {
+        return input.equals(command) || input.startsWith(command + " ");
     }
 
     private static LocalDate parseDate(String dateText, String dateLabel, String exampleDate)
