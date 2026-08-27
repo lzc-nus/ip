@@ -15,6 +15,15 @@ public class Deadline extends Task {
         this.by = by;
     }
 
+    /**
+     * Returns the date or time by which this task should be completed.
+     *
+     * @return the deadline's due value
+     */
+    public String getBy() {
+        return by;
+    }
+
     @Override
     protected String getTypeIcon() {
         return "D";

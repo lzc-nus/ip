@@ -1,6 +1,6 @@
 # Green Chonk
 
-Green Chonk is a small Java chatbot prototype with a playful personality. It displays a classic ASCII banner, animates its responses with a short thinking sequence, tracks typed tasks in memory, and exits when the user types bye.
+Green Chonk is a small Java chatbot prototype with a playful personality. It displays a classic ASCII banner, animates its responses with a short thinking sequence, saves typed tasks between sessions, and exits when the user types bye.
 
 The current version supports todos, deadlines, and events. Each type displays its own icon alongside its completion status. The `list` command displays numbered tasks, `mark NUMBER` completes a task, `unmark NUMBER` makes it incomplete again, and `delete NUMBER` removes it. Invalid commands produce a specific correction instead of terminating the program. The `bye` command ends the conversation regardless of capitalization.
 
@@ -32,7 +32,7 @@ javac -d out src/main/java/*.java
 java -cp out GreenChonk
 ~~~
 
-The program keeps reading commands until the user enters `bye` in any capitalization. Add tasks with `todo DESCRIPTION`, `deadline DESCRIPTION /by DATE`, or `event DESCRIPTION /from START /to END`. Date and time values are stored as entered. Use `list` to display tasks, `mark NUMBER` to complete one, `unmark NUMBER` to reverse that status, and `delete NUMBER` to remove one. The remaining tasks are renumbered automatically. If a command is incomplete, unknown, or refers to a task that does not exist, Green Chonk explains how to correct it and continues running without changing the task list. Tasks are stored only in memory and are not written to disk. Run the program in an interactive terminal to see the thinking animation overwrite the dots in place. If the output is redirected to a file or captured by a tool, the carriage-return characters may appear as separate frames instead.
+The program keeps reading commands until the user enters `bye` in any capitalization. Add tasks with `todo DESCRIPTION`, `deadline DESCRIPTION /by DATE`, or `event DESCRIPTION /from START /to END`. Date and time values are stored as entered. Use `list` to display tasks, `mark NUMBER` to complete one, `unmark NUMBER` to reverse that status, and `delete NUMBER` to remove one. The remaining tasks are renumbered automatically. If a command is incomplete, unknown, or refers to a task that does not exist, Green Chonk explains how to correct it and continues running without changing the task list. Tasks are saved automatically in `data/greenchonk.txt` whenever the list changes and restored the next time the program starts. The folder and file are created automatically on first use. Run the program in an interactive terminal to see the thinking animation overwrite the dots in place. If the output is redirected to a file or captured by a tool, the carriage-return characters may appear as separate frames instead.
 
 ## Example interaction
 
