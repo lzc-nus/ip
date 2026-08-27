@@ -1,0 +1,45 @@
+/**
+ * Represents an action requested by the user.
+ */
+public abstract class Command {
+    /**
+     * Executes this command using the application's components.
+     *
+     * @param tasks the tasks currently stored
+     * @param ui the user interface through which results are shown
+     * @param storage the storage used to persist task changes
+     * @throws GreenChonkException if the command cannot be completed
+     */
+    public abstract void execute(TaskList tasks, Ui ui, Storage storage)
+            throws GreenChonkException;
+
+    /**
+     * Returns whether this command ends the application.
+     *
+     * @return true if this command exits the application
+     */
+    public boolean isExit() {
+        return false;
+    }
+
+    /**
+     * Converts a user-facing task number into a valid zero-based index.
+     *
+     * @param taskNumber the one-based task number entered by the user
+     * @param commandName the command word being executed
+     * @param tasks the tasks currently stored
+     * @return the corresponding zero-based task index
+     * @throws GreenChonkException if the task number does not identify a task
+     */
+    protected static int getTaskIndex(int taskNumber, String commandName,
+            TaskList tasks) throws GreenChonkException {
+        if (tasks.isEmpty()) {
+            throw new GreenChonkException("There are no tasks to " + commandName + " yet.");
+        }
+        if (taskNumber < 1 || taskNumber > tasks.size()) {
+            throw new GreenChonkException("Task " + taskNumber
+                    + " does not exist. Choose a number from 1 to " + tasks.size() + ".");
+        }
+        return taskNumber - 1;
+    }
+}
