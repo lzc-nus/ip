@@ -178,6 +178,20 @@ public class Ui {
         }
     }
 
+    /**
+     * Displays the heading for tasks matching a find command.
+     */
+    public void showFindHeader() {
+        System.out.println("Here are the matching tasks in your list:");
+    }
+
+    /**
+     * Reports that a find command has no matching tasks.
+     */
+    public void showNoMatchingTasks() {
+        System.out.println("Green Chonk found no matching tasks.");
+    }
+
     private static String taskCountText(int taskCount) {
         String taskLabel = taskCount == 1 ? "task" : "tasks";
         return taskCount + " " + taskLabel;

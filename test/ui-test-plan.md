@@ -6,6 +6,7 @@ Run these tests after each application code change using the project-local `test
 
 - Create and list all three task types with parsed, consistently formatted dates.
 - Preserve `LocalDate` details while marking and unmarking through `Task` polymorphism.
+- Find task descriptions by case-insensitive substring while preserving their original task numbers.
 - Accept valid ISO dates, including leap days, and reject invalid dates without storing a task.
 - Reject events that end before they start while allowing same-day events.
 - Find deadlines and in-progress events on a date while preserving their original task numbers.
@@ -70,6 +71,27 @@ Also seed the data file with an event whose ending date is before its starting d
       ]
     },
     {
+      "name": "find-tasks-by-keyword",
+      "aim": "Verify find performs case-insensitive substring matching, preserves original task numbers, reports no matches, and rejects an empty keyword.",
+      "inputs": [
+        "todo buy milk",
+        "todo Read Book",
+        "deadline return book /by 2026-08-30",
+        "todo update handbook",
+        "find BOOK",
+        "find hand",
+        "find missing",
+        "find",
+        "bye"
+      ],
+      "expected": [
+        "Here are the matching tasks in your list:\n2.[T][ ] Read Book\n3.[D][ ] return book (by: Aug 30 2026)\n4.[T][ ] update handbook",
+        "Here are the matching tasks in your list:\n4.[T][ ] update handbook",
+        "Green Chonk found no matching tasks.",
+        "A find command needs a keyword. Try: find book"
+      ]
+    },
+    {
       "name": "parse-and-format-calendar-dates",
       "aim": "Verify valid ISO dates, including a leap day, are stored as dates and displayed in a friendly format.",
       "inputs": [
@@ -97,7 +119,7 @@ Also seed the data file with an event whose ending date is before its starting d
       "expected": [
         "Oops! Green Chonk couldn't chomp that:\n  Please enter a command. Try: todo buy milk",
         "Oops! Green Chonk couldn't chomp that:\n  A todo needs a description. Try: todo buy milk",
-        "Oops! Green Chonk couldn't chomp that:\n  I don't recognize \"roll away\". Try todo, deadline, event, list, schedule, mark, unmark, delete, or bye.",
+        "Oops! Green Chonk couldn't chomp that:\n  I don't recognize \"roll away\". Try todo, deadline, event, list, find, schedule, mark, unmark, delete, or bye.",
         "Green Chonk is not carrying any tasks yet."
       ]
     },

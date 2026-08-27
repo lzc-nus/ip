@@ -7,6 +7,7 @@ import greenchonk.command.AddCommand;
 import greenchonk.command.Command;
 import greenchonk.command.DeleteCommand;
 import greenchonk.command.ExitCommand;
+import greenchonk.command.FindCommand;
 import greenchonk.command.ListCommand;
 import greenchonk.command.ScheduleCommand;
 import greenchonk.command.UpdateStatusCommand;
@@ -26,6 +27,7 @@ public final class Parser {
     private static final String EVENT_COMMAND = "event";
     private static final String EVENT_FROM_SEPARATOR = "/from";
     private static final String EVENT_TO_SEPARATOR = "/to";
+    private static final String FIND_COMMAND = "find";
     private static final String MARK_COMMAND = "mark";
     private static final String SCHEDULE_COMMAND = "schedule";
     private static final String TODO_COMMAND = "todo";
@@ -50,6 +52,9 @@ public final class Parser {
         }
         if (input.equalsIgnoreCase("list")) {
             return new ListCommand();
+        }
+        if (isCommand(input, FIND_COMMAND)) {
+            return new FindCommand(parseFindKeyword(input));
         }
         if (isCommand(input, SCHEDULE_COMMAND)) {
             return new ScheduleCommand(parseScheduleDate(input));
@@ -76,7 +81,22 @@ public final class Parser {
         }
 
         throw new GreenChonkException("I don't recognize \"" + input
-                + "\". Try todo, deadline, event, list, schedule, mark, unmark, delete, or bye.");
+                + "\". Try todo, deadline, event, list, find, schedule, mark, unmark, delete, or bye.");
+    }
+
+    /**
+     * Returns the keyword supplied to a find command.
+     *
+     * @param command the complete find command.
+     * @return the keyword to search for.
+     * @throws GreenChonkException if the keyword is missing.
+     */
+    private static String parseFindKeyword(String command) throws GreenChonkException {
+        String keyword = getArguments(command);
+        if (keyword.isEmpty()) {
+            throw new GreenChonkException("A find command needs a keyword. Try: find book");
+        }
+        return keyword;
     }
 
     /**
