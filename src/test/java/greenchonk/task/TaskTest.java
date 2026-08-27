@@ -35,4 +35,13 @@ class TaskTest {
         assertEquals("[T][ ] read book", task.toString());
         assertFalse(task.occursOn(LocalDate.of(2026, 8, 28)));
     }
+
+    @Test
+    void matches_partialKeywordIgnoringCase_matchResultReturned() {
+        Task task = new Todo("Read handbook");
+
+        assertTrue(task.matches("BOOK"));
+        assertTrue(task.matches("hand"));
+        assertFalse(task.matches("write"));
+    }
 }

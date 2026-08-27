@@ -179,10 +179,24 @@ public class Ui {
     }
 
     /**
+     * Displays the heading for tasks matching a find command.
+     */
+    public void showFindHeader() {
+        System.out.println("Here are the matching tasks in your list:");
+    }
+
+    /**
+     * Reports that a find command has no matching tasks.
+     */
+    public void showNoMatchingTasks() {
+        System.out.println("Green Chonk found no matching tasks.");
+    }
+
+    /**
      * Returns a grammatically correct task-count phrase.
      *
-     * @param taskCount the number of tasks
-     * @return the task count with a singular or plural noun
+     * @param taskCount the number of tasks.
+     * @return the task count with a singular or plural noun.
      */
     private static String taskCountText(int taskCount) {
         String taskLabel = taskCount == 1 ? "task" : "tasks";

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import greenchonk.command.AddCommand;
 import greenchonk.command.DeleteCommand;
 import greenchonk.command.ExitCommand;
+import greenchonk.command.FindCommand;
 import greenchonk.command.ListCommand;
 import greenchonk.command.ScheduleCommand;
 import greenchonk.command.UpdateStatusCommand;
@@ -43,6 +44,11 @@ class ParserTest {
     }
 
     @Test
+    void parse_validFindCommand_findCommandCreated() throws GreenChonkException {
+        assertInstanceOf(FindCommand.class, Parser.parse("find read book"));
+    }
+
+    @Test
     void parse_blankCommand_exceptionThrown() {
         assertParseError("", "Please enter a command. Try: todo buy milk");
     }
@@ -51,18 +57,23 @@ class ParserTest {
     void parse_unknownOrExtendedSimpleCommand_exceptionThrown() {
         assertParseError("roll away",
                 "I don't recognize \"roll away\". Try todo, deadline, event, list, "
-                        + "schedule, mark, unmark, delete, or bye.");
+                        + "find, schedule, mark, unmark, delete, or bye.");
         assertParseError("bye now",
                 "I don't recognize \"bye now\". Try todo, deadline, event, list, "
-                        + "schedule, mark, unmark, delete, or bye.");
+                        + "find, schedule, mark, unmark, delete, or bye.");
         assertParseError("listing",
                 "I don't recognize \"listing\". Try todo, deadline, event, list, "
-                        + "schedule, mark, unmark, delete, or bye.");
+                        + "find, schedule, mark, unmark, delete, or bye.");
     }
 
     @Test
     void parse_todoWithoutDescription_exceptionThrown() {
         assertParseError("todo", "A todo needs a description. Try: todo buy milk");
+    }
+
+    @Test
+    void parse_findWithoutKeyword_exceptionThrown() {
+        assertParseError("find", "A find command needs a keyword. Try: find book");
     }
 
     @Test

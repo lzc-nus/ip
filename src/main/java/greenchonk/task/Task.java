@@ -1,6 +1,7 @@
 package greenchonk.task;
 
 import java.time.LocalDate;
+import java.util.Locale;
 
 /**
  * Represents a task and whether it has been completed.
@@ -58,6 +59,18 @@ public abstract class Task {
      */
     public String getDescription() {
         return description;
+    }
+
+    /**
+     * Returns whether this task's description contains a keyword, ignoring case.
+     *
+     * @param keyword the literal keyword to find.
+     * @return true if the description contains the keyword.
+     */
+    public boolean matches(String keyword) {
+        String normalizedDescription = description.toLowerCase(Locale.ROOT);
+        String normalizedKeyword = keyword.toLowerCase(Locale.ROOT);
+        return normalizedDescription.contains(normalizedKeyword);
     }
 
     /**

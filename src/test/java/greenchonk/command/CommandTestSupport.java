@@ -51,6 +51,8 @@ final class CommandTestSupport {
         int taskCount;
         int remainingTaskCount;
         boolean goodbyeShown;
+        boolean findHeaderShown;
+        boolean noMatchingTasksShown;
         TaskList listedTasks;
         LocalDate scheduleDate;
         LocalDate emptyScheduleDate;
@@ -99,6 +101,16 @@ final class CommandTestSupport {
         @Override
         public void showTaskList(TaskList tasks) {
             listedTasks = tasks;
+        }
+
+        @Override
+        public void showFindHeader() {
+            findHeaderShown = true;
+        }
+
+        @Override
+        public void showNoMatchingTasks() {
+            noMatchingTasksShown = true;
         }
     }
 }
