@@ -24,6 +24,11 @@ Unless the user says otherwise, assume that you are assisting a student working 
 
 # Project-specific requirements
 
+## Required project skills
+
+* Before writing, reviewing, or refactoring Java code, read and follow
+  `.agents/skills/seedu-java-coding-standard/SKILL.md`.
+
 ## Java version:
 
 Ensure that Java 25 is used when running the application or build tasks. On macOS, use `sdk use java 25.0.3.fx-zulu` to switch to Java 25 if needed.
