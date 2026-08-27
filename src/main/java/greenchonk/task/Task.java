@@ -78,6 +78,11 @@ public abstract class Task {
      */
     public abstract String getTypeIcon();
 
+    /**
+     * Returns the task's type, completion status, and description for display.
+     *
+     * @return the task's display text
+     */
     @Override
     public String toString() {
         return "[" + getTypeIcon() + "][" + getStatusIcon() + "] " + description;

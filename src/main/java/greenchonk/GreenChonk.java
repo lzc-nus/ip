@@ -25,6 +25,11 @@ public class GreenChonk {
         ui = new Ui();
     }
 
+    /**
+     * Starts Green Chonk with its default data file.
+     *
+     * @param args command-line arguments, which are not used
+     */
     public static void main(String[] args) {
         new GreenChonk(DATA_FILE_PATH).run();
     }

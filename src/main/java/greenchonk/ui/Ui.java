@@ -178,11 +178,23 @@ public class Ui {
         }
     }
 
+    /**
+     * Returns a grammatically correct task-count phrase.
+     *
+     * @param taskCount the number of tasks
+     * @return the task count with a singular or plural noun
+     */
     private static String taskCountText(int taskCount) {
         String taskLabel = taskCount == 1 ? "task" : "tasks";
         return taskCount + " " + taskLabel;
     }
 
+    /**
+     * Displays a short thinking animation before replacing it with a message.
+     * Restores the interrupted status if the animation is interrupted.
+     *
+     * @param message the message displayed after the animation
+     */
     private static void animateMessage(String message) {
         for (int dotCount = 1; dotCount <= 3; dotCount++) {
             System.out.print("\r" + center(".".repeat(dotCount)));
@@ -198,6 +210,13 @@ public class Ui {
         System.out.println();
     }
 
+    /**
+     * Pads text so its first character begins near the banner's horizontal center.
+     * Text wider than the banner is returned without leading padding.
+     *
+     * @param text the text to align
+     * @return the text prefixed with the required spaces
+     */
     private static String center(String text) {
         int leftPadding = Math.max(0, (BANNER_WIDTH - text.length()) / 2);
         return " ".repeat(leftPadding) + text;

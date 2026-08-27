@@ -29,6 +29,15 @@ public class UpdateStatusCommand extends Command {
         this.commandName = commandName;
     }
 
+    /**
+     * Applies the configured status and persists the updated task list.
+     * Restores the task's original status if persistence fails.
+     *
+     * @param tasks the task list containing the task to update
+     * @param ui the UI that reports the status change
+     * @param storage the storage to which the updated list is saved
+     * @throws GreenChonkException if the task number is invalid or saving fails
+     */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage)
             throws GreenChonkException {
@@ -46,6 +55,12 @@ public class UpdateStatusCommand extends Command {
         ui.showTaskStatusUpdated(task, newStatus);
     }
 
+    /**
+     * Applies a completion status through the task's status operations.
+     *
+     * @param task the task whose status is changed
+     * @param status the status to apply
+     */
     private static void setStatus(Task task, TaskStatus status) {
         if (status == TaskStatus.DONE) {
             task.markAsDone();

@@ -21,6 +21,15 @@ public class AddCommand extends Command {
         this.task = task;
     }
 
+    /**
+     * Adds the configured task and persists the updated task list.
+     * Restores the original list if persistence fails.
+     *
+     * @param tasks the task list to update
+     * @param ui the UI that reports the added task
+     * @param storage the storage to which the updated list is saved
+     * @throws GreenChonkException if the updated task list cannot be saved
+     */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage)
             throws GreenChonkException {

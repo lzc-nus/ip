@@ -31,6 +31,9 @@ public final class Parser {
     private static final String TODO_COMMAND = "todo";
     private static final String UNMARK_COMMAND = "unmark";
 
+    /**
+     * Prevents instantiation of this command-parsing utility class.
+     */
     private Parser() {
     }
 
@@ -179,6 +182,14 @@ public final class Parser {
         return parseDate(dateText, "schedule", "2026-08-28");
     }
 
+    /**
+     * Parses the one-based task number supplied to a mutation command.
+     *
+     * @param command the complete task mutation command
+     * @param commandName the command word used in validation feedback
+     * @return the parsed task number
+     * @throws GreenChonkException if the task number is missing or not an integer
+     */
     private static int parseTaskNumber(String command, String commandName)
             throws GreenChonkException {
         String numberText = getArguments(command);
@@ -197,10 +208,27 @@ public final class Parser {
         return taskNumber;
     }
 
+    /**
+     * Returns whether the input contains the specified command word.
+     * A command matches only when followed by the end of input or a space.
+     *
+     * @param input the complete user input
+     * @param command the command word to match
+     * @return true if the input starts with the complete command word
+     */
     private static boolean isCommand(String input, String command) {
         return input.equals(command) || input.startsWith(command + " ");
     }
 
+    /**
+     * Parses an ISO calendar date and translates parsing failures for the user.
+     *
+     * @param dateText the date text to parse
+     * @param dateLabel the field name used in validation feedback
+     * @param exampleDate a valid example used in validation feedback
+     * @return the parsed date
+     * @throws GreenChonkException if the date is invalid or not in ISO format
+     */
     private static LocalDate parseDate(String dateText, String dateLabel, String exampleDate)
             throws GreenChonkException {
         try {
@@ -211,6 +239,12 @@ public final class Parser {
         }
     }
 
+    /**
+     * Returns the trimmed text following the first command word.
+     *
+     * @param command the complete user command
+     * @return the command arguments, or an empty string when none were supplied
+     */
     private static String getArguments(String command) {
         int firstSpacePosition = command.indexOf(' ');
         if (firstSpacePosition < 0) {

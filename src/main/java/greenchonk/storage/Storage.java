@@ -219,6 +219,12 @@ public class Storage {
         return value.replace("\\", "\\\\").replace("|", "\\|");
     }
 
+    /**
+     * Creates a consistent exception for a malformed physical data-file line.
+     *
+     * @param lineNumber the one-based physical line number
+     * @return an exception identifying the malformed line
+     */
     private static GreenChonkException invalidDataLine(int lineNumber) {
         return new GreenChonkException("The data file has an invalid task on line " + lineNumber + ".");
     }
