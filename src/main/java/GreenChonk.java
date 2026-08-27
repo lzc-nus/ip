@@ -208,7 +208,12 @@ public class GreenChonk {
         }
         LocalDate from = parseDate(fromText, "event start", "2026-08-28");
         LocalDate to = parseDate(toText, "event end", "2026-08-29");
-        return new Event(description, from, to);
+        try {
+            return new Event(description, from, to);
+        } catch (IllegalArgumentException exception) {
+            throw new GreenChonkException("An event's end date cannot be before its start date. "
+                    + "Try /to " + from + " or later.");
+        }
     }
 
     /**
@@ -455,8 +460,12 @@ public class GreenChonk {
                 if (fields.size() != 5) {
                     throw invalidDataLine(lineNumber);
                 }
-                task = new Event(fields.get(2), parseSavedDate(fields.get(3), lineNumber),
-                        parseSavedDate(fields.get(4), lineNumber));
+                try {
+                    task = new Event(fields.get(2), parseSavedDate(fields.get(3), lineNumber),
+                            parseSavedDate(fields.get(4), lineNumber));
+                } catch (IllegalArgumentException exception) {
+                    throw invalidDataLine(lineNumber);
+                }
                 break;
             default:
                 throw invalidDataLine(lineNumber);

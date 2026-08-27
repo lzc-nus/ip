@@ -7,6 +7,7 @@ Run these tests after each application code change using the project-local `test
 - Create and list all three task types with parsed, consistently formatted dates.
 - Preserve `LocalDate` details while marking and unmarking through `Task` polymorphism.
 - Accept valid ISO dates, including leap days, and reject invalid dates without storing a task.
+- Reject events that end before they start while allowing same-day events.
 - Reject empty and unknown commands with actionable feedback.
 - Reject incomplete task commands and invalid task numbers without changing stored tasks.
 - Delete tasks from collection storage and renumber the remaining list.
@@ -22,6 +23,8 @@ In a temporary working directory, run Green Chonk twice against the same `data/g
 2. Start Green Chonk again and run `list`.
 
 The second session must restore the marked deadline and event, including their parsed dates, while the deleted todo must remain absent. The data file must contain ISO dates even though the UI displays friendly dates. The test directory and data file must not exist before the first session; this verifies first-run creation as well as loading.
+
+Also seed the data file with an event whose ending date is before its starting date. On startup, Green Chonk must identify that line as invalid rather than loading the impossible event.
 
 ## Automated cases
 
@@ -145,6 +148,21 @@ The second session must restore the marked deadline and event, including their p
         "The event start date must use yyyy-MM-dd and be valid. Try: 2026-08-28",
         "The event end date must use yyyy-MM-dd and be valid. Try: 2026-08-29",
         "Here are the tasks Green Chonk is carrying:\n1.[T][ ] valid task"
+      ]
+    },
+    {
+      "name": "validate-event-date-range",
+      "aim": "Verify an event cannot end before it starts while equal dates remain valid for a same-day event.",
+      "inputs": [
+        "event backwards /from 2026-12-29 /to 2023-03-24",
+        "event same-day /from 2026-08-28 /to 2026-08-28",
+        "list",
+        "bye"
+      ],
+      "expected": [
+        "An event's end date cannot be before its start date. Try /to 2026-12-29 or later.",
+        "Chomped this task:\n  [E][ ] same-day (from: Aug 28 2026 to: Aug 28 2026)\nGreen Chonk is now carrying 1 task.",
+        "Here are the tasks Green Chonk is carrying:\n1.[E][ ] same-day (from: Aug 28 2026 to: Aug 28 2026)"
       ]
     },
     {

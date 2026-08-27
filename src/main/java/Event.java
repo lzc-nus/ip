@@ -18,9 +18,13 @@ public class Event extends Task {
      * @param description the event description
      * @param from the event's starting date
      * @param to the event's ending date
+     * @throws IllegalArgumentException if the ending date is before the starting date
      */
     public Event(String description, LocalDate from, LocalDate to) {
         super(description);
+        if (to.isBefore(from)) {
+            throw new IllegalArgumentException("An event cannot end before it starts.");
+        }
         this.from = from;
         this.to = to;
     }
