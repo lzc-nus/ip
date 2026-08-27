@@ -2,6 +2,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -155,18 +157,19 @@ public class GreenChonk {
         String details = command.substring(DEADLINE_COMMAND.length()).trim();
         int separatorPosition = details.indexOf(DEADLINE_SEPARATOR);
         if (separatorPosition < 0) {
-            throw new GreenChonkException("A deadline needs /by followed by a date or time. "
-                    + "Try: deadline submit report /by Friday 5pm");
+            throw new GreenChonkException("A deadline needs /by followed by a date. "
+                    + "Try: deadline submit report /by 2026-08-28");
         }
 
         String description = details.substring(0, separatorPosition).trim();
-        String by = details.substring(separatorPosition + DEADLINE_SEPARATOR.length()).trim();
+        String byText = details.substring(separatorPosition + DEADLINE_SEPARATOR.length()).trim();
         if (description.isEmpty()) {
             throw new GreenChonkException("A deadline needs a description before /by.");
         }
-        if (by.isEmpty()) {
-            throw new GreenChonkException("A deadline needs a date or time after /by.");
+        if (byText.isEmpty()) {
+            throw new GreenChonkException("A deadline needs a date after /by.");
         }
+        LocalDate by = parseDate(byText, "deadline", "2026-08-28");
         return new Deadline(description, by);
     }
 
@@ -182,7 +185,7 @@ public class GreenChonk {
         int fromPosition = details.indexOf(EVENT_FROM_SEPARATOR);
         if (fromPosition < 0) {
             throw new GreenChonkException("An event needs /from and /to. "
-                    + "Try: event meeting /from Monday 2pm /to 4pm");
+                    + "Try: event meeting /from 2026-08-28 /to 2026-08-29");
         }
 
         String description = details.substring(0, fromPosition).trim();
@@ -192,18 +195,39 @@ public class GreenChonk {
             throw new GreenChonkException("An event needs a description before /from.");
         }
         if (toPosition < 0) {
-            throw new GreenChonkException("An event needs /to followed by an ending date or time.");
+            throw new GreenChonkException("An event needs /to followed by an ending date.");
         }
 
-        String from = timeRange.substring(0, toPosition).trim();
-        String to = timeRange.substring(toPosition + EVENT_TO_SEPARATOR.length()).trim();
-        if (from.isEmpty()) {
-            throw new GreenChonkException("An event needs a starting date or time after /from.");
+        String fromText = timeRange.substring(0, toPosition).trim();
+        String toText = timeRange.substring(toPosition + EVENT_TO_SEPARATOR.length()).trim();
+        if (fromText.isEmpty()) {
+            throw new GreenChonkException("An event needs a starting date after /from.");
         }
-        if (to.isEmpty()) {
-            throw new GreenChonkException("An event needs an ending date or time after /to.");
+        if (toText.isEmpty()) {
+            throw new GreenChonkException("An event needs an ending date after /to.");
         }
+        LocalDate from = parseDate(fromText, "event start", "2026-08-28");
+        LocalDate to = parseDate(toText, "event end", "2026-08-29");
         return new Event(description, from, to);
+    }
+
+    /**
+     * Parses an ISO calendar date and converts invalid input into a user-facing error.
+     *
+     * @param dateText the date text to parse
+     * @param dateLabel the field name to identify in an error
+     * @param exampleDate an example of a valid date
+     * @return the parsed date
+     * @throws GreenChonkException if the date is invalid or has the wrong format
+     */
+    private static LocalDate parseDate(String dateText, String dateLabel, String exampleDate)
+            throws GreenChonkException {
+        try {
+            return LocalDate.parse(dateText);
+        } catch (DateTimeParseException exception) {
+            throw new GreenChonkException("The " + dateLabel
+                    + " date must use yyyy-MM-dd and be valid. Try: " + exampleDate);
+        }
     }
 
     /**
@@ -383,11 +407,11 @@ public class GreenChonk {
         String commonFields = task.getTypeIcon() + DATA_SEPARATOR + status
                 + DATA_SEPARATOR + escapeDataField(task.getDescription());
         if (task instanceof Deadline deadline) {
-            return commonFields + DATA_SEPARATOR + escapeDataField(deadline.getBy());
+            return commonFields + DATA_SEPARATOR + deadline.getBy();
         }
         if (task instanceof Event event) {
-            return commonFields + DATA_SEPARATOR + escapeDataField(event.getFrom())
-                    + DATA_SEPARATOR + escapeDataField(event.getTo());
+            return commonFields + DATA_SEPARATOR + event.getFrom()
+                    + DATA_SEPARATOR + event.getTo();
         }
         return commonFields;
     }
@@ -425,13 +449,14 @@ public class GreenChonk {
                 if (fields.size() != 4) {
                     throw invalidDataLine(lineNumber);
                 }
-                task = new Deadline(fields.get(2), fields.get(3));
+                task = new Deadline(fields.get(2), parseSavedDate(fields.get(3), lineNumber));
                 break;
             case "E":
                 if (fields.size() != 5) {
                     throw invalidDataLine(lineNumber);
                 }
-                task = new Event(fields.get(2), fields.get(3), fields.get(4));
+                task = new Event(fields.get(2), parseSavedDate(fields.get(3), lineNumber),
+                        parseSavedDate(fields.get(4), lineNumber));
                 break;
             default:
                 throw invalidDataLine(lineNumber);
@@ -443,6 +468,22 @@ public class GreenChonk {
             throw invalidDataLine(lineNumber);
         }
         return task;
+    }
+
+    /**
+     * Parses a canonical date stored in the data file.
+     *
+     * @param dateText the stored date text
+     * @param lineNumber the line number used in error messages
+     * @return the parsed date
+     * @throws GreenChonkException if the stored date is invalid
+     */
+    private static LocalDate parseSavedDate(String dateText, int lineNumber) throws GreenChonkException {
+        try {
+            return LocalDate.parse(dateText);
+        } catch (DateTimeParseException exception) {
+            throw invalidDataLine(lineNumber);
+        }
     }
 
     /**
