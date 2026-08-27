@@ -43,6 +43,11 @@ public class Deadline extends Task {
         return "D";
     }
 
+    /**
+     * Returns the task display text with its formatted due date.
+     *
+     * @return the deadline's display text
+     */
     @Override
     public String toString() {
         return super.toString() + " (by: " + by.format(DISPLAY_DATE_FORMAT) + ")";

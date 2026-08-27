@@ -10,6 +10,12 @@ import greenchonk.ui.Ui;
  */
 public abstract class Command {
     /**
+     * Creates a command that can be executed by Green Chonk.
+     */
+    public Command() {
+    }
+
+    /**
      * Executes this command using the application's components.
      *
      * @param tasks the tasks currently stored

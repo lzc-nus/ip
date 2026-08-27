@@ -23,6 +23,15 @@ public class DeleteCommand extends Command {
         this.taskNumber = taskNumber;
     }
 
+    /**
+     * Deletes the configured task and persists the updated task list.
+     * Restores the deleted task at its original position if persistence fails.
+     *
+     * @param tasks the task list to update
+     * @param ui the UI that reports the deletion
+     * @param storage the storage to which the updated list is saved
+     * @throws GreenChonkException if the task number is invalid or saving fails
+     */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage)
             throws GreenChonkException {

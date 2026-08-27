@@ -59,6 +59,11 @@ public class Event extends Task {
         return "E";
     }
 
+    /**
+     * Returns the task display text with its formatted date range.
+     *
+     * @return the event's display text
+     */
     @Override
     public String toString() {
         return super.toString() + " (from: " + from.format(DISPLAY_DATE_FORMAT)
