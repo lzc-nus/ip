@@ -1,5 +1,4 @@
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -161,7 +160,7 @@ public class Ui {
      *
      * @param tasks the tasks to display
      */
-    public void showTaskList(List<Task> tasks) {
+    public void showTaskList(TaskList tasks) {
         if (tasks.isEmpty()) {
             System.out.println("Green Chonk is not carrying any tasks yet.");
             return;

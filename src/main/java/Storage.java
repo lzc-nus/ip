@@ -57,10 +57,10 @@ public class Storage {
      * @param tasks the tasks to persist
      * @throws GreenChonkException if the tasks cannot be written
      */
-    public void save(List<Task> tasks) throws GreenChonkException {
+    public void save(TaskList tasks) throws GreenChonkException {
         List<String> lines = new ArrayList<>();
-        for (Task task : tasks) {
-            lines.add(serializeTask(task));
+        for (int index = 0; index < tasks.size(); index++) {
+            lines.add(serializeTask(tasks.get(index)));
         }
 
         try {

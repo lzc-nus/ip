@@ -1,7 +1,5 @@
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Greets the user as Green Chonk, manages tasks, and exits on {@code bye}.
@@ -40,7 +38,7 @@ public class GreenChonk {
      */
     public void run() {
         ui.showWelcome();
-        List<Task> tasks = loadTasks();
+        TaskList tasks = loadTasks();
 
         while (ui.hasNextCommand()) {
             String command = ui.readCommand();
@@ -65,7 +63,7 @@ public class GreenChonk {
      * @param tasks the tasks currently stored
      * @throws GreenChonkException if the command is invalid
      */
-    private void executeCommand(String command, List<Task> tasks) throws GreenChonkException {
+    private void executeCommand(String command, TaskList tasks) throws GreenChonkException {
         if (command.isEmpty()) {
             throw new GreenChonkException("Please enter a command. Try: todo buy milk");
         }
@@ -236,7 +234,7 @@ public class GreenChonk {
      * @param tasks the tasks currently stored
      * @throws GreenChonkException if the schedule date is missing or invalid
      */
-    private void printSchedule(String command, List<Task> tasks) throws GreenChonkException {
+    private void printSchedule(String command, TaskList tasks) throws GreenChonkException {
         String dateText = command.substring(SCHEDULE_COMMAND.length()).trim();
         if (dateText.isEmpty()) {
             throw new GreenChonkException("Please provide a schedule date. Try: schedule 2026-08-28");
@@ -268,7 +266,7 @@ public class GreenChonk {
      * @param newStatus the completion status to apply
      * @throws GreenChonkException if the task number is missing, invalid, or outside the list
      */
-    private void updateTaskStatus(String command, String commandName, List<Task> tasks,
+    private void updateTaskStatus(String command, String commandName, TaskList tasks,
             TaskStatus newStatus) throws GreenChonkException {
         int taskIndex = parseTaskIndex(command, commandName, tasks.size());
         Task task = tasks.get(taskIndex);
@@ -300,9 +298,9 @@ public class GreenChonk {
      * @param tasks the tasks currently stored
      * @throws GreenChonkException if the task number is missing, invalid, or outside the list
      */
-    private void deleteTask(String command, List<Task> tasks) throws GreenChonkException {
+    private void deleteTask(String command, TaskList tasks) throws GreenChonkException {
         int taskIndex = parseTaskIndex(command, DELETE_COMMAND, tasks.size());
-        Task deletedTask = tasks.remove(taskIndex);
+        Task deletedTask = tasks.delete(taskIndex);
         try {
             storage.save(tasks);
         } catch (GreenChonkException exception) {
@@ -353,12 +351,12 @@ public class GreenChonk {
      * @param task the task to add
      * @throws GreenChonkException if the updated task list cannot be saved
      */
-    private void addTask(List<Task> tasks, Task task) throws GreenChonkException {
+    private void addTask(TaskList tasks, Task task) throws GreenChonkException {
         tasks.add(task);
         try {
             storage.save(tasks);
         } catch (GreenChonkException exception) {
-            tasks.remove(tasks.size() - 1);
+            tasks.delete(tasks.size() - 1);
             throw exception;
         }
         ui.showTaskAdded(task, tasks.size());
@@ -367,14 +365,14 @@ public class GreenChonk {
     /**
      * Loads saved tasks, creating the data directory and file on first use.
      *
-     * @return the tasks restored from disk, or an empty list if loading fails
+     * @return the tasks restored from disk, or an empty task list if loading fails
      */
-    private List<Task> loadTasks() {
+    private TaskList loadTasks() {
         try {
-            return storage.load();
+            return new TaskList(storage.load());
         } catch (GreenChonkException exception) {
             ui.showLoadingError(exception.getMessage());
-            return new ArrayList<>();
+            return new TaskList();
         }
     }
 
@@ -383,7 +381,7 @@ public class GreenChonk {
      *
      * @param tasks the tasks currently stored
      */
-    private void printTasks(List<Task> tasks) {
+    private void printTasks(TaskList tasks) {
         ui.showTaskList(tasks);
     }
 }
