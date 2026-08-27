@@ -28,6 +28,8 @@ Unless the user says otherwise, assume that you are assisting a student working 
 
 * Before writing, reviewing, or refactoring Java code, read and follow
   `.agents/skills/seedu-java-coding-standard/SKILL.md`.
+* Before proposing or creating a Git commit message or branch name, read and
+  follow `.agents/skills/seedu-git-standard/SKILL.md`.
 
 ## Java version:
 
