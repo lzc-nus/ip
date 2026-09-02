@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -79,14 +80,36 @@ def check_java_version(javac: str) -> None:
     print(f"Java compiler: {version_output}")
 
 
-def compile_application(project_root: Path, javac: str, build_dir: Path) -> None:
+def get_runtime_classpath(project_root: Path) -> str:
+    """Resolve the production dependency classpath through the Gradle wrapper."""
+    wrapper_name = "gradlew.bat" if os.name == "nt" else "gradlew"
+    wrapper = project_root / wrapper_name
+    command = [str(wrapper), "-q", "printRuntimeClasspath"]
+    result = subprocess.run(command, cwd=project_root, capture_output=True, text=True, check=False)
+    if result.returncode != 0:
+        print(result.stdout, file=sys.stderr)
+        print(result.stderr, file=sys.stderr)
+        raise RuntimeError("Could not resolve the application runtime classpath")
+    return result.stdout.strip()
+
+
+def compile_application(project_root: Path, javac: str, build_dir: Path,
+                        runtime_classpath: str) -> None:
     """Compile every production Java source into the temporary build directory."""
     source_root = project_root / "src" / "main" / "java"
     sources = sorted(source_root.rglob("*.java"))
     if not sources:
         raise FileNotFoundError(f"No Java sources found under {source_root}")
 
-    command = [javac, "-Xlint:all", "-d", str(build_dir), *(str(source) for source in sources)]
+    command = [
+        javac,
+        "-Xlint:all",
+        "-cp",
+        runtime_classpath,
+        "-d",
+        str(build_dir),
+        *(str(source) for source in sources),
+    ]
     result = subprocess.run(command, cwd=project_root, capture_output=True, text=True, check=False)
     if result.returncode != 0:
         print("Compilation failed", file=sys.stderr)
@@ -102,12 +125,13 @@ def find_ordered_fragment(output: str, fragment: str, start: int) -> int:
     return -1 if position < 0 else position + len(fragment)
 
 
-def run_case(java: str, build_dir: Path, working_dir: Path, main_class: str, case: dict) -> bool:
+def run_case(java: str, build_dir: Path, runtime_classpath: str,
+             working_dir: Path, main_class: str, case: dict) -> bool:
     """Run one interaction case, print its transcript, and check expectations."""
     user_input = "\n".join(case["inputs"]) + "\n"
     try:
         result = subprocess.run(
-            [java, "-cp", str(build_dir), main_class],
+            [java, "-cp", os.pathsep.join((str(build_dir), runtime_classpath)), main_class],
             cwd=working_dir,
             input=user_input,
             capture_output=True,
@@ -165,13 +189,15 @@ def main() -> int:
         javac = find_java_tool("javac")
         java = find_java_tool("java")
         check_java_version(javac)
+        runtime_classpath = get_runtime_classpath(project_root)
         with tempfile.TemporaryDirectory(prefix="green-chonk-ui-tests-") as directory:
             build_dir = Path(directory)
-            compile_application(project_root, javac, build_dir)
+            compile_application(project_root, javac, build_dir, runtime_classpath)
             for index, case in enumerate(plan["cases"], start=1):
                 working_dir = build_dir / "cases" / str(index)
                 working_dir.mkdir(parents=True)
-                if not run_case(java, build_dir, working_dir, plan["main_class"], case):
+                if not run_case(java, build_dir, runtime_classpath,
+                                working_dir, plan["main_class"], case):
                     return 1
     except (FileNotFoundError, ValueError, RuntimeError, json.JSONDecodeError) as error:
         print(f"ERROR: {error}", file=sys.stderr)

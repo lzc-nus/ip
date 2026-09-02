@@ -1,5 +1,7 @@
 package greenchonk.ui;
 
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.time.LocalDate;
 import java.util.Scanner;
 
@@ -23,27 +25,56 @@ public class Ui {
                 """;
 
     private final Scanner scanner;
+    private final PrintStream output;
+    private final boolean isAnimationEnabled;
+    private final boolean isCliDecorationEnabled;
 
     /**
      * Creates a UI that reads commands from standard input.
      */
     public Ui() {
-        scanner = new Scanner(System.in);
+        this(System.in, System.out, true, true);
+    }
+
+    /**
+     * Creates a UI that uses the specified input and output streams.
+     *
+     * @param input the stream from which commands are read.
+     * @param output the stream to which messages are written.
+     */
+    public Ui(InputStream input, PrintStream output) {
+        this(input, output, false, false);
+    }
+
+    /**
+     * Creates a UI with configurable command-line presentation behavior.
+     *
+     * @param input the stream from which commands are read.
+     * @param output the stream to which messages are written.
+     * @param isAnimationEnabled whether transitional animation frames are shown.
+     * @param isCliDecorationEnabled whether terminal-only dividers are shown.
+     */
+    private Ui(InputStream input, PrintStream output, boolean isAnimationEnabled,
+            boolean isCliDecorationEnabled) {
+        scanner = new Scanner(input);
+        this.output = output;
+        this.isAnimationEnabled = isAnimationEnabled;
+        this.isCliDecorationEnabled = isCliDecorationEnabled;
     }
 
     /**
      * Displays Green Chonk's banner and welcome messages.
      */
     public void showWelcome() {
-        System.out.println(DIVIDER);
-        System.out.print(BANNER);
-        System.out.println();
+        output.println(DIVIDER);
+        output.print(BANNER);
+        output.println();
         animateMessage("Green Chonk is waking up...");
         animateMessage("Hello! I'm Green Chonk.");
         animateMessage("Ready to chomp through your tasks!");
         animateMessage("What can I do for you?");
-        System.out.println();
-        System.out.println(DIVIDER);
+        output.println();
+        output.println(DIVIDER);
     }
 
     /**
@@ -68,10 +99,15 @@ public class Ui {
      * Displays Green Chonk's farewell.
      */
     public void showGoodbye() {
-        System.out.println();
-        System.out.println(DIVIDER);
+        if (!isCliDecorationEnabled) {
+            output.println("Bye! I'm rolling off for now. See you again soon!");
+            return;
+        }
+
+        output.println();
+        output.println(DIVIDER);
         animateMessage("Bye! I'm rolling off for now. See you again soon!");
-        System.out.println(DIVIDER);
+        output.println(DIVIDER);
     }
 
     /**
@@ -80,8 +116,8 @@ public class Ui {
      * @param message the explanation of the error.
      */
     public void showError(String message) {
-        System.out.println("Oops! Green Chonk couldn't chomp that:");
-        System.out.println("  " + message);
+        output.println("Oops! Green Chonk couldn't chomp that:");
+        output.println("  " + message);
     }
 
     /**
@@ -90,8 +126,8 @@ public class Ui {
      * @param message the explanation of the loading failure.
      */
     public void showLoadingError(String message) {
-        System.out.println("Oops! Green Chonk couldn't load saved tasks:");
-        System.out.println("  " + message);
+        output.println("Oops! Green Chonk couldn't load saved tasks:");
+        output.println("  " + message);
     }
 
     /**
@@ -100,7 +136,7 @@ public class Ui {
      * @param date the requested schedule date.
      */
     public void showScheduleHeader(LocalDate date) {
-        System.out.println("Here are the tasks scheduled for " + date + ":");
+        output.println("Here are the tasks scheduled for " + date + ":");
     }
 
     /**
@@ -110,7 +146,7 @@ public class Ui {
      * @param task the task to display.
      */
     public void showNumberedTask(int taskNumber, Task task) {
-        System.out.println(taskNumber + "." + task);
+        output.println(taskNumber + "." + task);
     }
 
     /**
@@ -119,7 +155,7 @@ public class Ui {
      * @param date the requested schedule date.
      */
     public void showEmptySchedule(LocalDate date) {
-        System.out.println("Green Chonk has no deadlines or events scheduled for " + date + ".");
+        output.println("Green Chonk has no deadlines or events scheduled for " + date + ".");
     }
 
     /**
@@ -130,11 +166,11 @@ public class Ui {
      */
     public void showTaskStatusUpdated(Task task, TaskStatus status) {
         if (status == TaskStatus.DONE) {
-            System.out.println("Nice! Green Chonk marked this task as done:");
+            output.println("Nice! Green Chonk marked this task as done:");
         } else {
-            System.out.println("OK, Green Chonk marked this task as not done yet:");
+            output.println("OK, Green Chonk marked this task as not done yet:");
         }
-        System.out.println("  " + task);
+        output.println("  " + task);
     }
 
     /**
@@ -144,9 +180,9 @@ public class Ui {
      * @param remainingTaskCount the number of tasks remaining.
      */
     public void showTaskDeleted(Task task, int remainingTaskCount) {
-        System.out.println("Noted. Green Chonk removed this task:");
-        System.out.println("  " + task);
-        System.out.println("Green Chonk is now carrying " + taskCountText(remainingTaskCount) + ".");
+        output.println("Noted. Green Chonk removed this task:");
+        output.println("  " + task);
+        output.println("Green Chonk is now carrying " + taskCountText(remainingTaskCount) + ".");
     }
 
     /**
@@ -156,9 +192,9 @@ public class Ui {
      * @param taskCount the updated number of tasks.
      */
     public void showTaskAdded(Task task, int taskCount) {
-        System.out.println("Chomped this task:");
-        System.out.println("  " + task);
-        System.out.println("Green Chonk is now carrying " + taskCountText(taskCount) + ".");
+        output.println("Chomped this task:");
+        output.println("  " + task);
+        output.println("Green Chonk is now carrying " + taskCountText(taskCount) + ".");
     }
 
     /**
@@ -168,11 +204,11 @@ public class Ui {
      */
     public void showTaskList(TaskList tasks) {
         if (tasks.isEmpty()) {
-            System.out.println("Green Chonk is not carrying any tasks yet.");
+            output.println("Green Chonk is not carrying any tasks yet.");
             return;
         }
 
-        System.out.println("Here are the tasks Green Chonk is carrying:");
+        output.println("Here are the tasks Green Chonk is carrying:");
         for (int index = 0; index < tasks.size(); index++) {
             showNumberedTask(index + 1, tasks.get(index));
         }
@@ -182,14 +218,14 @@ public class Ui {
      * Displays the heading for tasks matching a find command.
      */
     public void showFindHeader() {
-        System.out.println("Here are the matching tasks in your list:");
+        output.println("Here are the matching tasks in your list:");
     }
 
     /**
      * Reports that a find command has no matching tasks.
      */
     public void showNoMatchingTasks() {
-        System.out.println("Green Chonk found no matching tasks.");
+        output.println("Green Chonk found no matching tasks.");
     }
 
     /**
@@ -209,10 +245,15 @@ public class Ui {
      *
      * @param message the message displayed after the animation
      */
-    private static void animateMessage(String message) {
+    private void animateMessage(String message) {
+        if (!isAnimationEnabled) {
+            output.println(message);
+            return;
+        }
+
         for (int dotCount = 1; dotCount <= 3; dotCount++) {
-            System.out.print("\r" + center(".".repeat(dotCount)));
-            System.out.flush();
+            output.print("\r" + center(".".repeat(dotCount)));
+            output.flush();
             try {
                 Thread.sleep(FRAME_DELAY_MILLIS);
             } catch (InterruptedException exception) {
@@ -220,8 +261,8 @@ public class Ui {
                 break;
             }
         }
-        System.out.print("\r" + center(message));
-        System.out.println();
+        output.print("\r" + center(message));
+        output.println();
     }
 
     /**

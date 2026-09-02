@@ -17,6 +17,20 @@ Run these tests after each application code change using the project-local `test
 - Create missing storage automatically, save canonical dates on every mutation, and restore formatted dates and statuses.
 - Run each automated case in isolated temporary storage so saved tasks cannot leak between cases.
 
+## JavaFX GUI checks
+
+Run `./gradlew run` and verify the graphical interface manually:
+
+1. The welcome dialog appears in a resizable window and the command field receives keyboard focus.
+2. Pressing Enter and clicking **CHOMP** both add the user command and Green Chonk's response.
+3. A blank or invalid command appears as a visually distinct error response without crashing the app.
+4. Repeated commands keep the newest dialog visible by scrolling the conversation automatically.
+5. `bye` displays the farewell response and then closes the window.
+6. Restarting the GUI restores tasks created in the previous session.
+
+The automated cases below continue through the command-line interface because they exercise the same parser,
+commands, task list, and storage without depending on a display server.
+
 ## Persistence check
 
 In a temporary working directory, run Green Chonk twice against the same `data/greenchonk.txt`:
