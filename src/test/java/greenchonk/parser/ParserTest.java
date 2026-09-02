@@ -137,8 +137,7 @@ class ParserTest {
     }
 
     private static void assertParseError(String input, String expectedMessage) {
-        GreenChonkException exception = assertThrows(GreenChonkException.class,
-                () -> Parser.parse(input));
+        GreenChonkException exception = assertThrows(GreenChonkException.class, () -> Parser.parse(input));
         assertEquals(expectedMessage, exception.getMessage());
     }
 }

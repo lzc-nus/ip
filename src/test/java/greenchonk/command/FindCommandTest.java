@@ -26,11 +26,11 @@ class FindCommandTest {
 
         new FindCommand("BOOK").execute(tasks, ui, storage);
 
-        assertTrue(ui.findHeaderShown);
-        assertFalse(ui.noMatchingTasksShown);
-        assertEquals(List.of(2), ui.shownTaskNumbers);
-        assertEquals(1, ui.shownTasks.size());
-        assertSame(matchingTask, ui.shownTasks.get(0));
+        assertTrue(ui.isFindHeaderShown());
+        assertFalse(ui.isNoMatchingTasksShown());
+        assertEquals(List.of(2), ui.getShownTaskNumbers());
+        assertEquals(1, ui.getShownTasks().size());
+        assertSame(matchingTask, ui.getShownTasks().get(0));
         assertEquals(0, storage.getSaveCount());
     }
 
@@ -42,9 +42,9 @@ class FindCommandTest {
         new FindCommand("missing").execute(
                 new TaskList(List.of(new Todo("buy milk"))), ui, storage);
 
-        assertFalse(ui.findHeaderShown);
-        assertTrue(ui.noMatchingTasksShown);
-        assertTrue(ui.shownTasks.isEmpty());
+        assertFalse(ui.isFindHeaderShown());
+        assertTrue(ui.isNoMatchingTasksShown());
+        assertTrue(ui.getShownTasks().isEmpty());
         assertEquals(0, storage.getSaveCount());
     }
 }

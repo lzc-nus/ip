@@ -43,6 +43,16 @@ Run the JUnit regression suite from the project root:
 
 The suite covers command execution and rollback, parser validation, storage round trips, and task-domain behavior.
 
+## Run static analysis
+
+Check all production and test code against the SE-EDU Java coding standard:
+
+~~~bash
+./gradlew checkstyleMain checkstyleTest
+~~~
+
+The regular `build` task also runs these Checkstyle checks before producing an artifact.
+
 ## Package as an executable JAR
 
 Create the distributable fat JAR from the project root:

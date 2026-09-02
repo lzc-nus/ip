@@ -33,12 +33,12 @@ class ScheduleCommandTest {
 
         new ScheduleCommand(SCHEDULE_DATE).execute(tasks, ui, storage);
 
-        assertEquals(SCHEDULE_DATE, ui.scheduleDate);
-        assertEquals(List.of(2, 3), ui.shownTaskNumbers);
-        assertEquals(2, ui.shownTasks.size());
-        assertSame(deadline, ui.shownTasks.get(0));
-        assertSame(event, ui.shownTasks.get(1));
-        assertNull(ui.emptyScheduleDate);
+        assertEquals(SCHEDULE_DATE, ui.getScheduleDate());
+        assertEquals(List.of(2, 3), ui.getShownTaskNumbers());
+        assertEquals(2, ui.getShownTasks().size());
+        assertSame(deadline, ui.getShownTasks().get(0));
+        assertSame(event, ui.getShownTasks().get(1));
+        assertNull(ui.getEmptyScheduleDate());
         assertEquals(0, storage.getSaveCount());
     }
 
@@ -51,9 +51,9 @@ class ScheduleCommandTest {
 
         new ScheduleCommand(SCHEDULE_DATE).execute(tasks, ui, storage);
 
-        assertNull(ui.scheduleDate);
-        assertEquals(SCHEDULE_DATE, ui.emptyScheduleDate);
-        assertEquals(List.of(), ui.shownTasks);
+        assertNull(ui.getScheduleDate());
+        assertEquals(SCHEDULE_DATE, ui.getEmptyScheduleDate());
+        assertEquals(List.of(), ui.getShownTasks());
         assertEquals(0, storage.getSaveCount());
     }
 }
