@@ -18,7 +18,7 @@ class ExitCommandTest {
 
         command.execute(new TaskList(), ui, storage);
 
-        assertTrue(ui.goodbyeShown);
+        assertTrue(ui.isGoodbyeShown());
         assertTrue(command.isExit());
         assertEquals(0, storage.getSaveCount());
     }

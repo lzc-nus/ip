@@ -31,8 +31,8 @@ class UpdateStatusCommandTest {
 
         assertTrue(task.isDone());
         assertEquals(1, storage.getSaveCount());
-        assertSame(task, ui.updatedTask);
-        assertEquals(TaskStatus.DONE, ui.updatedStatus);
+        assertSame(task, ui.getUpdatedTask());
+        assertEquals(TaskStatus.DONE, ui.getUpdatedStatus());
     }
 
     @Test
@@ -48,8 +48,8 @@ class UpdateStatusCommandTest {
 
         assertFalse(task.isDone());
         assertEquals(1, storage.getSaveCount());
-        assertSame(task, ui.updatedTask);
-        assertEquals(TaskStatus.NOT_DONE, ui.updatedStatus);
+        assertSame(task, ui.getUpdatedTask());
+        assertEquals(TaskStatus.NOT_DONE, ui.getUpdatedStatus());
     }
 
     @Test
@@ -57,8 +57,8 @@ class UpdateStatusCommandTest {
         TaskList tasks = new TaskList(List.of(new Todo("only task")));
         RecordingStorage storage = new RecordingStorage();
 
-        GreenChonkException exception = assertThrows(GreenChonkException.class,
-                () -> new UpdateStatusCommand(0, TaskStatus.DONE, "mark")
+        GreenChonkException exception = assertThrows(GreenChonkException.class, () ->
+                new UpdateStatusCommand(0, TaskStatus.DONE, "mark")
                         .execute(tasks, new RecordingUi(), storage));
 
         assertEquals("Task 0 does not exist. Choose a number from 1 to 1.",
@@ -74,14 +74,14 @@ class UpdateStatusCommandTest {
         RecordingStorage storage = new RecordingStorage();
         storage.failNextSave();
 
-        GreenChonkException exception = assertThrows(GreenChonkException.class,
-                () -> new UpdateStatusCommand(1, TaskStatus.DONE, "mark")
+        GreenChonkException exception = assertThrows(GreenChonkException.class, () ->
+                new UpdateStatusCommand(1, TaskStatus.DONE, "mark")
                         .execute(tasks, ui, storage));
 
         assertEquals("save failed", exception.getMessage());
         assertFalse(task.isDone());
         assertEquals(1, storage.getSaveCount());
-        assertNull(ui.updatedTask);
+        assertNull(ui.getUpdatedTask());
     }
 
     @Test
@@ -93,13 +93,13 @@ class UpdateStatusCommandTest {
         RecordingStorage storage = new RecordingStorage();
         storage.failNextSave();
 
-        GreenChonkException exception = assertThrows(GreenChonkException.class,
-                () -> new UpdateStatusCommand(1, TaskStatus.NOT_DONE, "unmark")
+        GreenChonkException exception = assertThrows(GreenChonkException.class, () ->
+                new UpdateStatusCommand(1, TaskStatus.NOT_DONE, "unmark")
                         .execute(tasks, ui, storage));
 
         assertEquals("save failed", exception.getMessage());
         assertTrue(task.isDone());
         assertEquals(1, storage.getSaveCount());
-        assertNull(ui.updatedTask);
+        assertNull(ui.getUpdatedTask());
     }
 }

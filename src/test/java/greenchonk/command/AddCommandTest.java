@@ -28,8 +28,8 @@ class AddCommandTest {
         assertEquals(1, tasks.size());
         assertSame(task, tasks.get(0));
         assertEquals(1, storage.getSaveCount());
-        assertSame(task, ui.addedTask);
-        assertEquals(1, ui.taskCount);
+        assertSame(task, ui.getAddedTask());
+        assertEquals(1, ui.getTaskCount());
     }
 
     @Test
@@ -39,12 +39,12 @@ class AddCommandTest {
         RecordingStorage storage = new RecordingStorage();
         storage.failNextSave();
 
-        GreenChonkException exception = assertThrows(GreenChonkException.class,
-                () -> new AddCommand(new Todo("read book")).execute(tasks, ui, storage));
+        GreenChonkException exception = assertThrows(GreenChonkException.class, () ->
+                new AddCommand(new Todo("read book")).execute(tasks, ui, storage));
 
         assertEquals("save failed", exception.getMessage());
         assertTrue(tasks.isEmpty());
         assertEquals(1, storage.getSaveCount());
-        assertNull(ui.addedTask);
+        assertNull(ui.getAddedTask());
     }
 }

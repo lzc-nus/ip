@@ -15,8 +15,8 @@ class EventTest {
 
     @Test
     void constructor_endBeforeStart_exceptionThrown() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> new Event("conference", START_DATE, START_DATE.minusDays(1)));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                new Event("conference", START_DATE, START_DATE.minusDays(1)));
 
         assertEquals("An event cannot end before it starts.", exception.getMessage());
     }

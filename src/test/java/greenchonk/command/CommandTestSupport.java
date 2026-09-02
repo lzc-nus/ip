@@ -44,20 +44,76 @@ final class CommandTestSupport {
     }
 
     static final class RecordingUi extends Ui {
-        Task addedTask;
-        Task deletedTask;
-        Task updatedTask;
-        TaskStatus updatedStatus;
-        int taskCount;
-        int remainingTaskCount;
-        boolean goodbyeShown;
-        boolean findHeaderShown;
-        boolean noMatchingTasksShown;
-        TaskList listedTasks;
-        LocalDate scheduleDate;
-        LocalDate emptyScheduleDate;
-        final List<Integer> shownTaskNumbers = new ArrayList<>();
-        final List<Task> shownTasks = new ArrayList<>();
+        private Task addedTask;
+        private Task deletedTask;
+        private Task updatedTask;
+        private TaskStatus updatedStatus;
+        private int taskCount;
+        private int remainingTaskCount;
+        private boolean goodbyeShown;
+        private boolean findHeaderShown;
+        private boolean noMatchingTasksShown;
+        private TaskList listedTasks;
+        private LocalDate scheduleDate;
+        private LocalDate emptyScheduleDate;
+        private final List<Integer> shownTaskNumbers = new ArrayList<>();
+        private final List<Task> shownTasks = new ArrayList<>();
+
+        Task getAddedTask() {
+            return addedTask;
+        }
+
+        Task getDeletedTask() {
+            return deletedTask;
+        }
+
+        Task getUpdatedTask() {
+            return updatedTask;
+        }
+
+        TaskStatus getUpdatedStatus() {
+            return updatedStatus;
+        }
+
+        int getTaskCount() {
+            return taskCount;
+        }
+
+        int getRemainingTaskCount() {
+            return remainingTaskCount;
+        }
+
+        boolean isGoodbyeShown() {
+            return goodbyeShown;
+        }
+
+        boolean isFindHeaderShown() {
+            return findHeaderShown;
+        }
+
+        boolean isNoMatchingTasksShown() {
+            return noMatchingTasksShown;
+        }
+
+        TaskList getListedTasks() {
+            return listedTasks;
+        }
+
+        LocalDate getScheduleDate() {
+            return scheduleDate;
+        }
+
+        LocalDate getEmptyScheduleDate() {
+            return emptyScheduleDate;
+        }
+
+        List<Integer> getShownTaskNumbers() {
+            return List.copyOf(shownTaskNumbers);
+        }
+
+        List<Task> getShownTasks() {
+            return List.copyOf(shownTasks);
+        }
 
         @Override
         public void showGoodbye() {

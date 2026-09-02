@@ -20,7 +20,7 @@ class ListCommandTest {
 
         command.execute(tasks, ui, storage);
 
-        assertSame(tasks, ui.listedTasks);
+        assertSame(tasks, ui.getListedTasks());
         assertFalse(command.isExit());
         assertEquals(0, storage.getSaveCount());
     }
