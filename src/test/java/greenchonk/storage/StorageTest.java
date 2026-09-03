@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -37,6 +38,18 @@ class StorageTest {
 
         assertTrue(Files.isRegularFile(dataFile));
         assertTrue(loadedTasks.isEmpty());
+    }
+
+    @Test
+    void load_parentPathIsAFile_storageExceptionRetainsCause() throws IOException {
+        Path blockingFile = tempDirectory.resolve("blocking-file");
+        Files.writeString(blockingFile, "not a directory", StandardCharsets.UTF_8);
+        Storage storage = new Storage(blockingFile.resolve("tasks.txt").toString());
+
+        StorageException exception = assertThrows(StorageException.class, storage::load);
+
+        assertTrue(exception.getMessage().startsWith("I couldn't load the task list:"));
+        assertInstanceOf(IOException.class, exception.getCause());
     }
 
     @Test
@@ -131,5 +144,41 @@ class StorageTest {
                 storage.save(new TaskList()));
 
         assertTrue(exception.getMessage().startsWith("I couldn't save the task list:"));
+        assertInstanceOf(IOException.class, exception.getCause());
+    }
+
+    @Test
+    void save_existingData_fileReplacedWithoutTemporaryFiles()
+            throws IOException, StorageException {
+        Path dataFile = tempDirectory.resolve("data/tasks.txt");
+        Files.createDirectories(dataFile.getParent());
+        Files.writeString(dataFile, "old data", StandardCharsets.UTF_8);
+        Storage storage = new Storage(dataFile.toString());
+
+        storage.save(new TaskList(List.of(new Todo("replacement task"))));
+
+        assertEquals(List.of("T | 0 | replacement task"),
+                Files.readAllLines(dataFile, StandardCharsets.UTF_8));
+        try (Stream<Path> directoryEntries = Files.list(dataFile.getParent())) {
+            assertEquals(List.of(dataFile), directoryEntries.toList());
+        }
+    }
+
+    @Test
+    void save_targetIsNonEmptyDirectory_failureCleansTemporaryFile() throws IOException {
+        Path dataFile = tempDirectory.resolve("data/tasks.txt");
+        Files.createDirectories(dataFile);
+        Files.writeString(dataFile.resolve("keep.txt"), "keep", StandardCharsets.UTF_8);
+        Storage storage = new Storage(dataFile.toString());
+
+        StorageException exception = assertThrows(StorageException.class, () ->
+                storage.save(new TaskList(List.of(new Todo("task")))));
+
+        assertInstanceOf(IOException.class, exception.getCause());
+        assertTrue(Files.isDirectory(dataFile));
+        assertTrue(Files.isRegularFile(dataFile.resolve("keep.txt")));
+        try (Stream<Path> directoryEntries = Files.list(dataFile.getParent())) {
+            assertEquals(List.of(dataFile), directoryEntries.toList());
+        }
     }
 }

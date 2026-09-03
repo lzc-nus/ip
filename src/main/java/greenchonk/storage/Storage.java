@@ -2,8 +2,10 @@ package greenchonk.storage;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +26,7 @@ public class Storage {
      * @param filePath the path of the task data file.
      */
     public Storage(String filePath) {
-        dataFile = Path.of(filePath);
+        dataFile = Path.of(filePath).toAbsolutePath();
         taskCodec = new TaskCodec();
     }
 
@@ -49,8 +51,9 @@ public class Storage {
                     tasks.add(taskCodec.decode(line, lineNumber));
                 }
             }
-        } catch (IOException exception) {
-            throw new StorageException(exception.getMessage(), exception);
+        } catch (IOException | SecurityException exception) {
+            throw new StorageException("I couldn't load the task list: " + exception.getMessage(),
+                    exception);
         }
         return tasks;
     }
@@ -67,12 +70,60 @@ public class Storage {
             lines.add(taskCodec.encode(tasks.get(index)));
         }
 
+        Path temporaryFile = null;
         try {
             Files.createDirectories(dataFile.getParent());
-            Files.write(dataFile, lines, StandardCharsets.UTF_8);
-        } catch (IOException exception) {
+            temporaryFile = Files.createTempFile(dataFile.getParent(),
+                    getTemporaryFilePrefix(), ".tmp");
+            Files.write(temporaryFile, lines, StandardCharsets.UTF_8);
+            replaceDataFile(temporaryFile);
+        } catch (IOException | SecurityException exception) {
+            deleteTemporaryFile(temporaryFile, exception);
             throw new StorageException("I couldn't save the task list: " + exception.getMessage(),
                     exception);
+        }
+    }
+
+    /**
+     * Replaces the data file with a fully written temporary file.
+     * Falls back to a regular replacement when atomic moves are unavailable.
+     *
+     * @param temporaryFile the complete temporary data file.
+     * @throws IOException if neither replacement strategy succeeds.
+     */
+    private void replaceDataFile(Path temporaryFile) throws IOException {
+        try {
+            Files.move(temporaryFile, dataFile,
+                    StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+        } catch (AtomicMoveNotSupportedException exception) {
+            Files.move(temporaryFile, dataFile, StandardCopyOption.REPLACE_EXISTING);
+        }
+    }
+
+    /**
+     * Returns a valid prefix for temporary files created beside the data file.
+     *
+     * @return the data file name padded to at least three characters.
+     */
+    private String getTemporaryFilePrefix() {
+        String fileName = dataFile.getFileName().toString();
+        return fileName.length() >= 3 ? fileName : (fileName + "___").substring(0, 3);
+    }
+
+    /**
+     * Removes a temporary file after a failed save without hiding the original failure.
+     *
+     * @param temporaryFile the temporary file to remove, or null if none was created.
+     * @param originalException the failure that interrupted the save.
+     */
+    private static void deleteTemporaryFile(Path temporaryFile, Exception originalException) {
+        if (temporaryFile == null) {
+            return;
+        }
+        try {
+            Files.deleteIfExists(temporaryFile);
+        } catch (IOException | SecurityException cleanupException) {
+            originalException.addSuppressed(cleanupException);
         }
     }
 }

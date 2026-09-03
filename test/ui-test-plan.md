@@ -16,6 +16,7 @@ Run these tests after each application code change using the project-local `test
 - Delete tasks from collection storage and renumber the remaining list.
 - Reject invalid delete requests without changing stored tasks.
 - Create missing storage automatically, save canonical dates on every mutation, and restore formatted dates and statuses.
+- Replace saved data atomically without leaving temporary files after success or failure.
 - Run each automated case in isolated temporary storage so saved tasks cannot leak between cases.
 
 ## JavaFX GUI checks
@@ -42,7 +43,7 @@ In a temporary working directory, run Green Chonk twice against the same `data/g
 1. Add a todo, deadline, and event; mark the deadline; delete the todo; then exit.
 2. Start Green Chonk again and run `list`.
 
-The second session must restore the marked deadline and event, including their parsed dates, while the deleted todo must remain absent. The data file must contain ISO dates even though the UI displays friendly dates. The test directory and data file must not exist before the first session; this verifies first-run creation as well as loading.
+The second session must restore the marked deadline and event, including their parsed dates, while the deleted todo must remain absent. The data file must contain ISO dates even though the UI displays friendly dates. The test directory and data file must not exist before the first session; this verifies first-run creation as well as loading. No temporary save file should remain beside `greenchonk.txt`.
 
 Also seed the data file with an event whose ending date is before its starting date. On startup, Green Chonk must identify that line as invalid rather than loading the impossible event.
 
