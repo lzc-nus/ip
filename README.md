@@ -182,7 +182,8 @@ src/
     │       │   ├── ScheduleCommand.java
     │       │   └── UpdateStatusCommand.java
     │       ├── exception/
-    │       │   └── GreenChonkException.java
+    │       │   ├── GreenChonkException.java
+    │       │   └── StorageException.java
     │       ├── gui/
     │       │   ├── DialogBox.java
     │       │   ├── Launcher.java
@@ -191,7 +192,8 @@ src/
     │       ├── parser/
     │       │   └── Parser.java
     │       ├── storage/
-    │       │   └── Storage.java
+    │       │   ├── Storage.java
+    │       │   └── TaskCodec.java
     │       ├── task/
     │       │   ├── Deadline.java
     │       │   ├── Event.java

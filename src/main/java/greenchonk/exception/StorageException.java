@@ -3,28 +3,28 @@ package greenchonk.exception;
 import java.io.Serial;
 
 /**
- * Represents an invalid command or task operation specific to Green Chonk.
+ * Represents a failure to load, decode, encode, or save task data.
  */
-public class GreenChonkException extends Exception {
+public class StorageException extends GreenChonkException {
     @Serial
     private static final long serialVersionUID = 1L;
 
     /**
-     * Creates an exception with an explanation that can be shown to the user.
+     * Creates a storage exception with an explanation that can be shown to the user.
      *
      * @param message the user-facing explanation of the error.
      */
-    public GreenChonkException(String message) {
+    public StorageException(String message) {
         super(message);
     }
 
     /**
-     * Creates an exception with a user-facing explanation and underlying cause.
+     * Creates a storage exception with a user-facing explanation and underlying cause.
      *
      * @param message the user-facing explanation of the error.
      * @param cause the error that caused this exception.
      */
-    public GreenChonkException(String message, Throwable cause) {
+    public StorageException(String message, Throwable cause) {
         super(message, cause);
     }
 }

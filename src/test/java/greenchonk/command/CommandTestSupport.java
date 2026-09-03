@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import greenchonk.exception.GreenChonkException;
+import greenchonk.exception.StorageException;
 import greenchonk.storage.Storage;
 import greenchonk.task.Task;
 import greenchonk.task.TaskList;
@@ -35,10 +35,10 @@ final class CommandTestSupport {
         }
 
         @Override
-        public void save(TaskList tasks) throws GreenChonkException {
+        public void save(TaskList tasks) throws StorageException {
             saveCount++;
             if (shouldFail) {
-                throw new GreenChonkException("save failed");
+                throw new StorageException("save failed");
             }
         }
     }

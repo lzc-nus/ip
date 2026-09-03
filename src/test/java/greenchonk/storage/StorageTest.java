@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import greenchonk.exception.GreenChonkException;
+import greenchonk.exception.StorageException;
 import greenchonk.task.Deadline;
 import greenchonk.task.Event;
 import greenchonk.task.Task;
@@ -99,7 +100,7 @@ class StorageTest {
 
         for (String invalidLine : invalidLines) {
             Files.writeString(dataFile, invalidLine, StandardCharsets.UTF_8);
-            GreenChonkException exception = assertThrows(GreenChonkException.class,
+            StorageException exception = assertThrows(StorageException.class,
                     storage::load);
             assertEquals("The data file has an invalid task on line 1.",
                     exception.getMessage());
@@ -113,7 +114,7 @@ class StorageTest {
         Files.write(dataFile, List.of("T | 0 | valid", "", "X | 0 | invalid"),
                 StandardCharsets.UTF_8);
 
-        GreenChonkException exception = assertThrows(GreenChonkException.class, () ->
+        StorageException exception = assertThrows(StorageException.class, () ->
                 new Storage(dataFile.toString()).load());
 
         assertEquals("The data file has an invalid task on line 3.",
@@ -126,7 +127,7 @@ class StorageTest {
         Files.writeString(blockingFile, "not a directory", StandardCharsets.UTF_8);
         Storage storage = new Storage(blockingFile.resolve("tasks.txt").toString());
 
-        GreenChonkException exception = assertThrows(GreenChonkException.class, () ->
+        StorageException exception = assertThrows(StorageException.class, () ->
                 storage.save(new TaskList()));
 
         assertTrue(exception.getMessage().startsWith("I couldn't save the task list:"));
