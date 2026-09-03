@@ -8,12 +8,14 @@ import greenchonk.command.Command;
 import greenchonk.command.DeleteCommand;
 import greenchonk.command.ExitCommand;
 import greenchonk.command.FindCommand;
+import greenchonk.command.HelpCommand;
 import greenchonk.command.ListCommand;
 import greenchonk.command.ScheduleCommand;
 import greenchonk.command.UpdateStatusCommand;
 import greenchonk.exception.GreenChonkException;
 import greenchonk.task.Deadline;
 import greenchonk.task.Event;
+import greenchonk.task.TaskDate;
 import greenchonk.task.TaskStatus;
 import greenchonk.task.Todo;
 
@@ -56,6 +58,9 @@ public final class Parser {
         if (input.equalsIgnoreCase("list")) {
             return new ListCommand();
         }
+        if (input.equalsIgnoreCase("help")) {
+            return new HelpCommand();
+        }
         if (isCommand(input, FIND_COMMAND)) {
             return new FindCommand(parseFindKeyword(input));
         }
@@ -84,7 +89,7 @@ public final class Parser {
         }
 
         throw new GreenChonkException("I don't recognize \"" + input
-                + "\". Try todo, deadline, event, list, find, schedule, mark, unmark, delete, or bye.");
+                + "\". Try todo, deadline, event, list, find, schedule, mark, unmark, delete, help, or bye.");
     }
 
     /**
@@ -133,15 +138,15 @@ public final class Parser {
         }
 
         String description = details.substring(0, separatorPosition).trim();
-        String byText = details.substring(separatorPosition + DEADLINE_SEPARATOR.length()).trim();
+        String dueDateText = details.substring(separatorPosition + DEADLINE_SEPARATOR.length()).trim();
         if (description.isEmpty()) {
             throw new GreenChonkException("A deadline needs a description before /by.");
         }
-        if (byText.isEmpty()) {
+        if (dueDateText.isEmpty()) {
             throw new GreenChonkException("A deadline needs a date after /by.");
         }
-        LocalDate by = parseDate(byText, "deadline", "2026-08-28");
-        return new Deadline(description, by);
+        LocalDate dueDate = parseDate(dueDateText, "deadline", "2026-08-28");
+        return new Deadline(description, dueDate);
     }
 
     /**
@@ -169,21 +174,21 @@ public final class Parser {
             throw new GreenChonkException("An event needs /to followed by an ending date.");
         }
 
-        String fromText = timeRange.substring(0, toPosition).trim();
-        String toText = timeRange.substring(toPosition + EVENT_TO_SEPARATOR.length()).trim();
-        if (fromText.isEmpty()) {
+        String startDateText = timeRange.substring(0, toPosition).trim();
+        String endDateText = timeRange.substring(toPosition + EVENT_TO_SEPARATOR.length()).trim();
+        if (startDateText.isEmpty()) {
             throw new GreenChonkException("An event needs a starting date after /from.");
         }
-        if (toText.isEmpty()) {
+        if (endDateText.isEmpty()) {
             throw new GreenChonkException("An event needs an ending date after /to.");
         }
-        LocalDate from = parseDate(fromText, "event start", "2026-08-28");
-        LocalDate to = parseDate(toText, "event end", "2026-08-29");
+        LocalDate startDate = parseDate(startDateText, "event start", "2026-08-28");
+        LocalDate endDate = parseDate(endDateText, "event end", "2026-08-29");
         try {
-            return new Event(description, from, to);
+            return new Event(description, startDate, endDate);
         } catch (IllegalArgumentException exception) {
             throw new GreenChonkException("An event's end date cannot be before its start date. "
-                    + "Try /to " + from + " or later.");
+                    + "Try /to " + startDate + " or later.");
         }
     }
 
@@ -241,21 +246,22 @@ public final class Parser {
     }
 
     /**
-     * Parses an ISO calendar date and translates parsing failures for the user.
+     * Parses a supported calendar date and translates parsing failures for the user.
      *
      * @param dateText the date text to parse
      * @param dateLabel the field name used in validation feedback
      * @param exampleDate a valid example used in validation feedback
      * @return the parsed date
-     * @throws GreenChonkException if the date is invalid or not in ISO format
+     * @throws GreenChonkException if the date is invalid or uses an unsupported format
      */
     private static LocalDate parseDate(String dateText, String dateLabel, String exampleDate)
             throws GreenChonkException {
         try {
-            return LocalDate.parse(dateText);
+            return TaskDate.parse(dateText);
         } catch (DateTimeParseException exception) {
             throw new GreenChonkException("The " + dateLabel
-                    + " date must use yyyy-MM-dd and be valid. Try: " + exampleDate);
+                    + " date must use yyyy-MM-dd, d/M/yyyy, or d MMM yyyy and be valid. Try: "
+                    + exampleDate);
         }
     }
 

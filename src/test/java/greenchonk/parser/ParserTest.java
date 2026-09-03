@@ -10,6 +10,7 @@ import greenchonk.command.AddCommand;
 import greenchonk.command.DeleteCommand;
 import greenchonk.command.ExitCommand;
 import greenchonk.command.FindCommand;
+import greenchonk.command.HelpCommand;
 import greenchonk.command.ListCommand;
 import greenchonk.command.ScheduleCommand;
 import greenchonk.command.UpdateStatusCommand;
@@ -17,9 +18,10 @@ import greenchonk.exception.GreenChonkException;
 
 class ParserTest {
     @Test
-    void parse_exitAndListIgnoringCase_correctCommandCreated() throws GreenChonkException {
+    void parse_simpleCommandsIgnoringCase_correctCommandCreated() throws GreenChonkException {
         assertInstanceOf(ExitCommand.class, Parser.parse("BYE"));
         assertInstanceOf(ListCommand.class, Parser.parse("LiSt"));
+        assertInstanceOf(HelpCommand.class, Parser.parse("HeLp"));
     }
 
     @Test
@@ -57,13 +59,13 @@ class ParserTest {
     void parse_unknownOrExtendedSimpleCommand_exceptionThrown() {
         assertParseError("roll away",
                 "I don't recognize \"roll away\". Try todo, deadline, event, list, "
-                        + "find, schedule, mark, unmark, delete, or bye.");
+                        + "find, schedule, mark, unmark, delete, help, or bye.");
         assertParseError("bye now",
                 "I don't recognize \"bye now\". Try todo, deadline, event, list, "
-                        + "find, schedule, mark, unmark, delete, or bye.");
+                        + "find, schedule, mark, unmark, delete, help, or bye.");
         assertParseError("listing",
                 "I don't recognize \"listing\". Try todo, deadline, event, list, "
-                        + "find, schedule, mark, unmark, delete, or bye.");
+                        + "find, schedule, mark, unmark, delete, help, or bye.");
     }
 
     @Test
@@ -90,7 +92,8 @@ class ParserTest {
     @Test
     void parse_deadlineWithInvalidDate_exceptionThrown() {
         assertParseError("deadline submit report /by 2026-02-29",
-                "The deadline date must use yyyy-MM-dd and be valid. Try: 2026-08-28");
+                "The deadline date must use yyyy-MM-dd, d/M/yyyy, or d MMM yyyy "
+                        + "and be valid. Try: 2026-08-28");
     }
 
     @Test
@@ -111,9 +114,11 @@ class ParserTest {
     @Test
     void parse_eventWithInvalidDates_exceptionThrown() {
         assertParseError("event meeting /from tomorrow /to 2026-08-29",
-                "The event start date must use yyyy-MM-dd and be valid. Try: 2026-08-28");
+                "The event start date must use yyyy-MM-dd, d/M/yyyy, or d MMM yyyy "
+                        + "and be valid. Try: 2026-08-28");
         assertParseError("event meeting /from 2026-08-28 /to tomorrow",
-                "The event end date must use yyyy-MM-dd and be valid. Try: 2026-08-29");
+                "The event end date must use yyyy-MM-dd, d/M/yyyy, or d MMM yyyy "
+                        + "and be valid. Try: 2026-08-29");
         assertParseError("event meeting /from 2026-08-30 /to 2026-08-29",
                 "An event's end date cannot be before its start date. "
                         + "Try /to 2026-08-30 or later.");
@@ -133,7 +138,8 @@ class ParserTest {
         assertParseError("schedule",
                 "Please provide a schedule date. Try: schedule 2026-08-28");
         assertParseError("schedule next Friday",
-                "The schedule date must use yyyy-MM-dd and be valid. Try: 2026-08-28");
+                "The schedule date must use yyyy-MM-dd, d/M/yyyy, or d MMM yyyy "
+                        + "and be valid. Try: 2026-08-28");
     }
 
     private static void assertParseError(String input, String expectedMessage) {

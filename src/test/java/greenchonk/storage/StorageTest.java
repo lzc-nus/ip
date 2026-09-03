@@ -12,11 +12,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import greenchonk.exception.GreenChonkException;
+import greenchonk.exception.StorageException;
 import greenchonk.task.Deadline;
 import greenchonk.task.Event;
 import greenchonk.task.Task;
@@ -36,6 +38,18 @@ class StorageTest {
 
         assertTrue(Files.isRegularFile(dataFile));
         assertTrue(loadedTasks.isEmpty());
+    }
+
+    @Test
+    void load_parentPathIsAFile_storageExceptionRetainsCause() throws IOException {
+        Path blockingFile = tempDirectory.resolve("blocking-file");
+        Files.writeString(blockingFile, "not a directory", StandardCharsets.UTF_8);
+        Storage storage = new Storage(blockingFile.resolve("tasks.txt").toString());
+
+        StorageException exception = assertThrows(StorageException.class, storage::load);
+
+        assertTrue(exception.getMessage().startsWith("I couldn't load the task list:"));
+        assertInstanceOf(IOException.class, exception.getCause());
     }
 
     @Test
@@ -63,11 +77,11 @@ class StorageTest {
 
         Deadline loadedDeadline = assertInstanceOf(Deadline.class, loadedTasks.get(1));
         assertTrue(loadedDeadline.isDone());
-        assertEquals(LocalDate.of(2026, 8, 28), loadedDeadline.getBy());
+        assertEquals(LocalDate.of(2026, 8, 28), loadedDeadline.getDueDate());
 
         Event loadedEvent = assertInstanceOf(Event.class, loadedTasks.get(2));
-        assertEquals(LocalDate.of(2026, 8, 29), loadedEvent.getFrom());
-        assertEquals(LocalDate.of(2026, 8, 30), loadedEvent.getTo());
+        assertEquals(LocalDate.of(2026, 8, 29), loadedEvent.getStartDate());
+        assertEquals(LocalDate.of(2026, 8, 30), loadedEvent.getEndDate());
     }
 
     @Test
@@ -99,7 +113,7 @@ class StorageTest {
 
         for (String invalidLine : invalidLines) {
             Files.writeString(dataFile, invalidLine, StandardCharsets.UTF_8);
-            GreenChonkException exception = assertThrows(GreenChonkException.class,
+            StorageException exception = assertThrows(StorageException.class,
                     storage::load);
             assertEquals("The data file has an invalid task on line 1.",
                     exception.getMessage());
@@ -113,7 +127,7 @@ class StorageTest {
         Files.write(dataFile, List.of("T | 0 | valid", "", "X | 0 | invalid"),
                 StandardCharsets.UTF_8);
 
-        GreenChonkException exception = assertThrows(GreenChonkException.class, () ->
+        StorageException exception = assertThrows(StorageException.class, () ->
                 new Storage(dataFile.toString()).load());
 
         assertEquals("The data file has an invalid task on line 3.",
@@ -126,9 +140,45 @@ class StorageTest {
         Files.writeString(blockingFile, "not a directory", StandardCharsets.UTF_8);
         Storage storage = new Storage(blockingFile.resolve("tasks.txt").toString());
 
-        GreenChonkException exception = assertThrows(GreenChonkException.class, () ->
+        StorageException exception = assertThrows(StorageException.class, () ->
                 storage.save(new TaskList()));
 
         assertTrue(exception.getMessage().startsWith("I couldn't save the task list:"));
+        assertInstanceOf(IOException.class, exception.getCause());
+    }
+
+    @Test
+    void save_existingData_fileReplacedWithoutTemporaryFiles()
+            throws IOException, StorageException {
+        Path dataFile = tempDirectory.resolve("data/tasks.txt");
+        Files.createDirectories(dataFile.getParent());
+        Files.writeString(dataFile, "old data", StandardCharsets.UTF_8);
+        Storage storage = new Storage(dataFile.toString());
+
+        storage.save(new TaskList(List.of(new Todo("replacement task"))));
+
+        assertEquals(List.of("T | 0 | replacement task"),
+                Files.readAllLines(dataFile, StandardCharsets.UTF_8));
+        try (Stream<Path> directoryEntries = Files.list(dataFile.getParent())) {
+            assertEquals(List.of(dataFile), directoryEntries.toList());
+        }
+    }
+
+    @Test
+    void save_targetIsNonEmptyDirectory_failureCleansTemporaryFile() throws IOException {
+        Path dataFile = tempDirectory.resolve("data/tasks.txt");
+        Files.createDirectories(dataFile);
+        Files.writeString(dataFile.resolve("keep.txt"), "keep", StandardCharsets.UTF_8);
+        Storage storage = new Storage(dataFile.toString());
+
+        StorageException exception = assertThrows(StorageException.class, () ->
+                storage.save(new TaskList(List.of(new Todo("task")))));
+
+        assertInstanceOf(IOException.class, exception.getCause());
+        assertTrue(Files.isDirectory(dataFile));
+        assertTrue(Files.isRegularFile(dataFile.resolve("keep.txt")));
+        try (Stream<Path> directoryEntries = Files.list(dataFile.getParent())) {
+            assertEquals(List.of(dataFile), directoryEntries.toList());
+        }
     }
 }

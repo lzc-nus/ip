@@ -234,6 +234,26 @@ public class Ui {
     }
 
     /**
+     * Displays guidance for every supported command.
+     */
+    public void showHelp() {
+        printLines(
+                "Here are the commands Green Chonk understands:",
+                "  todo DESCRIPTION",
+                "  deadline DESCRIPTION /by DATE",
+                "  event DESCRIPTION /from START_DATE /to END_DATE",
+                "  list",
+                "  find KEYWORD",
+                "  schedule DATE",
+                "  mark TASK_NUMBER",
+                "  unmark TASK_NUMBER",
+                "  delete TASK_NUMBER",
+                "  help",
+                "  bye",
+                "Dates: yyyy-MM-dd, d/M/yyyy, or d MMM yyyy (e.g., 2026-08-28, 28/8/2026, 28 Aug 2026).");
+    }
+
+    /**
      * Returns a grammatically correct task-count phrase.
      *
      * @param taskCount the number of tasks.

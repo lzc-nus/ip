@@ -7,14 +7,16 @@ Run these tests after each application code change using the project-local `test
 - Create and list all three task types with parsed, consistently formatted dates.
 - Preserve `LocalDate` details while marking and unmarking through `Task` polymorphism.
 - Find task descriptions by case-insensitive substring while preserving their original task numbers.
-- Accept valid ISO dates, including leap days, and reject invalid dates without storing a task.
+- Accept valid ISO, day/month/year, and English text dates, including leap days, while rejecting invalid dates.
 - Reject events that end before they start while allowing same-day events.
 - Find deadlines and in-progress events on a date while preserving their original task numbers.
 - Reject empty and unknown commands with actionable feedback.
+- Display concise guidance for every supported command without changing saved tasks.
 - Reject incomplete task commands and invalid task numbers without changing stored tasks.
 - Delete tasks from collection storage and renumber the remaining list.
 - Reject invalid delete requests without changing stored tasks.
 - Create missing storage automatically, save canonical dates on every mutation, and restore formatted dates and statuses.
+- Replace saved data atomically without leaving temporary files after success or failure.
 - Run each automated case in isolated temporary storage so saved tasks cannot leak between cases.
 
 ## JavaFX GUI checks
@@ -41,7 +43,7 @@ In a temporary working directory, run Green Chonk twice against the same `data/g
 1. Add a todo, deadline, and event; mark the deadline; delete the todo; then exit.
 2. Start Green Chonk again and run `list`.
 
-The second session must restore the marked deadline and event, including their parsed dates, while the deleted todo must remain absent. The data file must contain ISO dates even though the UI displays friendly dates. The test directory and data file must not exist before the first session; this verifies first-run creation as well as loading.
+The second session must restore the marked deadline and event, including their parsed dates, while the deleted todo must remain absent. The data file must contain ISO dates even though the UI displays friendly dates. The test directory and data file must not exist before the first session; this verifies first-run creation as well as loading. No temporary save file should remain beside `greenchonk.txt`.
 
 Also seed the data file with an event whose ending date is before its starting date. On startup, Green Chonk must identify that line as invalid rather than loading the impossible event.
 
@@ -51,6 +53,19 @@ Also seed the data file with an event whose ending date is before its starting d
 {
   "main_class": "greenchonk.GreenChonk",
   "cases": [
+    {
+      "name": "show-command-help",
+      "aim": "Verify help lists every command and the required date format without changing the task list.",
+      "inputs": [
+        "help",
+        "list",
+        "bye"
+      ],
+      "expected": [
+        "Here are the commands Green Chonk understands:\n  todo DESCRIPTION\n  deadline DESCRIPTION /by DATE\n  event DESCRIPTION /from START_DATE /to END_DATE\n  list\n  find KEYWORD\n  schedule DATE\n  mark TASK_NUMBER\n  unmark TASK_NUMBER\n  delete TASK_NUMBER\n  help\n  bye\nDates: yyyy-MM-dd, d/M/yyyy, or d MMM yyyy (e.g., 2026-08-28, 28/8/2026, 28 Aug 2026).",
+        "Green Chonk is not carrying any tasks yet."
+      ]
+    },
     {
       "name": "add-and-list-task-types",
       "aim": "Verify todos, deadlines, and events are constructed and displayed with the correct type icons and details.",
@@ -110,16 +125,18 @@ Also seed the data file with an event whose ending date is before its starting d
     },
     {
       "name": "parse-and-format-calendar-dates",
-      "aim": "Verify valid ISO dates, including a leap day, are stored as dates and displayed in a friendly format.",
+      "aim": "Verify each supported date format, including a leap day and mixed-case month, produces a friendly display.",
       "inputs": [
-        "deadline do homework /by 2028-02-29",
-        "event orientation /from 2026-12-31 /to 2027-01-01",
+        "deadline do homework /by 29/2/2028",
+        "event orientation /from 31 dEc 2026 /to 1 Jan 2027",
+        "schedule 31/12/2026",
         "list",
         "bye"
       ],
       "expected": [
         "[D][ ] do homework (by: Feb 29 2028)",
         "[E][ ] orientation (from: Dec 31 2026 to: Jan 01 2027)",
+        "Here are the tasks scheduled for 2026-12-31:\n2.[E][ ] orientation (from: Dec 31 2026 to: Jan 01 2027)",
         "Here are the tasks Green Chonk is carrying:\n1.[D][ ] do homework (by: Feb 29 2028)\n2.[E][ ] orientation (from: Dec 31 2026 to: Jan 01 2027)"
       ]
     },
@@ -136,7 +153,7 @@ Also seed the data file with an event whose ending date is before its starting d
       "expected": [
         "Oops! Green Chonk couldn't chomp that:\n  Please enter a command. Try: todo buy milk",
         "Oops! Green Chonk couldn't chomp that:\n  A todo needs a description. Try: todo buy milk",
-        "Oops! Green Chonk couldn't chomp that:\n  I don't recognize \"roll away\". Try todo, deadline, event, list, find, schedule, mark, unmark, delete, or bye.",
+        "Oops! Green Chonk couldn't chomp that:\n  I don't recognize \"roll away\". Try todo, deadline, event, list, find, schedule, mark, unmark, delete, help, or bye.",
         "Green Chonk is not carrying any tasks yet."
       ]
     },
@@ -183,10 +200,10 @@ Also seed the data file with an event whose ending date is before its starting d
       ],
       "expected": [
         "[T][ ] valid task",
-        "The deadline date must use yyyy-MM-dd and be valid. Try: 2026-08-28",
-        "The deadline date must use yyyy-MM-dd and be valid. Try: 2026-08-28",
-        "The event start date must use yyyy-MM-dd and be valid. Try: 2026-08-28",
-        "The event end date must use yyyy-MM-dd and be valid. Try: 2026-08-29",
+        "The deadline date must use yyyy-MM-dd, d/M/yyyy, or d MMM yyyy and be valid. Try: 2026-08-28",
+        "The deadline date must use yyyy-MM-dd, d/M/yyyy, or d MMM yyyy and be valid. Try: 2026-08-28",
+        "The event start date must use yyyy-MM-dd, d/M/yyyy, or d MMM yyyy and be valid. Try: 2026-08-28",
+        "The event end date must use yyyy-MM-dd, d/M/yyyy, or d MMM yyyy and be valid. Try: 2026-08-29",
         "Here are the tasks Green Chonk is carrying:\n1.[T][ ] valid task"
       ]
     },
@@ -222,7 +239,7 @@ Also seed the data file with an event whose ending date is before its starting d
         "Here are the tasks scheduled for 2026-08-28:\n2.[D][ ] submit report (by: Aug 28 2026)\n3.[E][ ] conference (from: Aug 27 2026 to: Aug 29 2026)",
         "Green Chonk has no deadlines or events scheduled for 2026-08-30.",
         "Please provide a schedule date. Try: schedule 2026-08-28",
-        "The schedule date must use yyyy-MM-dd and be valid. Try: 2026-08-28"
+        "The schedule date must use yyyy-MM-dd, d/M/yyyy, or d MMM yyyy and be valid. Try: 2026-08-28"
       ]
     },
     {

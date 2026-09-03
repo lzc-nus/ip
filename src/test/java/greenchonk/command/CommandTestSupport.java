@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import greenchonk.exception.GreenChonkException;
+import greenchonk.exception.StorageException;
 import greenchonk.storage.Storage;
 import greenchonk.task.Task;
 import greenchonk.task.TaskList;
@@ -35,10 +35,10 @@ final class CommandTestSupport {
         }
 
         @Override
-        public void save(TaskList tasks) throws GreenChonkException {
+        public void save(TaskList tasks) throws StorageException {
             saveCount++;
             if (shouldFail) {
-                throw new GreenChonkException("save failed");
+                throw new StorageException("save failed");
             }
         }
     }
@@ -51,6 +51,7 @@ final class CommandTestSupport {
         private int taskCount;
         private int remainingTaskCount;
         private boolean goodbyeShown;
+        private boolean helpShown;
         private boolean findHeaderShown;
         private boolean noMatchingTasksShown;
         private TaskList listedTasks;
@@ -87,6 +88,10 @@ final class CommandTestSupport {
             return goodbyeShown;
         }
 
+        boolean isHelpShown() {
+            return helpShown;
+        }
+
         boolean isFindHeaderShown() {
             return findHeaderShown;
         }
@@ -118,6 +123,11 @@ final class CommandTestSupport {
         @Override
         public void showGoodbye() {
             goodbyeShown = true;
+        }
+
+        @Override
+        public void showHelp() {
+            helpShown = true;
         }
 
         @Override
