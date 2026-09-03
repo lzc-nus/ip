@@ -57,6 +57,7 @@ test {
 
 application {
     mainClass = 'greenchonk.gui.Launcher'
+    applicationDefaultJvmArgs = ['--enable-native-access=javafx.graphics']
 }
 
 tasks.register('printRuntimeClasspath') {

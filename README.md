@@ -20,7 +20,9 @@ sdk use java 25.0.3.fx-zulu
 1. Open this project directory in IntelliJ IDEA.
 2. Configure the project SDK and language level to JDK 25.
 3. Open src/main/java/greenchonk/gui/Launcher.java.
-4. Right-click the file and select **Run Launcher.main()**.
+4. Create an Application run configuration for `greenchonk.gui.Launcher`.
+5. Add `--enable-native-access=javafx.graphics` to its **VM options**.
+6. Run the configuration.
 
 ## Build and run with Gradle
 
@@ -71,7 +73,7 @@ The generated file is `build/libs/greenchonk.jar`. To test the package as a user
 into an empty folder, open a terminal in that folder, and run the following command to launch the GUI:
 
 ~~~bash
-java -jar "greenchonk.jar"
+java --enable-native-access=javafx.graphics -jar "greenchonk.jar"
 ~~~
 
 Keep the generated JAR out of Git; Gradle can reproduce it from the committed source and build configuration.

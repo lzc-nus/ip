@@ -29,6 +29,7 @@ Run `./gradlew run` and verify the graphical interface manually:
 5. Repeated commands keep the newest dialog visible by scrolling the conversation automatically.
 6. `bye` displays the farewell response and then closes the window.
 7. Restarting the GUI restores tasks created in the previous session.
+8. Starting the GUI with `./gradlew run` does not print a restricted native-access warning.
 
 The automated cases below continue through the command-line interface because they exercise the same parser,
 commands, task list, and storage without depending on a display server.
