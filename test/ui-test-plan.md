@@ -25,9 +25,10 @@ Run `./gradlew run` and verify the graphical interface manually:
    keyboard focus.
 2. Pressing Enter and clicking **CHOMP** both add the user command and Green Chonk's response.
 3. A blank or invalid command appears as a visually distinct error response without crashing the app.
-4. Repeated commands keep the newest dialog visible by scrolling the conversation automatically.
-5. `bye` displays the farewell response and then closes the window.
-6. Restarting the GUI restores tasks created in the previous session.
+4. A multi-line response does not stretch either avatar beyond its fixed circular frame.
+5. Repeated commands keep the newest dialog visible by scrolling the conversation automatically.
+6. `bye` displays the farewell response and then closes the window.
+7. Restarting the GUI restores tasks created in the previous session.
 
 The automated cases below continue through the command-line interface because they exercise the same parser,
 commands, task list, and storage without depending on a display server.
