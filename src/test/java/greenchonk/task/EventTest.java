@@ -26,8 +26,8 @@ class EventTest {
         Event event = new Event("conference", START_DATE, START_DATE);
 
         assertTrue(event.occursOn(START_DATE));
-        assertEquals(START_DATE, event.getFrom());
-        assertEquals(START_DATE, event.getTo());
+        assertEquals(START_DATE, event.getStartDate());
+        assertEquals(START_DATE, event.getEndDate());
     }
 
     @Test
@@ -45,8 +45,8 @@ class EventTest {
     void accessorsAndDisplay_validEvent_valuesAndFormatMatch() {
         Event event = new Event("conference", START_DATE, END_DATE);
 
-        assertEquals(START_DATE, event.getFrom());
-        assertEquals(END_DATE, event.getTo());
+        assertEquals(START_DATE, event.getStartDate());
+        assertEquals(END_DATE, event.getEndDate());
         assertEquals("E", event.getTypeIcon());
         assertEquals("[E][ ] conference (from: Aug 28 2026 to: Aug 30 2026)",
                 event.toString());

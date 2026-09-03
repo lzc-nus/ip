@@ -92,7 +92,8 @@ class ParserTest {
     @Test
     void parse_deadlineWithInvalidDate_exceptionThrown() {
         assertParseError("deadline submit report /by 2026-02-29",
-                "The deadline date must use yyyy-MM-dd and be valid. Try: 2026-08-28");
+                "The deadline date must use yyyy-MM-dd, d/M/yyyy, or d MMM yyyy "
+                        + "and be valid. Try: 2026-08-28");
     }
 
     @Test
@@ -113,9 +114,11 @@ class ParserTest {
     @Test
     void parse_eventWithInvalidDates_exceptionThrown() {
         assertParseError("event meeting /from tomorrow /to 2026-08-29",
-                "The event start date must use yyyy-MM-dd and be valid. Try: 2026-08-28");
+                "The event start date must use yyyy-MM-dd, d/M/yyyy, or d MMM yyyy "
+                        + "and be valid. Try: 2026-08-28");
         assertParseError("event meeting /from 2026-08-28 /to tomorrow",
-                "The event end date must use yyyy-MM-dd and be valid. Try: 2026-08-29");
+                "The event end date must use yyyy-MM-dd, d/M/yyyy, or d MMM yyyy "
+                        + "and be valid. Try: 2026-08-29");
         assertParseError("event meeting /from 2026-08-30 /to 2026-08-29",
                 "An event's end date cannot be before its start date. "
                         + "Try /to 2026-08-30 or later.");
@@ -135,7 +138,8 @@ class ParserTest {
         assertParseError("schedule",
                 "Please provide a schedule date. Try: schedule 2026-08-28");
         assertParseError("schedule next Friday",
-                "The schedule date must use yyyy-MM-dd and be valid. Try: 2026-08-28");
+                "The schedule date must use yyyy-MM-dd, d/M/yyyy, or d MMM yyyy "
+                        + "and be valid. Try: 2026-08-28");
     }
 
     private static void assertParseError(String input, String expectedMessage) {

@@ -24,7 +24,7 @@ class DeadlineTest {
     void accessorsAndDisplay_validDeadline_valuesAndFormatMatch() {
         Deadline deadline = new Deadline("submit report", DUE_DATE);
 
-        assertEquals(DUE_DATE, deadline.getBy());
+        assertEquals(DUE_DATE, deadline.getDueDate());
         assertEquals("D", deadline.getTypeIcon());
         assertEquals("[D][ ] submit report (by: Aug 28 2026)", deadline.toString());
     }

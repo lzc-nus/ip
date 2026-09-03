@@ -250,7 +250,7 @@ public class Ui {
                 "  delete TASK_NUMBER",
                 "  help",
                 "  bye",
-                "Use dates in yyyy-MM-dd format, for example 2026-08-28.");
+                "Dates: yyyy-MM-dd, d/M/yyyy, or d MMM yyyy (e.g., 2026-08-28, 28/8/2026, 28 Aug 2026).");
     }
 
     /**

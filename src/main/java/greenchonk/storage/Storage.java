@@ -91,11 +91,11 @@ public class Storage {
         String commonFields = task.getTypeIcon() + DATA_SEPARATOR + status
                 + DATA_SEPARATOR + escapeDataField(task.getDescription());
         if (task instanceof Deadline deadline) {
-            return commonFields + DATA_SEPARATOR + deadline.getBy();
+            return commonFields + DATA_SEPARATOR + deadline.getDueDate();
         }
         if (task instanceof Event event) {
-            return commonFields + DATA_SEPARATOR + event.getFrom()
-                    + DATA_SEPARATOR + event.getTo();
+            return commonFields + DATA_SEPARATOR + event.getStartDate()
+                    + DATA_SEPARATOR + event.getEndDate();
         }
         return commonFields;
     }

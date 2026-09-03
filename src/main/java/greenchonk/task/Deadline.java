@@ -1,27 +1,22 @@
 package greenchonk.task;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 
 /**
  * Represents a task that must be completed by a particular date.
  */
 public class Deadline extends Task {
-    private static final DateTimeFormatter DISPLAY_DATE_FORMAT =
-            DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH);
-
-    private final LocalDate by;
+    private final LocalDate dueDate;
 
     /**
      * Creates an incomplete deadline with the given description and due value.
      *
      * @param description the deadline description.
-     * @param by the date by which the task should be completed.
+     * @param dueDate the date by which the task should be completed.
      */
-    public Deadline(String description, LocalDate by) {
+    public Deadline(String description, LocalDate dueDate) {
         super(description);
-        this.by = by;
+        this.dueDate = dueDate;
     }
 
     /**
@@ -29,13 +24,13 @@ public class Deadline extends Task {
      *
      * @return the deadline's due date.
      */
-    public LocalDate getBy() {
-        return by;
+    public LocalDate getDueDate() {
+        return dueDate;
     }
 
     @Override
     public boolean occursOn(LocalDate date) {
-        return by.equals(date);
+        return dueDate.equals(date);
     }
 
     @Override
@@ -50,6 +45,6 @@ public class Deadline extends Task {
      */
     @Override
     public String toString() {
-        return super.toString() + " (by: " + by.format(DISPLAY_DATE_FORMAT) + ")";
+        return super.toString() + " (by: " + TaskDate.format(dueDate) + ")";
     }
 }
