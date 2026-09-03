@@ -116,8 +116,9 @@ public class Ui {
      * @param message the explanation of the error.
      */
     public void showError(String message) {
-        output.println("Oops! Green Chonk couldn't chomp that:");
-        output.println("  " + message);
+        printLines(
+                "Oops! Green Chonk couldn't chomp that:",
+                "  " + message);
     }
 
     /**
@@ -126,8 +127,9 @@ public class Ui {
      * @param message the explanation of the loading failure.
      */
     public void showLoadingError(String message) {
-        output.println("Oops! Green Chonk couldn't load saved tasks:");
-        output.println("  " + message);
+        printLines(
+                "Oops! Green Chonk couldn't load saved tasks:",
+                "  " + message);
     }
 
     /**
@@ -165,12 +167,13 @@ public class Ui {
      * @param status the task's new status.
      */
     public void showTaskStatusUpdated(Task task, TaskStatus status) {
+        String confirmation;
         if (status == TaskStatus.DONE) {
-            output.println("Nice! Green Chonk marked this task as done:");
+            confirmation = "Nice! Green Chonk marked this task as done:";
         } else {
-            output.println("OK, Green Chonk marked this task as not done yet:");
+            confirmation = "OK, Green Chonk marked this task as not done yet:";
         }
-        output.println("  " + task);
+        printLines(confirmation, "  " + task);
     }
 
     /**
@@ -180,9 +183,10 @@ public class Ui {
      * @param remainingTaskCount the number of tasks remaining.
      */
     public void showTaskDeleted(Task task, int remainingTaskCount) {
-        output.println("Noted. Green Chonk removed this task:");
-        output.println("  " + task);
-        output.println("Green Chonk is now carrying " + taskCountText(remainingTaskCount) + ".");
+        printLines(
+                "Noted. Green Chonk removed this task:",
+                "  " + task,
+                "Green Chonk is now carrying " + taskCountText(remainingTaskCount) + ".");
     }
 
     /**
@@ -192,9 +196,10 @@ public class Ui {
      * @param taskCount the updated number of tasks.
      */
     public void showTaskAdded(Task task, int taskCount) {
-        output.println("Chomped this task:");
-        output.println("  " + task);
-        output.println("Green Chonk is now carrying " + taskCountText(taskCount) + ".");
+        printLines(
+                "Chomped this task:",
+                "  " + task,
+                "Green Chonk is now carrying " + taskCountText(taskCount) + ".");
     }
 
     /**
@@ -237,6 +242,17 @@ public class Ui {
     private static String taskCountText(int taskCount) {
         String taskLabel = taskCount == 1 ? "task" : "tasks";
         return taskCount + " " + taskLabel;
+    }
+
+    /**
+     * Displays each supplied line in order.
+     *
+     * @param lines the lines to display.
+     */
+    private void printLines(String... lines) {
+        for (String line : lines) {
+            output.println(line);
+        }
     }
 
     /**
