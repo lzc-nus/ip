@@ -10,6 +10,7 @@ import greenchonk.command.AddCommand;
 import greenchonk.command.DeleteCommand;
 import greenchonk.command.ExitCommand;
 import greenchonk.command.FindCommand;
+import greenchonk.command.HelpCommand;
 import greenchonk.command.ListCommand;
 import greenchonk.command.ScheduleCommand;
 import greenchonk.command.UpdateStatusCommand;
@@ -17,9 +18,10 @@ import greenchonk.exception.GreenChonkException;
 
 class ParserTest {
     @Test
-    void parse_exitAndListIgnoringCase_correctCommandCreated() throws GreenChonkException {
+    void parse_simpleCommandsIgnoringCase_correctCommandCreated() throws GreenChonkException {
         assertInstanceOf(ExitCommand.class, Parser.parse("BYE"));
         assertInstanceOf(ListCommand.class, Parser.parse("LiSt"));
+        assertInstanceOf(HelpCommand.class, Parser.parse("HeLp"));
     }
 
     @Test
@@ -57,13 +59,13 @@ class ParserTest {
     void parse_unknownOrExtendedSimpleCommand_exceptionThrown() {
         assertParseError("roll away",
                 "I don't recognize \"roll away\". Try todo, deadline, event, list, "
-                        + "find, schedule, mark, unmark, delete, or bye.");
+                        + "find, schedule, mark, unmark, delete, help, or bye.");
         assertParseError("bye now",
                 "I don't recognize \"bye now\". Try todo, deadline, event, list, "
-                        + "find, schedule, mark, unmark, delete, or bye.");
+                        + "find, schedule, mark, unmark, delete, help, or bye.");
         assertParseError("listing",
                 "I don't recognize \"listing\". Try todo, deadline, event, list, "
-                        + "find, schedule, mark, unmark, delete, or bye.");
+                        + "find, schedule, mark, unmark, delete, help, or bye.");
     }
 
     @Test

@@ -8,6 +8,7 @@ import greenchonk.command.Command;
 import greenchonk.command.DeleteCommand;
 import greenchonk.command.ExitCommand;
 import greenchonk.command.FindCommand;
+import greenchonk.command.HelpCommand;
 import greenchonk.command.ListCommand;
 import greenchonk.command.ScheduleCommand;
 import greenchonk.command.UpdateStatusCommand;
@@ -56,6 +57,9 @@ public final class Parser {
         if (input.equalsIgnoreCase("list")) {
             return new ListCommand();
         }
+        if (input.equalsIgnoreCase("help")) {
+            return new HelpCommand();
+        }
         if (isCommand(input, FIND_COMMAND)) {
             return new FindCommand(parseFindKeyword(input));
         }
@@ -84,7 +88,7 @@ public final class Parser {
         }
 
         throw new GreenChonkException("I don't recognize \"" + input
-                + "\". Try todo, deadline, event, list, find, schedule, mark, unmark, delete, or bye.");
+                + "\". Try todo, deadline, event, list, find, schedule, mark, unmark, delete, help, or bye.");
     }
 
     /**

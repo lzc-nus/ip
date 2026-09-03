@@ -11,6 +11,7 @@ Run these tests after each application code change using the project-local `test
 - Reject events that end before they start while allowing same-day events.
 - Find deadlines and in-progress events on a date while preserving their original task numbers.
 - Reject empty and unknown commands with actionable feedback.
+- Display concise guidance for every supported command without changing saved tasks.
 - Reject incomplete task commands and invalid task numbers without changing stored tasks.
 - Delete tasks from collection storage and renumber the remaining list.
 - Reject invalid delete requests without changing stored tasks.
@@ -51,6 +52,19 @@ Also seed the data file with an event whose ending date is before its starting d
 {
   "main_class": "greenchonk.GreenChonk",
   "cases": [
+    {
+      "name": "show-command-help",
+      "aim": "Verify help lists every command and the required date format without changing the task list.",
+      "inputs": [
+        "help",
+        "list",
+        "bye"
+      ],
+      "expected": [
+        "Here are the commands Green Chonk understands:\n  todo DESCRIPTION\n  deadline DESCRIPTION /by DATE\n  event DESCRIPTION /from START_DATE /to END_DATE\n  list\n  find KEYWORD\n  schedule DATE\n  mark TASK_NUMBER\n  unmark TASK_NUMBER\n  delete TASK_NUMBER\n  help\n  bye\nUse dates in yyyy-MM-dd format, for example 2026-08-28.",
+        "Green Chonk is not carrying any tasks yet."
+      ]
+    },
     {
       "name": "add-and-list-task-types",
       "aim": "Verify todos, deadlines, and events are constructed and displayed with the correct type icons and details.",
@@ -136,7 +150,7 @@ Also seed the data file with an event whose ending date is before its starting d
       "expected": [
         "Oops! Green Chonk couldn't chomp that:\n  Please enter a command. Try: todo buy milk",
         "Oops! Green Chonk couldn't chomp that:\n  A todo needs a description. Try: todo buy milk",
-        "Oops! Green Chonk couldn't chomp that:\n  I don't recognize \"roll away\". Try todo, deadline, event, list, find, schedule, mark, unmark, delete, or bye.",
+        "Oops! Green Chonk couldn't chomp that:\n  I don't recognize \"roll away\". Try todo, deadline, event, list, find, schedule, mark, unmark, delete, help, or bye.",
         "Green Chonk is not carrying any tasks yet."
       ]
     },
