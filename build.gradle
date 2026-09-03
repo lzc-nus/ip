@@ -20,6 +20,20 @@ checkstyle {
 
 dependencies {
     String jUnitVersion = '5.14.4'
+    String javaFxVersion = '17.0.7'
+
+    implementation "org.openjfx:javafx-base:${javaFxVersion}:win"
+    implementation "org.openjfx:javafx-base:${javaFxVersion}:mac"
+    implementation "org.openjfx:javafx-base:${javaFxVersion}:linux"
+    implementation "org.openjfx:javafx-controls:${javaFxVersion}:win"
+    implementation "org.openjfx:javafx-controls:${javaFxVersion}:mac"
+    implementation "org.openjfx:javafx-controls:${javaFxVersion}:linux"
+    implementation "org.openjfx:javafx-fxml:${javaFxVersion}:win"
+    implementation "org.openjfx:javafx-fxml:${javaFxVersion}:mac"
+    implementation "org.openjfx:javafx-fxml:${javaFxVersion}:linux"
+    implementation "org.openjfx:javafx-graphics:${javaFxVersion}:win"
+    implementation "org.openjfx:javafx-graphics:${javaFxVersion}:mac"
+    implementation "org.openjfx:javafx-graphics:${javaFxVersion}:linux"
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:${jUnitVersion}"
 
@@ -42,7 +56,14 @@ test {
 }
 
 application {
-    mainClass = 'greenchonk.GreenChonk'
+    mainClass = 'greenchonk.gui.Launcher'
+    applicationDefaultJvmArgs = ['--enable-native-access=javafx.graphics']
+}
+
+tasks.register('printRuntimeClasspath') {
+    doLast {
+        println sourceSets.main.runtimeClasspath.asPath
+    }
 }
 
 jar {
@@ -57,5 +78,11 @@ shadowJar {
 }
 
 run {
+    standardInput = System.in
+}
+
+tasks.register('runCli', JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'greenchonk.GreenChonk'
     standardInput = System.in
 }

@@ -1,6 +1,6 @@
 # Green Chonk
 
-Green Chonk is a small Java chatbot prototype with a playful personality. It displays a classic ASCII banner, animates its responses with a short thinking sequence, saves typed tasks between sessions, and exits when the user types bye.
+Green Chonk is a JavaFX task companion with a focused chat interface and a playful personality. It keeps the original command-line interface as a testable fallback, saves typed tasks between sessions, and exits when the user types bye.
 
 The current version supports todos, deadlines, and events. Deadlines and events accept ISO calendar dates such as `2026-08-28` and display them in a friendlier form such as `Aug 28 2026`. Each task type displays its own icon alongside its completion status. The `list` command displays numbered tasks, `find KEYWORD` searches task descriptions, `schedule DATE` finds deadlines and events occurring on a date, `mark NUMBER` completes a task, `unmark NUMBER` makes it incomplete again, and `delete NUMBER` removes it. Invalid commands produce a specific correction instead of terminating the program. The `bye` command ends the conversation regardless of capitalization.
 
@@ -19,8 +19,10 @@ sdk use java 25.0.3.fx-zulu
 
 1. Open this project directory in IntelliJ IDEA.
 2. Configure the project SDK and language level to JDK 25.
-3. Open src/main/java/greenchonk/GreenChonk.java.
-4. Right-click the file and select **Run GreenChonk.main()**.
+3. Open src/main/java/greenchonk/gui/Launcher.java.
+4. Create an Application run configuration for `greenchonk.gui.Launcher`.
+5. Add `--enable-native-access=javafx.graphics` to its **VM options**.
+6. Run the configuration.
 
 ## Build and run with Gradle
 
@@ -32,6 +34,12 @@ From the project root:
 ~~~
 
 The Gradle wrapper downloads the required Gradle version and project dependencies automatically on first use.
+
+To run the original command-line interface instead:
+
+~~~bash
+./gradlew runCli
+~~~
 
 ## Run automated tests
 
@@ -62,10 +70,10 @@ Create the distributable fat JAR from the project root:
 ~~~
 
 The generated file is `build/libs/greenchonk.jar`. To test the package as a user would receive it, copy the JAR
-into an empty folder, open a terminal in that folder, and run:
+into an empty folder, open a terminal in that folder, and run the following command to launch the GUI:
 
 ~~~bash
-java -jar "greenchonk.jar"
+java --enable-native-access=javafx.graphics -jar "greenchonk.jar"
 ~~~
 
 Keep the generated JAR out of Git; Gradle can reproduce it from the committed source and build configuration.
@@ -146,33 +154,45 @@ _____________________________________________________________
 ~~~text
 src/
 └── main/
-    └── java/
-        └── greenchonk/
-            ├── GreenChonk.java
-            ├── command/
-            │   ├── AddCommand.java
-            │   ├── Command.java
-            │   ├── DeleteCommand.java
-            │   ├── ExitCommand.java
-            │   ├── FindCommand.java
-            │   ├── ListCommand.java
-            │   ├── ScheduleCommand.java
-            │   └── UpdateStatusCommand.java
-            ├── exception/
-            │   └── GreenChonkException.java
-            ├── parser/
-            │   └── Parser.java
-            ├── storage/
-            │   └── Storage.java
-            ├── task/
-            │   ├── Deadline.java
-            │   ├── Event.java
-            │   ├── Task.java
-            │   ├── TaskList.java
-            │   ├── TaskStatus.java
-            │   └── Todo.java
-            └── ui/
-                └── Ui.java
+    ├── java/
+    │   └── greenchonk/
+    │       ├── GreenChonk.java
+    │       ├── command/
+    │       │   ├── AddCommand.java
+    │       │   ├── Command.java
+    │       │   ├── DeleteCommand.java
+    │       │   ├── ExitCommand.java
+    │       │   ├── FindCommand.java
+    │       │   ├── ListCommand.java
+    │       │   ├── ScheduleCommand.java
+    │       │   └── UpdateStatusCommand.java
+    │       ├── exception/
+    │       │   └── GreenChonkException.java
+    │       ├── gui/
+    │       │   ├── DialogBox.java
+    │       │   ├── Launcher.java
+    │       │   ├── Main.java
+    │       │   └── MainWindow.java
+    │       ├── parser/
+    │       │   └── Parser.java
+    │       ├── storage/
+    │       │   └── Storage.java
+    │       ├── task/
+    │       │   ├── Deadline.java
+    │       │   ├── Event.java
+    │       │   ├── Task.java
+    │       │   ├── TaskList.java
+    │       │   ├── TaskStatus.java
+    │       │   └── Todo.java
+    │       └── ui/
+    │           └── Ui.java
+    └── resources/
+        ├── images/
+        │   └── green-chonk.png
+        └── view/
+            ├── DialogBox.fxml
+            ├── MainWindow.fxml
+            └── styles.css
 ~~~
 
 Keep Java source files under src/main/java, which is the source directory expected by the project setup.
