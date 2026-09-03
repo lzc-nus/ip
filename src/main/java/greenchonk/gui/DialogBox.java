@@ -97,12 +97,12 @@ public class DialogBox extends HBox {
     }
 
     /**
-     * Places the avatar before the message and aligns the row to the left.
+     * Places the avatar before the message and aligns the row to the bottom-left.
      */
     private void flip() {
         ObservableList<Node> children = FXCollections.observableArrayList(getChildren());
         Collections.reverse(children);
         getChildren().setAll(children);
-        setAlignment(Pos.TOP_LEFT);
+        setAlignment(Pos.BOTTOM_LEFT);
     }
 }

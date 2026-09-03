@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 
-<fx:root alignment="TOP_RIGHT"
+<fx:root alignment="BOTTOM_RIGHT"
          fillHeight="false"
          maxWidth="1.7976931348623157E308"
          spacing="12.0"
