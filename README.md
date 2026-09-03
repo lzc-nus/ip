@@ -185,6 +185,8 @@ src/
     │       └── ui/
     │           └── Ui.java
     └── resources/
+        ├── images/
+        │   └── green-chonk.png
         └── view/
             ├── DialogBox.fxml
             ├── MainWindow.fxml

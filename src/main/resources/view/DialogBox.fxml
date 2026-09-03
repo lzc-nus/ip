@@ -2,7 +2,9 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 
 <fx:root alignment="TOP_RIGHT"
          maxWidth="1.7976931348623157E308"
@@ -17,13 +19,29 @@
                minHeight="-Infinity"
                styleClass="dialog-bubble"
                wrapText="true" />
-        <Label fx:id="avatar"
-               alignment="CENTER"
-               minHeight="46.0"
-               minWidth="46.0"
-               prefHeight="46.0"
-               prefWidth="46.0"
-               styleClass="avatar" />
+        <StackPane fx:id="avatar"
+                   minHeight="46.0"
+                   minWidth="46.0"
+                   prefHeight="46.0"
+                   prefWidth="46.0"
+                   styleClass="avatar">
+            <children>
+                <ImageView fx:id="avatarImage"
+                           fitHeight="44.0"
+                           fitWidth="44.0"
+                           managed="false"
+                           preserveRatio="true"
+                           smooth="false"
+                           visible="false" />
+                <Label fx:id="avatarText"
+                       alignment="CENTER"
+                       managed="false"
+                       maxHeight="1.7976931348623157E308"
+                       maxWidth="1.7976931348623157E308"
+                       styleClass="avatar-text"
+                       visible="false" />
+            </children>
+        </StackPane>
     </children>
     <padding>
         <Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />

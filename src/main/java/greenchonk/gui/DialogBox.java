@@ -2,6 +2,7 @@ package greenchonk.gui;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Objects;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,20 +11,32 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Circle;
 
 /**
  * Represents one message and avatar in the chat history.
  */
 public class DialogBox extends HBox {
     private static final String USER_AVATAR_TEXT = "YOU";
-    private static final String GREEN_CHONK_AVATAR_TEXT = "GC";
+    private static final double AVATAR_RADIUS = 22.0;
+    private static final Image GREEN_CHONK_IMAGE = new Image(Objects.requireNonNull(
+            DialogBox.class.getResourceAsStream("/images/green-chonk.png")));
 
     @FXML
     private Label dialog;
 
     @FXML
-    private Label avatar;
+    private StackPane avatar;
+
+    @FXML
+    private ImageView avatarImage;
+
+    @FXML
+    private Label avatarText;
 
     private DialogBox(String text) {
         try {
@@ -35,6 +48,7 @@ public class DialogBox extends HBox {
             throw new IllegalStateException("Unable to load the dialog layout.", exception);
         }
         dialog.setText(text);
+        avatarImage.setClip(new Circle(AVATAR_RADIUS, AVATAR_RADIUS, AVATAR_RADIUS));
     }
 
     /**
@@ -45,7 +59,9 @@ public class DialogBox extends HBox {
      */
     public static DialogBox getUserDialog(String text) {
         DialogBox dialogBox = new DialogBox(text);
-        dialogBox.avatar.setText(USER_AVATAR_TEXT);
+        dialogBox.avatarText.setText(USER_AVATAR_TEXT);
+        dialogBox.avatarText.setManaged(true);
+        dialogBox.avatarText.setVisible(true);
         dialogBox.avatar.getStyleClass().add("user-avatar");
         dialogBox.dialog.getStyleClass().add("user-bubble");
         return dialogBox;
@@ -59,7 +75,9 @@ public class DialogBox extends HBox {
      */
     public static DialogBox getGreenChonkDialog(String text) {
         DialogBox dialogBox = new DialogBox(text);
-        dialogBox.avatar.setText(GREEN_CHONK_AVATAR_TEXT);
+        dialogBox.avatarImage.setImage(GREEN_CHONK_IMAGE);
+        dialogBox.avatarImage.setManaged(true);
+        dialogBox.avatarImage.setVisible(true);
         dialogBox.avatar.getStyleClass().add("green-chonk-avatar");
         dialogBox.dialog.getStyleClass().add("green-chonk-bubble");
         dialogBox.flip();

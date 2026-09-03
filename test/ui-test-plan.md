@@ -21,7 +21,8 @@ Run these tests after each application code change using the project-local `test
 
 Run `./gradlew run` and verify the graphical interface manually:
 
-1. The welcome dialog appears in a resizable window and the command field receives keyboard focus.
+1. The welcome dialog appears with Green Chonk's picture in a resizable window, and the command field receives
+   keyboard focus.
 2. Pressing Enter and clicking **CHOMP** both add the user command and Green Chonk's response.
 3. A blank or invalid command appears as a visually distinct error response without crashing the app.
 4. Repeated commands keep the newest dialog visible by scrolling the conversation automatically.
