@@ -57,13 +57,7 @@ public class GreenChonk {
         boolean isExit = false;
 
         while (!isExit && ui.hasNextCommand()) {
-            try {
-                Command command = Parser.parse(ui.readCommand().trim());
-                command.execute(tasks, ui, storage);
-                isExit = command.isExit();
-            } catch (GreenChonkException exception) {
-                ui.showError(exception.getMessage());
-            }
+            isExit = executeCommand(ui.readCommand(), tasks, ui);
         }
     }
 
@@ -81,14 +75,28 @@ public class GreenChonk {
                 guiTasks = loadTasks(responseUi);
             }
 
-            try {
-                Command command = Parser.parse(input.trim());
-                command.execute(guiTasks, responseUi, storage);
-            } catch (GreenChonkException exception) {
-                responseUi.showError(exception.getMessage());
-            }
+            executeCommand(input, guiTasks, responseUi);
         }
         return outputBuffer.toString(StandardCharsets.UTF_8).stripTrailing();
+    }
+
+    /**
+     * Executes one command and reports expected failures through the target UI.
+     *
+     * @param input the command entered by the user.
+     * @param tasks the task list on which to execute the command.
+     * @param targetUi the UI through which results are shown.
+     * @return true if the command ends the application, or false otherwise.
+     */
+    private boolean executeCommand(String input, TaskList tasks, Ui targetUi) {
+        try {
+            Command command = Parser.parse(input.trim());
+            command.execute(tasks, targetUi, storage);
+            return command.isExit();
+        } catch (GreenChonkException exception) {
+            targetUi.showError(exception.getMessage());
+            return false;
+        }
     }
 
     /**

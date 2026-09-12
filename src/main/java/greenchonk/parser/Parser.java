@@ -49,6 +49,9 @@ public final class Parser {
      * @throws GreenChonkException if the command or its arguments are invalid.
      */
     public static Command parse(String input) throws GreenChonkException {
+        assert input != null : "Command input must not be null";
+        assert input.equals(input.trim()) : "Command input must be trimmed before parsing";
+
         if (input.isEmpty()) {
             throw new GreenChonkException("Please enter a command. Try: todo buy milk");
         }
