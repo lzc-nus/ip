@@ -1,7 +1,8 @@
 package greenchonk.command;
 
+import java.util.stream.IntStream;
+
 import greenchonk.storage.Storage;
-import greenchonk.task.Task;
 import greenchonk.task.TaskList;
 import greenchonk.ui.Ui;
 
@@ -22,19 +23,18 @@ public class FindCommand extends Command {
 
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) {
-        boolean hasMatchingTask = false;
-        for (int index = 0; index < tasks.size(); index++) {
-            Task task = tasks.get(index);
-            if (task.matches(keyword)) {
-                if (!hasMatchingTask) {
-                    ui.showFindHeader();
-                }
-                ui.showNumberedTask(index + 1, task);
-                hasMatchingTask = true;
-            }
-        }
-        if (!hasMatchingTask) {
+        int[] matchingTaskIndexes = IntStream.range(0, tasks.size())
+                .filter(index -> tasks.get(index).matches(keyword))
+                .toArray();
+
+        if (matchingTaskIndexes.length == 0) {
             ui.showNoMatchingTasks();
+            return;
+        }
+
+        ui.showFindHeader();
+        for (int taskIndex : matchingTaskIndexes) {
+            ui.showNumberedTask(taskIndex + 1, tasks.get(taskIndex));
         }
     }
 }
