@@ -82,6 +82,9 @@ final class TaskCodec {
      */
     private static Task decodeTaskFields(List<String> fields, int lineNumber)
             throws StorageException {
+        assert fields.size() >= 3
+                : "Validated task data must contain type, status, and description fields";
+
         String type = fields.get(0);
         switch (type) {
             case "T":
