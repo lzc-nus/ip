@@ -16,6 +16,20 @@ import greenchonk.task.Todo;
  */
 final class TaskCodec {
     private static final String DATA_SEPARATOR = " | ";
+    private static final int FIELD_TYPE_INDEX = 0;
+    private static final int FIELD_STATUS_INDEX = 1;
+    private static final int FIELD_DESCRIPTION_INDEX = 2;
+    private static final int FIELD_FIRST_DATE_INDEX = 3;
+    private static final int FIELD_SECOND_DATE_INDEX = 4;
+    private static final int FIELD_COUNT_MINIMUM = 3;
+    private static final int FIELD_COUNT_TODO = 3;
+    private static final int FIELD_COUNT_DEADLINE = 4;
+    private static final int FIELD_COUNT_EVENT = 5;
+    private static final String STATUS_NOT_DONE = "0";
+    private static final String STATUS_DONE = "1";
+    private static final String TYPE_TODO = "T";
+    private static final String TYPE_DEADLINE = "D";
+    private static final String TYPE_EVENT = "E";
 
     /**
      * Encodes one task as a line in the data file.
@@ -25,7 +39,7 @@ final class TaskCodec {
      * @throws StorageException if the task type is unsupported.
      */
     String encode(Task task) throws StorageException {
-        String status = task.isDone() ? "1" : "0";
+        String status = task.isDone() ? STATUS_DONE : STATUS_NOT_DONE;
         String commonFields = task.getTypeIcon() + DATA_SEPARATOR + status
                 + DATA_SEPARATOR + escapeDataField(task.getDescription());
         if (task instanceof Deadline deadline) {
@@ -51,7 +65,7 @@ final class TaskCodec {
      */
     Task decode(String line, int lineNumber) throws StorageException {
         List<String> fields = splitDataLine(line, lineNumber);
-        if (fields.size() < 3) {
+        if (fields.size() < FIELD_COUNT_MINIMUM) {
             throw invalidDataLine(lineNumber);
         }
         for (String field : fields) {
@@ -60,13 +74,13 @@ final class TaskCodec {
             }
         }
 
-        String status = fields.get(1);
-        if (!status.equals("0") && !status.equals("1")) {
+        String status = fields.get(FIELD_STATUS_INDEX);
+        if (!status.equals(STATUS_NOT_DONE) && !status.equals(STATUS_DONE)) {
             throw invalidDataLine(lineNumber);
         }
 
         Task task = decodeTaskFields(fields, lineNumber);
-        if (status.equals("1")) {
+        if (status.equals(STATUS_DONE)) {
             task.markAsDone();
         }
         return task;
@@ -82,25 +96,28 @@ final class TaskCodec {
      */
     private static Task decodeTaskFields(List<String> fields, int lineNumber)
             throws StorageException {
-        String type = fields.get(0);
+        String type = fields.get(FIELD_TYPE_INDEX);
+        String description = fields.get(FIELD_DESCRIPTION_INDEX);
         switch (type) {
-            case "T":
-                if (fields.size() != 3) {
+            case TYPE_TODO:
+                if (fields.size() != FIELD_COUNT_TODO) {
                     throw invalidDataLine(lineNumber);
                 }
-                return new Todo(fields.get(2));
-            case "D":
-                if (fields.size() != 4) {
+                return new Todo(description);
+            case TYPE_DEADLINE:
+                if (fields.size() != FIELD_COUNT_DEADLINE) {
                     throw invalidDataLine(lineNumber);
                 }
-                return new Deadline(fields.get(2), parseSavedDate(fields.get(3), lineNumber));
-            case "E":
-                if (fields.size() != 5) {
+                return new Deadline(description,
+                        parseSavedDate(fields.get(FIELD_FIRST_DATE_INDEX), lineNumber));
+            case TYPE_EVENT:
+                if (fields.size() != FIELD_COUNT_EVENT) {
                     throw invalidDataLine(lineNumber);
                 }
                 try {
-                    return new Event(fields.get(2), parseSavedDate(fields.get(3), lineNumber),
-                            parseSavedDate(fields.get(4), lineNumber));
+                    return new Event(description,
+                            parseSavedDate(fields.get(FIELD_FIRST_DATE_INDEX), lineNumber),
+                            parseSavedDate(fields.get(FIELD_SECOND_DATE_INDEX), lineNumber));
                 } catch (IllegalArgumentException exception) {
                     throw invalidDataLine(lineNumber);
                 }
