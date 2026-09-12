@@ -92,6 +92,10 @@ public class Storage {
      * @throws IOException if neither replacement strategy succeeds.
      */
     private void replaceDataFile(Path temporaryFile) throws IOException {
+        assert temporaryFile != null : "Temporary file must be created before replacement";
+        assert temporaryFile.getParent().equals(dataFile.getParent())
+                : "Temporary file must be created beside the data file";
+
         try {
             Files.move(temporaryFile, dataFile,
                     StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
