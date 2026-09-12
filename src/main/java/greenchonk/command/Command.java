@@ -53,6 +53,10 @@ public abstract class Command {
             throw new GreenChonkException("Task " + taskNumber
                     + " does not exist. Choose a number from 1 to " + tasks.size() + ".");
         }
-        return taskNumber - 1;
+
+        int taskIndex = taskNumber - 1;
+        assert taskIndex >= 0 && taskIndex < tasks.size()
+                : "Validated task number must map to an existing task index";
+        return taskIndex;
     }
 }
