@@ -45,6 +45,41 @@ public class Event extends Task {
     }
 
     @Override
+    public Event withDescription(String description) {
+        Event editedEvent = new Event(description, startDate, endDate);
+        copyStatusTo(editedEvent);
+        return editedEvent;
+    }
+
+    /**
+     * Returns a copy of this event with a replacement starting date.
+     * The copy retains this event's description, ending date, and completion status.
+     *
+     * @param startDate the replacement starting date.
+     * @return the updated event copy.
+     * @throws IllegalArgumentException if the replacement date is after the ending date.
+     */
+    public Event withStartDate(LocalDate startDate) {
+        Event editedEvent = new Event(getDescription(), startDate, endDate);
+        copyStatusTo(editedEvent);
+        return editedEvent;
+    }
+
+    /**
+     * Returns a copy of this event with a replacement ending date.
+     * The copy retains this event's description, starting date, and completion status.
+     *
+     * @param endDate the replacement ending date.
+     * @return the updated event copy.
+     * @throws IllegalArgumentException if the replacement date is before the starting date.
+     */
+    public Event withEndDate(LocalDate endDate) {
+        Event editedEvent = new Event(getDescription(), startDate, endDate);
+        copyStatusTo(editedEvent);
+        return editedEvent;
+    }
+
+    @Override
     public boolean occursOn(LocalDate date) {
         return !date.isBefore(startDate) && !date.isAfter(endDate);
     }

@@ -33,6 +33,21 @@ class GreenChonkTest {
     }
 
     @Test
+    void getResponse_editCommand_updatesSharedTaskState() {
+        GreenChonk greenChonk = new GreenChonk(tempDirectory.resolve("data/tasks.txt").toString());
+        greenChonk.getResponse("deadline submit draft /by 2026-08-28");
+        greenChonk.getResponse("mark 1");
+
+        String editResponse = greenChonk.getResponse(
+                "edit 1 /description submit final report");
+        String listResponse = greenChonk.getResponse("list");
+
+        assertTrue(editResponse.contains("Before: [D][X] submit draft (by: Aug 28 2026)"));
+        assertTrue(editResponse.contains("After:  [D][X] submit final report (by: Aug 28 2026)"));
+        assertTrue(listResponse.contains("1.[D][X] submit final report (by: Aug 28 2026)"));
+    }
+
+    @Test
     void getResponse_exitCommand_returnsFarewellWithoutAnimationFrames() {
         GreenChonk greenChonk = new GreenChonk(tempDirectory.resolve("data/tasks.txt").toString());
 

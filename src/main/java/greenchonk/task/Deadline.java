@@ -29,6 +29,26 @@ public class Deadline extends Task {
     }
 
     @Override
+    public Deadline withDescription(String description) {
+        Deadline editedDeadline = new Deadline(description, dueDate);
+        copyStatusTo(editedDeadline);
+        return editedDeadline;
+    }
+
+    /**
+     * Returns a copy of this deadline with a replacement due date.
+     * The copy retains this deadline's description and completion status.
+     *
+     * @param dueDate the replacement due date.
+     * @return the updated deadline copy.
+     */
+    public Deadline withDueDate(LocalDate dueDate) {
+        Deadline editedDeadline = new Deadline(getDescription(), dueDate);
+        copyStatusTo(editedDeadline);
+        return editedDeadline;
+    }
+
+    @Override
     public boolean occursOn(LocalDate date) {
         return dueDate.equals(date);
     }

@@ -2,7 +2,7 @@
 
 Green Chonk is a JavaFX task companion with a focused chat interface and a playful personality. It keeps the original command-line interface as a testable fallback, saves typed tasks between sessions, and exits when the user types bye.
 
-The current version supports todos, deadlines, and events. Deadlines and events accept ISO dates such as `2026-08-28`, day/month/year dates such as `28/8/2026`, and English text dates such as `28 Aug 2026`. They display in a friendly form such as `Aug 28 2026`. Each task type displays its own icon alongside its completion status. The `list` command displays numbered tasks, `find KEYWORD` searches task descriptions, `schedule DATE` finds deadlines and events occurring on a date, `mark NUMBER` completes a task, `unmark NUMBER` makes it incomplete again, and `delete NUMBER` removes it. Use `help` to see every command and its format inside the application. Invalid commands produce a specific correction instead of terminating the program. The `bye` command ends the conversation regardless of capitalization.
+The current version supports todos, deadlines, and events. Deadlines and events accept ISO dates such as `2026-08-28`, day/month/year dates such as `28/8/2026`, and English text dates such as `28 Aug 2026`. They display in a friendly form such as `Aug 28 2026`. Each task type displays its own icon alongside its completion status. The `list` command displays numbered tasks, `find KEYWORD` searches task descriptions, `schedule DATE` finds deadlines and events occurring on a date, and `edit` changes one task detail without recreating the task. The `mark NUMBER` command completes a task, `unmark NUMBER` makes it incomplete again, and `delete NUMBER` removes it. Use `help` to see every command and its format inside the application. Invalid commands produce a specific correction instead of terminating the program. The `bye` command ends the conversation regardless of capitalization.
 
 ## Requirements
 
@@ -78,7 +78,7 @@ java --enable-native-access=javafx.graphics -jar "greenchonk.jar"
 
 Keep the generated JAR out of Git; Gradle can reproduce it from the committed source and build configuration.
 
-The program keeps reading commands until the user enters `bye` in any capitalization. Enter `help` at any time to see every available command. Add tasks with `todo DESCRIPTION`, `deadline DESCRIPTION /by DATE`, or `event DESCRIPTION /from START /to END`. Enter dates as `yyyy-MM-dd`, `d/M/yyyy`, or `d MMM yyyy`; slash dates use day/month/year and text months are English and case-insensitive. Invalid calendar dates are rejected without storing a task. An event's ending date must be the same as or later than its starting date. Green Chonk displays valid dates as `MMM dd yyyy`. Use `list` to display every task. Use `find KEYWORD` for a case-insensitive substring search of task descriptions; matching results retain their order and original task numbers. Use `schedule DATE` to display deadlines due and events in progress on that date. Scheduled results keep their original task numbers so they can be marked, unmarked, or deleted directly. Use `mark NUMBER` to complete a task, `unmark NUMBER` to reverse that status, and `delete NUMBER` to remove one. The remaining tasks are renumbered automatically. If a command is incomplete, unknown, or refers to a task that does not exist, Green Chonk explains how to correct it and continues running without changing the task list. Tasks and their canonical ISO dates are saved atomically in `data/greenchonk.txt` whenever the list changes and restored the next time the program starts. This prevents a failed or interrupted write from replacing the last complete data file. The folder and file are created automatically on first use. Run the program in an interactive terminal to see the thinking animation overwrite the dots in place. If the output is redirected to a file or captured by a tool, the carriage-return characters may appear as separate frames instead.
+The program keeps reading commands until the user enters `bye` in any capitalization. Enter `help` at any time to see every available command. Add tasks with `todo DESCRIPTION`, `deadline DESCRIPTION /by DATE`, or `event DESCRIPTION /from START /to END`. Enter dates as `yyyy-MM-dd`, `d/M/yyyy`, or `d MMM yyyy`; slash dates use day/month/year and text months are English and case-insensitive. Invalid calendar dates are rejected without storing a task. An event's ending date must be the same as or later than its starting date. Green Chonk displays valid dates as `MMM dd yyyy`. Use `list` to display every task. Use `find KEYWORD` for a case-insensitive substring search of task descriptions; matching results retain their order and original task numbers. Use `schedule DATE` to display deadlines due and events in progress on that date. Scheduled results keep their original task numbers so they can be edited, marked, unmarked, or deleted directly. Edit one detail with `edit NUMBER /description DESCRIPTION`, `edit NUMBER /by DATE`, `edit NUMBER /from START_DATE`, or `edit NUMBER /to END_DATE`. The `/by` field applies only to deadlines, while `/from` and `/to` apply only to events. Each edit preserves the task's completion status and all details not named in the command. Use `mark NUMBER` to complete a task, `unmark NUMBER` to reverse that status, and `delete NUMBER` to remove one. The remaining tasks are renumbered automatically. If a command is incomplete, unknown, or refers to a task that does not exist, Green Chonk explains how to correct it and continues running without changing the task list. Tasks and their canonical ISO dates are saved atomically in `data/greenchonk.txt` whenever the list changes and restored the next time the program starts. This prevents a failed or interrupted write from replacing the last complete data file. The folder and file are created automatically on first use. Run the program in an interactive terminal to see the thinking animation overwrite the dots in place. If the output is redirected to a file or captured by a tool, the carriage-return characters may appear as separate frames instead.
 
 ## Example interaction
 
@@ -106,6 +106,10 @@ Here are the commands Green Chonk understands:
   list
   find KEYWORD
   schedule DATE
+  edit TASK_NUMBER /description DESCRIPTION
+  edit TASK_NUMBER /by DATE
+  edit TASK_NUMBER /from START_DATE
+  edit TASK_NUMBER /to END_DATE
   mark TASK_NUMBER
   unmark TASK_NUMBER
   delete TASK_NUMBER
@@ -139,23 +143,31 @@ Here are the tasks Green Chonk is carrying:
 > find report
 Here are the matching tasks in your list:
 2.[D][X] finish report (by: Aug 28 2026)
+> edit 2 /description submit final report
+Green Chonk updated this task:
+  Before: [D][X] finish report (by: Aug 28 2026)
+  After:  [D][X] submit final report (by: Aug 28 2026)
+> edit 3 /to 2026-09-01
+Green Chonk updated this task:
+  Before: [E][ ] project meeting (from: Aug 29 2026 to: Aug 30 2026)
+  After:  [E][ ] project meeting (from: Aug 29 2026 to: Sep 01 2026)
 > unmark 2
 OK, Green Chonk marked this task as not done yet:
-  [D][ ] finish report (by: Aug 28 2026)
+  [D][ ] submit final report (by: Aug 28 2026)
 > delete 2
 Noted. Green Chonk removed this task:
-  [D][ ] finish report (by: Aug 28 2026)
+  [D][ ] submit final report (by: Aug 28 2026)
 Green Chonk is now carrying 2 tasks.
 > list
 Here are the tasks Green Chonk is carrying:
 1.[T][ ] buy milk
-2.[E][ ] project meeting (from: Aug 29 2026 to: Aug 30 2026)
+2.[E][ ] project meeting (from: Aug 29 2026 to: Sep 01 2026)
 > todo
 Oops! Green Chonk couldn't chomp that:
   A todo needs a description. Try: todo buy milk
 > roll away
 Oops! Green Chonk couldn't chomp that:
-  I don't recognize "roll away". Try todo, deadline, event, list, find, schedule, mark, unmark, delete, help, or bye.
+  I don't recognize "roll away". Try todo, deadline, event, list, find, schedule, edit, mark, unmark, delete, help, or bye.
 > bye
 
 _____________________________________________________________
@@ -175,6 +187,7 @@ src/
     │       │   ├── AddCommand.java
     │       │   ├── Command.java
     │       │   ├── DeleteCommand.java
+    │       │   ├── EditCommand.java
     │       │   ├── ExitCommand.java
     │       │   ├── FindCommand.java
     │       │   ├── HelpCommand.java

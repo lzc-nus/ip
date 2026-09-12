@@ -61,4 +61,16 @@ class TaskListTest {
         assertEquals(1, tasks.size());
         assertSame(secondTask, tasks.get(0));
     }
+
+    @Test
+    void replace_existingTask_taskReplacedAndReturned() {
+        Task originalTask = new Todo("original");
+        Task replacementTask = new Todo("replacement");
+        TaskList tasks = new TaskList(List.of(originalTask));
+
+        Task replacedTask = tasks.replace(0, replacementTask);
+
+        assertSame(originalTask, replacedTask);
+        assertSame(replacementTask, tasks.get(0));
+    }
 }

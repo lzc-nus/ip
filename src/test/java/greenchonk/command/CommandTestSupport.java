@@ -46,6 +46,8 @@ final class CommandTestSupport {
     static final class RecordingUi extends Ui {
         private Task addedTask;
         private Task deletedTask;
+        private Task editedOriginalTask;
+        private Task editedTask;
         private Task updatedTask;
         private TaskStatus updatedStatus;
         private int taskCount;
@@ -66,6 +68,14 @@ final class CommandTestSupport {
 
         Task getDeletedTask() {
             return deletedTask;
+        }
+
+        Task getEditedOriginalTask() {
+            return editedOriginalTask;
+        }
+
+        Task getEditedTask() {
+            return editedTask;
         }
 
         Task getUpdatedTask() {
@@ -162,6 +172,12 @@ final class CommandTestSupport {
         public void showTaskAdded(Task task, int taskCount) {
             addedTask = task;
             this.taskCount = taskCount;
+        }
+
+        @Override
+        public void showTaskEdited(Task originalTask, Task editedTask) {
+            editedOriginalTask = originalTask;
+            this.editedTask = editedTask;
         }
 
         @Override
