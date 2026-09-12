@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import greenchonk.command.AddCommand;
 import greenchonk.command.DeleteCommand;
+import greenchonk.command.EditCommand;
 import greenchonk.command.ExitCommand;
 import greenchonk.command.FindCommand;
 import greenchonk.command.HelpCommand;
@@ -38,6 +39,11 @@ class ParserTest {
         assertInstanceOf(UpdateStatusCommand.class, Parser.parse("mark 1"));
         assertInstanceOf(UpdateStatusCommand.class, Parser.parse("unmark 2"));
         assertInstanceOf(DeleteCommand.class, Parser.parse("delete 3"));
+        assertInstanceOf(EditCommand.class,
+                Parser.parse("edit 1 /description submit final report"));
+        assertInstanceOf(EditCommand.class, Parser.parse("edit 2 /by 30/8/2026"));
+        assertInstanceOf(EditCommand.class, Parser.parse("edit 3 /from 29 Aug 2026"));
+        assertInstanceOf(EditCommand.class, Parser.parse("edit 3 /to 2026-08-30"));
     }
 
     @Test
@@ -59,13 +65,13 @@ class ParserTest {
     void parse_unknownOrExtendedSimpleCommand_exceptionThrown() {
         assertParseError("roll away",
                 "I don't recognize \"roll away\". Try todo, deadline, event, list, "
-                        + "find, schedule, mark, unmark, delete, help, or bye.");
+                        + "find, schedule, edit, mark, unmark, delete, help, or bye.");
         assertParseError("bye now",
                 "I don't recognize \"bye now\". Try todo, deadline, event, list, "
-                        + "find, schedule, mark, unmark, delete, help, or bye.");
+                        + "find, schedule, edit, mark, unmark, delete, help, or bye.");
         assertParseError("listing",
                 "I don't recognize \"listing\". Try todo, deadline, event, list, "
-                        + "find, schedule, mark, unmark, delete, help, or bye.");
+                        + "find, schedule, edit, mark, unmark, delete, help, or bye.");
     }
 
     @Test
@@ -131,6 +137,33 @@ class ParserTest {
                 "\"two\" is not a valid task number. Use a whole number such as 1.");
         assertParseError("delete 1 2",
                 "\"1 2\" is not a valid task number. Use a whole number such as 1.");
+    }
+
+    @Test
+    void parse_editWithMissingOrInvalidParts_exceptionThrown() {
+        assertParseError("edit", "An edit command needs a task number and field. "
+                + "Try: edit 1 /description buy milk");
+        assertParseError("edit one /description buy milk",
+                "\"one\" is not a valid task number. Use a whole number such as 1.");
+        assertParseError("edit 1", "Please choose a field to edit. "
+                + "Use /description, /by, /from, or /to.");
+        assertParseError("edit 1 /description", "Please provide a new description. "
+                + "Try: edit 1 /description buy milk");
+        assertParseError("edit 1 /when tomorrow",
+                "I don't recognize the edit field \"/when\". "
+                        + "Use /description, /by, /from, or /to.");
+    }
+
+    @Test
+    void parse_editWithMissingOrInvalidDate_exceptionThrown() {
+        assertParseError("edit 1 /by",
+                "Please provide a new deadline date. Try: 2026-08-28");
+        assertParseError("edit 1 /from tomorrow",
+                "The new event start date must use yyyy-MM-dd, d/M/yyyy, or d MMM yyyy "
+                        + "and be valid. Try: 2026-08-28");
+        assertParseError("edit 1 /to 2026-02-29",
+                "The new event end date must use yyyy-MM-dd, d/M/yyyy, or d MMM yyyy "
+                        + "and be valid. Try: 2026-08-29");
     }
 
     @Test

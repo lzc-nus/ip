@@ -62,6 +62,26 @@ public abstract class Task {
     }
 
     /**
+     * Returns a copy of this task with a replacement description.
+     * The copy retains this task's completion status and subtype-specific details.
+     *
+     * @param description the replacement description.
+     * @return the updated task copy.
+     */
+    public abstract Task withDescription(String description);
+
+    /**
+     * Copies this task's completion status to another task.
+     *
+     * @param task the task that should receive this task's status.
+     */
+    protected void copyStatusTo(Task task) {
+        if (isDone()) {
+            task.markAsDone();
+        }
+    }
+
+    /**
      * Returns whether this task's description contains a keyword, ignoring case.
      *
      * @param keyword the literal keyword to find.

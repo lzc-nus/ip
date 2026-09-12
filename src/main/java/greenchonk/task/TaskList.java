@@ -81,4 +81,15 @@ public class TaskList {
     public Task delete(int index) {
         return tasks.remove(index);
     }
+
+    /**
+     * Replaces and returns the task at a specified zero-based index.
+     *
+     * @param index the index of the task to replace.
+     * @param task the replacement task.
+     * @return the task previously stored at the index.
+     */
+    public Task replace(int index, Task task) {
+        return tasks.set(index, task);
+    }
 }

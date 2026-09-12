@@ -14,6 +14,13 @@ public class Todo extends Task {
     }
 
     @Override
+    public Todo withDescription(String description) {
+        Todo editedTodo = new Todo(description);
+        copyStatusTo(editedTodo);
+        return editedTodo;
+    }
+
+    @Override
     public String getTypeIcon() {
         return "T";
     }

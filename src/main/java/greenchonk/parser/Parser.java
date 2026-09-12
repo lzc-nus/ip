@@ -6,6 +6,7 @@ import java.time.format.DateTimeParseException;
 import greenchonk.command.AddCommand;
 import greenchonk.command.Command;
 import greenchonk.command.DeleteCommand;
+import greenchonk.command.EditCommand;
 import greenchonk.command.ExitCommand;
 import greenchonk.command.FindCommand;
 import greenchonk.command.HelpCommand;
@@ -26,6 +27,11 @@ public final class Parser {
     private static final String DEADLINE_COMMAND = "deadline";
     private static final String DELETE_COMMAND = "delete";
     private static final String DEADLINE_SEPARATOR = "/by";
+    private static final String EDIT_COMMAND = "edit";
+    private static final String EDIT_DESCRIPTION_FIELD = "/description";
+    private static final String EDIT_DUE_DATE_FIELD = "/by";
+    private static final String EDIT_END_DATE_FIELD = "/to";
+    private static final String EDIT_START_DATE_FIELD = "/from";
     private static final String EVENT_COMMAND = "event";
     private static final String EVENT_FROM_SEPARATOR = "/from";
     private static final String EVENT_TO_SEPARATOR = "/to";
@@ -70,6 +76,9 @@ public final class Parser {
         if (isCommand(input, SCHEDULE_COMMAND)) {
             return new ScheduleCommand(parseScheduleDate(input));
         }
+        if (isCommand(input, EDIT_COMMAND)) {
+            return parseEdit(input);
+        }
         if (isCommand(input, MARK_COMMAND)) {
             return new UpdateStatusCommand(parseTaskNumber(input, MARK_COMMAND),
                     TaskStatus.DONE, MARK_COMMAND);
@@ -92,7 +101,80 @@ public final class Parser {
         }
 
         throw new GreenChonkException("I don't recognize \"" + input
-                + "\". Try todo, deadline, event, list, find, schedule, mark, unmark, delete, help, or bye.");
+                + "\". Try todo, deadline, event, list, find, schedule, edit, mark, unmark, delete, help, or bye.");
+    }
+
+    /**
+     * Creates an edit command after validating its task number, field, and value.
+     *
+     * @param command the complete edit command.
+     * @return the parsed edit command.
+     * @throws GreenChonkException if the task number, field, or replacement value is invalid.
+     */
+    private static EditCommand parseEdit(String command) throws GreenChonkException {
+        String arguments = getArguments(command);
+        if (arguments.isEmpty()) {
+            throw new GreenChonkException("An edit command needs a task number and field. "
+                    + "Try: edit 1 /description buy milk");
+        }
+
+        int fieldPosition = arguments.indexOf(' ');
+        String numberText = fieldPosition < 0
+                ? arguments
+                : arguments.substring(0, fieldPosition);
+        int taskNumber = parseTaskNumberText(numberText);
+        if (fieldPosition < 0) {
+            throw new GreenChonkException("Please choose a field to edit. "
+                    + "Use /description, /by, /from, or /to.");
+        }
+
+        String fieldAndValue = arguments.substring(fieldPosition + 1).trim();
+        int valuePosition = fieldAndValue.indexOf(' ');
+        String field = valuePosition < 0
+                ? fieldAndValue
+                : fieldAndValue.substring(0, valuePosition);
+        String value = valuePosition < 0
+                ? ""
+                : fieldAndValue.substring(valuePosition + 1).trim();
+
+        switch (field) {
+            case EDIT_DESCRIPTION_FIELD:
+                if (value.isEmpty()) {
+                    throw new GreenChonkException("Please provide a new description. "
+                            + "Try: edit 1 /description buy milk");
+                }
+                return EditCommand.editDescription(taskNumber, value);
+            case EDIT_DUE_DATE_FIELD:
+                return EditCommand.editDueDate(taskNumber,
+                        parseEditDate(value, "deadline", "2026-08-28"));
+            case EDIT_START_DATE_FIELD:
+                return EditCommand.editStartDate(taskNumber,
+                        parseEditDate(value, "event start", "2026-08-28"));
+            case EDIT_END_DATE_FIELD:
+                return EditCommand.editEndDate(taskNumber,
+                        parseEditDate(value, "event end", "2026-08-29"));
+            default:
+                throw new GreenChonkException("I don't recognize the edit field \"" + field
+                        + "\". Use /description, /by, /from, or /to.");
+        }
+    }
+
+    /**
+     * Parses a replacement date after checking that the edit value is present.
+     *
+     * @param dateText the replacement date text.
+     * @param dateLabel the field name used in validation feedback.
+     * @param exampleDate a valid example used in validation feedback.
+     * @return the parsed replacement date.
+     * @throws GreenChonkException if the date is missing or invalid.
+     */
+    private static LocalDate parseEditDate(String dateText, String dateLabel,
+            String exampleDate) throws GreenChonkException {
+        if (dateText.isEmpty()) {
+            throw new GreenChonkException("Please provide a new " + dateLabel
+                    + " date. Try: " + exampleDate);
+        }
+        return parseDate(dateText, "new " + dateLabel, exampleDate);
     }
 
     /**
@@ -225,6 +307,17 @@ public final class Parser {
             throw new GreenChonkException("Please provide a task number. Try: " + commandName + " 1");
         }
 
+        return parseTaskNumberText(numberText);
+    }
+
+    /**
+     * Parses a one-based task number from its isolated text representation.
+     *
+     * @param numberText the text expected to contain a task number.
+     * @return the parsed task number.
+     * @throws GreenChonkException if the text is not an integer.
+     */
+    private static int parseTaskNumberText(String numberText) throws GreenChonkException {
         int taskNumber;
         try {
             taskNumber = Integer.parseInt(numberText);

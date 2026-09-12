@@ -10,6 +10,8 @@ Run these tests after each application code change using the project-local `test
 - Accept valid ISO, day/month/year, and English text dates, including leap days, while rejecting invalid dates.
 - Reject events that end before they start while allowing same-day events.
 - Find deadlines and in-progress events on a date while preserving their original task numbers.
+- Edit descriptions and type-specific dates while preserving task status and untouched details.
+- Reject incompatible edit fields and invalid replacement dates without changing stored tasks.
 - Reject empty and unknown commands with actionable feedback.
 - Display concise guidance for every supported command without changing saved tasks.
 - Reject incomplete task commands and invalid task numbers without changing stored tasks.
@@ -62,8 +64,69 @@ Also seed the data file with an event whose ending date is before its starting d
         "bye"
       ],
       "expected": [
-        "Here are the commands Green Chonk understands:\n  todo DESCRIPTION\n  deadline DESCRIPTION /by DATE\n  event DESCRIPTION /from START_DATE /to END_DATE\n  list\n  find KEYWORD\n  schedule DATE\n  mark TASK_NUMBER\n  unmark TASK_NUMBER\n  delete TASK_NUMBER\n  help\n  bye\nDates: yyyy-MM-dd, d/M/yyyy, or d MMM yyyy (e.g., 2026-08-28, 28/8/2026, 28 Aug 2026).",
+        "Here are the commands Green Chonk understands:\n  todo DESCRIPTION\n  deadline DESCRIPTION /by DATE\n  event DESCRIPTION /from START_DATE /to END_DATE\n  list\n  find KEYWORD\n  schedule DATE\n  edit TASK_NUMBER /description DESCRIPTION\n  edit TASK_NUMBER /by DATE\n  edit TASK_NUMBER /from START_DATE\n  edit TASK_NUMBER /to END_DATE\n  mark TASK_NUMBER\n  unmark TASK_NUMBER\n  delete TASK_NUMBER\n  help\n  bye\nDates: yyyy-MM-dd, d/M/yyyy, or d MMM yyyy (e.g., 2026-08-28, 28/8/2026, 28 Aug 2026).",
         "Green Chonk is not carrying any tasks yet."
+      ]
+    },
+    {
+      "name": "edit-task-details",
+      "aim": "Verify each supported edit changes only one detail while preserving the task type, completion status, and other details.",
+      "inputs": [
+        "todo buy milk",
+        "deadline submit draft /by 2026-08-28",
+        "event conference /from 2026-08-29 /to 2026-08-30",
+        "mark 2",
+        "edit 1 /description buy oat milk",
+        "edit 2 /description submit final report",
+        "edit 2 /by 30/8/2026",
+        "edit 3 /from 28 Aug 2026",
+        "edit 3 /to 2026-09-01",
+        "list",
+        "bye"
+      ],
+      "expected": [
+        "Green Chonk updated this task:\n  Before: [T][ ] buy milk\n  After:  [T][ ] buy oat milk",
+        "Green Chonk updated this task:\n  Before: [D][X] submit draft (by: Aug 28 2026)\n  After:  [D][X] submit final report (by: Aug 28 2026)",
+        "Green Chonk updated this task:\n  Before: [D][X] submit final report (by: Aug 28 2026)\n  After:  [D][X] submit final report (by: Aug 30 2026)",
+        "Green Chonk updated this task:\n  Before: [E][ ] conference (from: Aug 29 2026 to: Aug 30 2026)\n  After:  [E][ ] conference (from: Aug 28 2026 to: Aug 30 2026)",
+        "Green Chonk updated this task:\n  Before: [E][ ] conference (from: Aug 28 2026 to: Aug 30 2026)\n  After:  [E][ ] conference (from: Aug 28 2026 to: Sep 01 2026)",
+        "Here are the tasks Green Chonk is carrying:\n1.[T][ ] buy oat milk\n2.[D][X] submit final report (by: Aug 30 2026)\n3.[E][ ] conference (from: Aug 28 2026 to: Sep 01 2026)"
+      ]
+    },
+    {
+      "name": "reject-invalid-edits",
+      "aim": "Verify malformed edits, incompatible fields, invalid dates, and impossible event ranges leave the task list unchanged.",
+      "inputs": [
+        "todo unchanged todo",
+        "deadline unchanged deadline /by 2026-08-28",
+        "event unchanged event /from 2026-08-29 /to 2026-08-30",
+        "edit",
+        "edit one /description replacement",
+        "edit 1",
+        "edit 1 /description",
+        "edit 1 /when tomorrow",
+        "edit 1 /by 2026-08-30",
+        "edit 2 /to 2026-08-30",
+        "edit 3 /from tomorrow",
+        "edit 3 /from 2026-08-31",
+        "edit 3 /to 2026-08-28",
+        "edit 4 /description missing",
+        "list",
+        "bye"
+      ],
+      "expected": [
+        "An edit command needs a task number and field. Try: edit 1 /description buy milk",
+        "\"one\" is not a valid task number. Use a whole number such as 1.",
+        "Please choose a field to edit. Use /description, /by, /from, or /to.",
+        "Please provide a new description. Try: edit 1 /description buy milk",
+        "I don't recognize the edit field \"/when\". Use /description, /by, /from, or /to.",
+        "Task 1 is not a deadline. Use /by only with a deadline.",
+        "Task 2 is not an event. Use /from and /to only with an event.",
+        "The new event start date must use yyyy-MM-dd, d/M/yyyy, or d MMM yyyy and be valid. Try: 2026-08-28",
+        "An event's start date cannot be after its end date. Try /from 2026-08-30 or earlier.",
+        "An event's end date cannot be before its start date. Try /to 2026-08-29 or later.",
+        "Task 4 does not exist. Choose a number from 1 to 3.",
+        "Here are the tasks Green Chonk is carrying:\n1.[T][ ] unchanged todo\n2.[D][ ] unchanged deadline (by: Aug 28 2026)\n3.[E][ ] unchanged event (from: Aug 29 2026 to: Aug 30 2026)"
       ]
     },
     {
@@ -153,7 +216,7 @@ Also seed the data file with an event whose ending date is before its starting d
       "expected": [
         "Oops! Green Chonk couldn't chomp that:\n  Please enter a command. Try: todo buy milk",
         "Oops! Green Chonk couldn't chomp that:\n  A todo needs a description. Try: todo buy milk",
-        "Oops! Green Chonk couldn't chomp that:\n  I don't recognize \"roll away\". Try todo, deadline, event, list, find, schedule, mark, unmark, delete, help, or bye.",
+        "Oops! Green Chonk couldn't chomp that:\n  I don't recognize \"roll away\". Try todo, deadline, event, list, find, schedule, edit, mark, unmark, delete, help, or bye.",
         "Green Chonk is not carrying any tasks yet."
       ]
     },

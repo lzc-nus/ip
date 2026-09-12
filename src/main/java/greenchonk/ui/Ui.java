@@ -203,6 +203,19 @@ public class Ui {
     }
 
     /**
+     * Displays a task before and after one of its details was edited.
+     *
+     * @param originalTask the task before the edit.
+     * @param editedTask the task after the edit.
+     */
+    public void showTaskEdited(Task originalTask, Task editedTask) {
+        printLines(
+                "Green Chonk updated this task:",
+                "  Before: " + originalTask,
+                "  After:  " + editedTask);
+    }
+
+    /**
      * Displays all tasks in their current order.
      *
      * @param tasks the tasks to display.
@@ -245,6 +258,10 @@ public class Ui {
                 "  list",
                 "  find KEYWORD",
                 "  schedule DATE",
+                "  edit TASK_NUMBER /description DESCRIPTION",
+                "  edit TASK_NUMBER /by DATE",
+                "  edit TASK_NUMBER /from START_DATE",
+                "  edit TASK_NUMBER /to END_DATE",
                 "  mark TASK_NUMBER",
                 "  unmark TASK_NUMBER",
                 "  delete TASK_NUMBER",
