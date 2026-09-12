@@ -1,9 +1,9 @@
 package greenchonk.command;
 
 import java.time.LocalDate;
+import java.util.stream.IntStream;
 
 import greenchonk.storage.Storage;
-import greenchonk.task.Task;
 import greenchonk.task.TaskList;
 import greenchonk.ui.Ui;
 
@@ -32,19 +32,18 @@ public class ScheduleCommand extends Command {
      */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) {
-        boolean hasScheduledTask = false;
-        for (int index = 0; index < tasks.size(); index++) {
-            Task task = tasks.get(index);
-            if (task.occursOn(date)) {
-                if (!hasScheduledTask) {
-                    ui.showScheduleHeader(date);
-                }
-                ui.showNumberedTask(index + 1, task);
-                hasScheduledTask = true;
-            }
-        }
-        if (!hasScheduledTask) {
+        int[] scheduledTaskIndexes = IntStream.range(0, tasks.size())
+                .filter(index -> tasks.get(index).occursOn(date))
+                .toArray();
+
+        if (scheduledTaskIndexes.length == 0) {
             ui.showEmptySchedule(date);
+            return;
+        }
+
+        ui.showScheduleHeader(date);
+        for (int taskIndex : scheduledTaskIndexes) {
+            ui.showNumberedTask(taskIndex + 1, tasks.get(taskIndex));
         }
     }
 }
