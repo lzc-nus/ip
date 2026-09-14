@@ -45,6 +45,13 @@ public class Event extends Task {
     }
 
     @Override
+    public boolean hasSameDetails(Task other) {
+        return super.hasSameDetails(other)
+                && startDate.equals(((Event) other).startDate)
+                && endDate.equals(((Event) other).endDate);
+    }
+
+    @Override
     public Event withDescription(String description) {
         Event editedEvent = new Event(description, startDate, endDate);
         copyStatusTo(editedEvent);

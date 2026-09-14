@@ -19,6 +19,7 @@ import greenchonk.task.TaskList;
 public class Storage {
     private final Path dataFile;
     private final TaskCodec taskCodec;
+    private boolean hasCorruptedData;
 
     /**
      * Creates storage backed by the specified file.
@@ -48,9 +49,15 @@ public class Storage {
             for (int lineNumber = 1; lineNumber <= lines.size(); lineNumber++) {
                 String line = lines.get(lineNumber - 1);
                 if (!line.isBlank()) {
-                    tasks.add(taskCodec.decode(line, lineNumber));
+                    try {
+                        tasks.add(taskCodec.decode(line, lineNumber));
+                    } catch (StorageException exception) {
+                        hasCorruptedData = true;
+                        throw exception;
+                    }
                 }
             }
+            hasCorruptedData = false;
         } catch (IOException | SecurityException exception) {
             throw new StorageException("I couldn't load the task list: " + exception.getMessage(),
                     exception);
@@ -65,6 +72,11 @@ public class Storage {
      * @throws StorageException if the tasks cannot be encoded or written.
      */
     public void save(TaskList tasks) throws StorageException {
+        if (hasCorruptedData) {
+            throw new StorageException("I won't overwrite the data file because it contains "
+                    + "an invalid task. Fix or move the file, then restart Green Chonk.");
+        }
+
         List<String> lines = new ArrayList<>();
         for (int index = 0; index < tasks.size(); index++) {
             lines.add(taskCodec.encode(tasks.get(index)));

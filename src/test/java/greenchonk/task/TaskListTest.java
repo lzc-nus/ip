@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,5 +73,24 @@ class TaskListTest {
 
         assertSame(originalTask, replacedTask);
         assertSame(replacementTask, tasks.get(0));
+    }
+
+    @Test
+    void containsEquivalent_variedTypesDatesAndStatuses_correctResultReturned() {
+        Todo todo = new Todo("read book");
+        todo.markAsDone();
+        Deadline deadline = new Deadline("submit report", LocalDate.of(2026, 8, 28));
+        Event event = new Event("conference", LocalDate.of(2026, 8, 29),
+                LocalDate.of(2026, 8, 30));
+        TaskList tasks = new TaskList(List.of(todo, deadline, event));
+
+        assertTrue(tasks.containsEquivalent(new Todo("read book")));
+        assertTrue(tasks.containsEquivalent(
+                new Deadline("submit report", LocalDate.of(2026, 8, 28))));
+        assertTrue(tasks.containsEquivalent(new Event("conference",
+                LocalDate.of(2026, 8, 29), LocalDate.of(2026, 8, 30))));
+        assertFalse(tasks.containsEquivalent(new Todo("submit report")));
+        assertFalse(tasks.containsEquivalent(
+                new Deadline("submit report", LocalDate.of(2026, 8, 29))));
     }
 }

@@ -29,6 +29,12 @@ public class Deadline extends Task {
     }
 
     @Override
+    public boolean hasSameDetails(Task other) {
+        return super.hasSameDetails(other)
+                && dueDate.equals(((Deadline) other).dueDate);
+    }
+
+    @Override
     public Deadline withDescription(String description) {
         Deadline editedDeadline = new Deadline(description, dueDate);
         copyStatusTo(editedDeadline);

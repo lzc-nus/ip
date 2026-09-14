@@ -90,7 +90,7 @@ public class GreenChonk {
      */
     private boolean executeCommand(String input, TaskList tasks, Ui targetUi) {
         try {
-            Command command = Parser.parse(input.trim());
+            Command command = Parser.parse(input.strip());
             command.execute(tasks, targetUi, storage);
             return command.isExit();
         } catch (GreenChonkException exception) {
