@@ -162,6 +162,9 @@ final class TaskCodec {
         for (int index = 0; index < line.length(); index++) {
             char character = line.charAt(index);
             if (isEscaped) {
+                if (character != '\\' && character != '|') {
+                    throw invalidDataLine(lineNumber);
+                }
                 field.append(character);
                 isEscaped = false;
             } else if (character == '\\') {

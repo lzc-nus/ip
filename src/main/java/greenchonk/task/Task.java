@@ -62,6 +62,19 @@ public abstract class Task {
     }
 
     /**
+     * Returns whether another task has the same type and user-provided details.
+     * Completion status is deliberately ignored when detecting duplicates.
+     *
+     * @param other the task to compare.
+     * @return true if both tasks represent the same task details.
+     */
+    public boolean hasSameDetails(Task other) {
+        return other != null
+                && getClass().equals(other.getClass())
+                && description.equals(other.description);
+    }
+
+    /**
      * Returns a copy of this task with a replacement description.
      * The copy retains this task's completion status and subtype-specific details.
      *

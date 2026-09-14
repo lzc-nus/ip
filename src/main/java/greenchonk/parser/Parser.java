@@ -2,6 +2,10 @@ package greenchonk.parser;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import greenchonk.command.AddCommand;
 import greenchonk.command.Command;
@@ -56,7 +60,7 @@ public final class Parser {
      */
     public static Command parse(String input) throws GreenChonkException {
         assert input != null : "Command input must not be null";
-        assert input.equals(input.trim()) : "Command input must be trimmed before parsing";
+        assert input.equals(input.strip()) : "Command input must be stripped before parsing";
 
         if (input.isEmpty()) {
             throw new GreenChonkException("Please enter a command. Try: todo buy milk");
@@ -216,12 +220,16 @@ public final class Parser {
      */
     private static Deadline parseDeadline(String command) throws GreenChonkException {
         String details = getArguments(command);
-        int separatorPosition = details.indexOf(DEADLINE_SEPARATOR);
-        if (separatorPosition < 0) {
+        List<Integer> separatorPositions = findParameterPositions(details, DEADLINE_SEPARATOR);
+        if (separatorPositions.isEmpty()) {
             throw new GreenChonkException("A deadline needs /by followed by a date. "
                     + "Try: deadline submit report /by 2026-08-28");
         }
+        if (separatorPositions.size() > 1) {
+            throw new GreenChonkException("A deadline accepts /by only once.");
+        }
 
+        int separatorPosition = separatorPositions.get(0);
         String description = details.substring(0, separatorPosition).trim();
         String dueDateText = details.substring(separatorPosition + DEADLINE_SEPARATOR.length()).trim();
         if (description.isEmpty()) {
@@ -243,24 +251,35 @@ public final class Parser {
      */
     private static Event parseEvent(String command) throws GreenChonkException {
         String details = getArguments(command);
-        int fromPosition = details.indexOf(EVENT_FROM_SEPARATOR);
-        if (fromPosition < 0) {
+        List<Integer> fromPositions = findParameterPositions(details, EVENT_FROM_SEPARATOR);
+        List<Integer> toPositions = findParameterPositions(details, EVENT_TO_SEPARATOR);
+        if (fromPositions.isEmpty()) {
             throw new GreenChonkException("An event needs /from and /to. "
                     + "Try: event meeting /from 2026-08-28 /to 2026-08-29");
         }
+        if (fromPositions.size() > 1) {
+            throw new GreenChonkException("An event accepts /from only once.");
+        }
+        if (toPositions.isEmpty()) {
+            throw new GreenChonkException("An event needs /to followed by an ending date.");
+        }
+        if (toPositions.size() > 1) {
+            throw new GreenChonkException("An event accepts /to only once.");
+        }
 
+        int fromPosition = fromPositions.get(0);
+        int toPosition = toPositions.get(0);
+        if (toPosition < fromPosition) {
+            throw new GreenChonkException("Put /from before /to in an event command.");
+        }
         String description = details.substring(0, fromPosition).trim();
-        String timeRange = details.substring(fromPosition + EVENT_FROM_SEPARATOR.length()).trim();
-        int toPosition = timeRange.indexOf(EVENT_TO_SEPARATOR);
         if (description.isEmpty()) {
             throw new GreenChonkException("An event needs a description before /from.");
         }
-        if (toPosition < 0) {
-            throw new GreenChonkException("An event needs /to followed by an ending date.");
-        }
 
-        String startDateText = timeRange.substring(0, toPosition).trim();
-        String endDateText = timeRange.substring(toPosition + EVENT_TO_SEPARATOR.length()).trim();
+        String startDateText = details.substring(
+                fromPosition + EVENT_FROM_SEPARATOR.length(), toPosition).trim();
+        String endDateText = details.substring(toPosition + EVENT_TO_SEPARATOR.length()).trim();
         if (startDateText.isEmpty()) {
             throw new GreenChonkException("An event needs a starting date after /from.");
         }
@@ -338,7 +357,9 @@ public final class Parser {
      * @return true if the input starts with the complete command word
      */
     private static boolean isCommand(String input, String command) {
-        return input.equals(command) || input.startsWith(command + " ");
+        int commandEnd = findFirstWhitespace(input);
+        String commandWord = commandEnd < 0 ? input : input.substring(0, commandEnd);
+        return commandWord.equalsIgnoreCase(command);
     }
 
     /**
@@ -368,10 +389,43 @@ public final class Parser {
      * @return the command arguments, or an empty string when none were supplied
      */
     private static String getArguments(String command) {
-        int firstSpacePosition = command.indexOf(' ');
-        if (firstSpacePosition < 0) {
+        int commandEnd = findFirstWhitespace(command);
+        if (commandEnd < 0) {
             return "";
         }
-        return command.substring(firstSpacePosition + 1).trim();
+        return command.substring(commandEnd + 1).strip();
+    }
+
+    /**
+     * Returns the position of the first whitespace character in a command.
+     *
+     * @param text the text to inspect.
+     * @return the first whitespace position, or -1 when none exists.
+     */
+    private static int findFirstWhitespace(String text) {
+        for (int index = 0; index < text.length(); index++) {
+            if (Character.isWhitespace(text.charAt(index))) {
+                return index;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Returns every position at which a standalone parameter marker begins.
+     *
+     * @param text the command details to inspect.
+     * @param parameter the parameter marker to find.
+     * @return the parameter's start positions in encounter order.
+     */
+    private static List<Integer> findParameterPositions(String text, String parameter) {
+        Pattern parameterPattern = Pattern.compile(
+                "(?<!\\S)" + Pattern.quote(parameter) + "(?=\\s|$)");
+        Matcher matcher = parameterPattern.matcher(text);
+        List<Integer> positions = new ArrayList<>();
+        while (matcher.find()) {
+            positions.add(matcher.start());
+        }
+        return positions;
     }
 }

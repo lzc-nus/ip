@@ -33,6 +33,11 @@ public class AddCommand extends Command {
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage)
             throws GreenChonkException {
+        if (tasks.containsEquivalent(task)) {
+            throw new GreenChonkException(
+                    "Green Chonk is already carrying a task with those details.");
+        }
+
         tasks.add(task);
         try {
             storage.save(tasks);

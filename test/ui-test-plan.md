@@ -13,6 +13,9 @@ Run these tests after each application code change using the project-local `test
 - Edit descriptions and type-specific dates while preserving task status and untouched details.
 - Reject incompatible edit fields and invalid replacement dates without changing stored tasks.
 - Reject empty and unknown commands with actionable feedback.
+- Accept harmless whitespace and command capitalization while rejecting repeated or reordered parameters.
+- Reject exact duplicate tasks even when the existing task has a different completion status.
+- Preserve malformed data files rather than overwriting them after a failed load.
 - Display concise guidance for every supported command without changing saved tasks.
 - Reject incomplete task commands and invalid task numbers without changing stored tasks.
 - Delete tasks from collection storage and renumber the remaining list.
@@ -71,6 +74,31 @@ Also seed the data file with an event whose ending date is before its starting d
       "expected": [
         "Here are the commands Green Chonk understands:\n  todo DESCRIPTION\n  deadline DESCRIPTION /by DATE\n  event DESCRIPTION /from START_DATE /to END_DATE\n  list\n  find KEYWORD\n  schedule DATE\n  edit TASK_NUMBER /description DESCRIPTION\n  edit TASK_NUMBER /by DATE\n  edit TASK_NUMBER /from START_DATE\n  edit TASK_NUMBER /to END_DATE\n  mark TASK_NUMBER\n  unmark TASK_NUMBER\n  delete TASK_NUMBER\n  help\n  bye\nDates: yyyy-MM-dd, d/M/yyyy, or d MMM yyyy (e.g., 2026-08-28, 28/8/2026, 28 Aug 2026).",
         "Green Chonk is not carrying any tasks yet."
+      ]
+    },
+    {
+      "name": "handle-command-edge-cases",
+      "aim": "Accept harmless spacing and capitalization while rejecting duplicates and ambiguous scheduled-task parameters.",
+      "inputs": [
+        "  ToDo\t  spaced task  ",
+        "DEADLINE review/bylaws   /by   2026-08-28",
+        "mark 1",
+        "todo spaced task",
+        "deadline report /by 2026-08-28 /by 2026-08-29",
+        "event meeting /to 2026-08-29 /from 2026-08-28",
+        "event meeting /from 2026-08-28 /to 2026-08-29 /to 2026-08-30",
+        "list",
+        "bye"
+      ],
+      "expected": [
+        "Chomped and packed this task:\n  [T][ ] spaced task\nGreen Chonk is now carrying 1 task.",
+        "Chomped and packed this task:\n  [D][ ] review/bylaws (by: Aug 28 2026)\nGreen Chonk is now carrying 2 tasks.",
+        "High paw! Green Chonk marked this task as done:\n  [T][X] spaced task",
+        "Green Chonk is already carrying a task with those details.",
+        "A deadline accepts /by only once.",
+        "Put /from before /to in an event command.",
+        "An event accepts /to only once.",
+        "Here are the tasks Green Chonk is carrying:\n1.[T][X] spaced task\n2.[D][ ] review/bylaws (by: Aug 28 2026)"
       ]
     },
     {

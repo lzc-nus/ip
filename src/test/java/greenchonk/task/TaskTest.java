@@ -44,4 +44,15 @@ class TaskTest {
         assertTrue(task.matches("hand"));
         assertFalse(task.matches("write"));
     }
+
+    @Test
+    void hasSameDetails_nullTypeAndDescription_comparisonIsSemantic() {
+        Task task = new Todo("read book");
+
+        assertTrue(task.hasSameDetails(new Todo("read book")));
+        assertFalse(task.hasSameDetails(new Todo("Read book")));
+        assertFalse(task.hasSameDetails(
+                new Deadline("read book", LocalDate.of(2026, 8, 28))));
+        assertFalse(task.hasSameDetails(null));
+    }
 }

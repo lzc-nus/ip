@@ -135,6 +135,33 @@ class StorageTest {
     }
 
     @Test
+    void load_invalidEscape_exceptionThrown() throws IOException {
+        Path dataFile = tempDirectory.resolve("data/tasks.txt");
+        Files.createDirectories(dataFile.getParent());
+        Files.writeString(dataFile, "T | 0 | invalid\\qescape", StandardCharsets.UTF_8);
+
+        StorageException exception = assertThrows(StorageException.class, () ->
+                new Storage(dataFile.toString()).load());
+
+        assertEquals("The data file has an invalid task on line 1.", exception.getMessage());
+    }
+
+    @Test
+    void save_afterCorruptedLoad_originalDataNotOverwritten() throws IOException {
+        Path dataFile = tempDirectory.resolve("data/tasks.txt");
+        Files.createDirectories(dataFile.getParent());
+        Files.writeString(dataFile, "invalid data", StandardCharsets.UTF_8);
+        Storage storage = new Storage(dataFile.toString());
+        assertThrows(StorageException.class, storage::load);
+
+        StorageException exception = assertThrows(StorageException.class, () ->
+                storage.save(new TaskList(List.of(new Todo("replacement")))));
+
+        assertTrue(exception.getMessage().startsWith("I won't overwrite the data file"));
+        assertEquals("invalid data", Files.readString(dataFile, StandardCharsets.UTF_8));
+    }
+
+    @Test
     void save_parentPathIsAFile_exceptionThrown() throws IOException {
         Path blockingFile = tempDirectory.resolve("blocking-file");
         Files.writeString(blockingFile, "not a directory", StandardCharsets.UTF_8);

@@ -35,6 +35,13 @@ class ParserTest {
     }
 
     @Test
+    void parse_mixedCaseAndWhitespace_commandAccepted() throws GreenChonkException {
+        assertInstanceOf(AddCommand.class, Parser.parse("ToDo\t  read book"));
+        assertInstanceOf(AddCommand.class,
+                Parser.parse("DEADLINE review/bylaws   /by   2026-08-28"));
+    }
+
+    @Test
     void parse_validTaskMutationCommands_correctCommandCreated() throws GreenChonkException {
         assertInstanceOf(UpdateStatusCommand.class, Parser.parse("mark 1"));
         assertInstanceOf(UpdateStatusCommand.class, Parser.parse("unmark 2"));
@@ -103,6 +110,12 @@ class ParserTest {
     }
 
     @Test
+    void parse_deadlineWithRepeatedParameter_exceptionThrown() {
+        assertParseError("deadline submit /by 2026-08-28 /by 2026-08-29",
+                "A deadline accepts /by only once.");
+    }
+
+    @Test
     void parse_eventWithMissingFields_exceptionThrown() {
         assertParseError("event meeting /to 2026-08-29",
                 "An event needs /from and /to. "
@@ -128,6 +141,16 @@ class ParserTest {
         assertParseError("event meeting /from 2026-08-30 /to 2026-08-29",
                 "An event's end date cannot be before its start date. "
                         + "Try /to 2026-08-30 or later.");
+    }
+
+    @Test
+    void parse_eventWithRepeatedOrReorderedParameters_exceptionThrown() {
+        assertParseError("event meeting /from 2026-08-28 /from 2026-08-29 /to 2026-08-30",
+                "An event accepts /from only once.");
+        assertParseError("event meeting /from 2026-08-28 /to 2026-08-29 /to 2026-08-30",
+                "An event accepts /to only once.");
+        assertParseError("event meeting /to 2026-08-29 /from 2026-08-28",
+                "Put /from before /to in an event command.");
     }
 
     @Test
