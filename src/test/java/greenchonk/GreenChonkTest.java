@@ -1,12 +1,23 @@
 package greenchonk;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+
+import greenchonk.storage.Storage;
+import greenchonk.ui.Ui;
 
 class GreenChonkTest {
     @TempDir
@@ -56,5 +67,44 @@ class GreenChonkTest {
         assertTrue(response.contains("Task backpack zipped! I'm rolling off for now. See you soon!"));
         assertFalse(response.contains("\r"));
         assertFalse(response.contains("___"));
+    }
+
+    @Test
+    void run_commandsUntilBye_tasksPersistedAndFarewellShown() throws IOException {
+        Path dataFile = tempDirectory.resolve("data/tasks.txt");
+        ByteArrayInputStream input = new ByteArrayInputStream(
+                "todo test the command loop\nbye\nlist\n"
+                        .getBytes(StandardCharsets.UTF_8));
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        Ui ui = new Ui(input, new PrintStream(output, true, StandardCharsets.UTF_8));
+        GreenChonk greenChonk = new GreenChonk(new Storage(dataFile.toString()), ui);
+
+        greenChonk.run();
+
+        String text = output.toString(StandardCharsets.UTF_8);
+        assertTrue(text.contains("Chomped and packed this task"));
+        assertTrue(text.contains("Task backpack zipped"));
+        assertFalse(text.contains("Here are the tasks Green Chonk is carrying"));
+        assertEquals(List.of("T | 0 | test the command loop"),
+                Files.readAllLines(dataFile, StandardCharsets.UTF_8));
+    }
+
+    @Test
+    void run_inputEndsWithoutBye_loopStopsAfterReportingLoadingFailure() throws IOException {
+        Path dataFile = tempDirectory.resolve("data/tasks.txt");
+        Files.createDirectories(dataFile.getParent());
+        Files.writeString(dataFile, "invalid data", StandardCharsets.UTF_8);
+        ByteArrayInputStream input = new ByteArrayInputStream(
+                "list\n".getBytes(StandardCharsets.UTF_8));
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        Ui ui = new Ui(input, new PrintStream(output, true, StandardCharsets.UTF_8));
+        GreenChonk greenChonk = new GreenChonk(new Storage(dataFile.toString()), ui);
+
+        greenChonk.run();
+
+        String text = output.toString(StandardCharsets.UTF_8);
+        assertTrue(text.contains("couldn't load saved tasks"));
+        assertTrue(text.contains("not carrying any tasks yet"));
+        assertFalse(text.contains("Task backpack zipped"));
     }
 }

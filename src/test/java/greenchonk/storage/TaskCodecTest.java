@@ -49,4 +49,28 @@ class TaskCodecTest {
 
         assertEquals("The data file has an invalid task on line 7.", exception.getMessage());
     }
+
+    @Test
+    void encode_unsupportedTask_storageExceptionThrown() {
+        StorageException exception = assertThrows(StorageException.class, () ->
+                taskCodec.encode(new UnsupportedTask("custom task")));
+
+        assertEquals("I couldn't save an unsupported task type.", exception.getMessage());
+    }
+
+    private static class UnsupportedTask extends Task {
+        UnsupportedTask(String description) {
+            super(description);
+        }
+
+        @Override
+        public Task withDescription(String description) {
+            return new UnsupportedTask(description);
+        }
+
+        @Override
+        public String getTypeIcon() {
+            return "X";
+        }
+    }
 }
