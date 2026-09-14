@@ -15,8 +15,9 @@ import javafx.util.Duration;
  * Controls Green Chonk's main chat window.
  */
 public class MainWindow extends AnchorPane {
-    private static final String WELCOME_MESSAGE = "Hey! I'm Green Chonk.\n"
-            + "Tell me what you need to remember, and I'll carry it for you.";
+    private static final String WELCOME_MESSAGE = "Hey! I'm Green Chonk—part bear, part pear,\n"
+            + "and fully prepared to carry your tasks.\n"
+            + "Type help whenever you need a paw.";
     private static final Duration EXIT_DELAY = Duration.millis(900);
 
     @FXML

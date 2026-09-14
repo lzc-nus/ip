@@ -53,7 +53,7 @@ class GreenChonkTest {
 
         String response = greenChonk.getResponse("bye");
 
-        assertTrue(response.contains("Bye! I'm rolling off for now. See you again soon!"));
+        assertTrue(response.contains("Task backpack zipped! I'm rolling off for now. See you soon!"));
         assertFalse(response.contains("\r"));
         assertFalse(response.contains("___"));
     }
