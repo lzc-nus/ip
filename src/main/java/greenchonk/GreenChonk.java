@@ -35,8 +35,18 @@ public class GreenChonk {
      * @param filePath the path of the task data file.
      */
     public GreenChonk(String filePath) {
-        storage = new Storage(filePath);
-        ui = new Ui();
+        this(new Storage(filePath), new Ui());
+    }
+
+    /**
+     * Creates Green Chonk with supplied collaborators for automated testing.
+     *
+     * @param storage the persistence component to use.
+     * @param ui the command-line interface to use.
+     */
+    GreenChonk(Storage storage, Ui ui) {
+        this.storage = storage;
+        this.ui = ui;
     }
 
     /**

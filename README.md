@@ -43,13 +43,20 @@ To run the original command-line interface instead:
 
 ## Run automated tests
 
-Run the JUnit regression suite from the project root:
+Run the complete local quality gate from the project root:
 
 ~~~bash
-./gradlew test
+./gradlew clean check
 ~~~
 
-The suite covers command execution and rollback, parser validation, storage round trips, and task-domain behavior.
+The suite covers the command loop, command execution and rollback, parser
+validation, storage round trips and failures, task-domain behavior, and
+command-line feedback. JaCoCo enforces at least 90% line and branch coverage
+of non-GUI code. The JavaFX presentation layer is covered by the manual cases
+in `test/ui-test-plan.md`.
+
+Open `build/reports/jacoco/test/html/index.html` after the check to inspect the
+interactive coverage report.
 
 ## Run static analysis
 

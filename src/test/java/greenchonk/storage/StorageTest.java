@@ -162,6 +162,25 @@ class StorageTest {
     }
 
     @Test
+    void load_afterCorruptedDataIsRepaired_savingEnabledAgain()
+            throws IOException, StorageException {
+        Path dataFile = tempDirectory.resolve("data/tasks.txt");
+        Files.createDirectories(dataFile.getParent());
+        Files.writeString(dataFile, "invalid data", StandardCharsets.UTF_8);
+        Storage storage = new Storage(dataFile.toString());
+        assertThrows(StorageException.class, storage::load);
+        Files.writeString(dataFile, "T | 0 | repaired", StandardCharsets.UTF_8);
+
+        List<Task> loadedTasks = storage.load();
+        storage.save(new TaskList(List.of(new Todo("replacement"))));
+
+        assertEquals(1, loadedTasks.size());
+        assertEquals("repaired", loadedTasks.get(0).getDescription());
+        assertEquals(List.of("T | 0 | replacement"),
+                Files.readAllLines(dataFile, StandardCharsets.UTF_8));
+    }
+
+    @Test
     void save_parentPathIsAFile_exceptionThrown() throws IOException {
         Path blockingFile = tempDirectory.resolve("blocking-file");
         Files.writeString(blockingFile, "not a directory", StandardCharsets.UTF_8);
