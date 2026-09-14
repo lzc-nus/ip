@@ -70,9 +70,9 @@ public class Ui {
         output.print(BANNER);
         output.println();
         animateMessage("Green Chonk is waking up...");
-        animateMessage("Hello! I'm Green Chonk.");
-        animateMessage("Ready to chomp through your tasks!");
-        animateMessage("What can I do for you?");
+        animateMessage("Hello! I'm Green Chonk—part bear, part pear.");
+        animateMessage("Hand me your tasks, and I'll keep them safe.");
+        animateMessage("Type help whenever you need a paw.");
         output.println();
         output.println(DIVIDER);
     }
@@ -100,13 +100,13 @@ public class Ui {
      */
     public void showGoodbye() {
         if (!isCliDecorationEnabled) {
-            output.println("Bye! I'm rolling off for now. See you again soon!");
+            output.println("Task backpack zipped! I'm rolling off for now. See you soon!");
             return;
         }
 
         output.println();
         output.println(DIVIDER);
-        animateMessage("Bye! I'm rolling off for now. See you again soon!");
+        animateMessage("Task backpack zipped! I'm rolling off for now. See you soon!");
         output.println(DIVIDER);
     }
 
@@ -169,7 +169,7 @@ public class Ui {
     public void showTaskStatusUpdated(Task task, TaskStatus status) {
         String confirmation;
         if (status == TaskStatus.DONE) {
-            confirmation = "Nice! Green Chonk marked this task as done:";
+            confirmation = "High paw! Green Chonk marked this task as done:";
         } else {
             confirmation = "OK, Green Chonk marked this task as not done yet:";
         }
@@ -197,7 +197,7 @@ public class Ui {
      */
     public void showTaskAdded(Task task, int taskCount) {
         printLines(
-                "Chomped this task:",
+                "Chomped and packed this task:",
                 "  " + task,
                 "Green Chonk is now carrying " + taskCountText(taskCount) + ".");
     }

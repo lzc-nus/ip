@@ -1,6 +1,6 @@
 # Green Chonk
 
-Green Chonk is a JavaFX task companion with a focused chat interface and a playful personality. It keeps the original command-line interface as a testable fallback, saves typed tasks between sessions, and exits when the user types bye.
+Green Chonk is a part-bear, part-pear JavaFX task companion with a focused chat interface and a playful personality. It keeps the original command-line interface as a testable fallback, saves typed tasks between sessions, and exits when the user types bye.
 
 The current version supports todos, deadlines, and events. Deadlines and events accept ISO dates such as `2026-08-28`, day/month/year dates such as `28/8/2026`, and English text dates such as `28 Aug 2026`. They display in a friendly form such as `Aug 28 2026`. Each task type displays its own icon alongside its completion status. The `list` command displays numbered tasks, `find KEYWORD` searches task descriptions, `schedule DATE` finds deadlines and events occurring on a date, and `edit` changes one task detail without recreating the task. The `mark NUMBER` command completes a task, `unmark NUMBER` makes it incomplete again, and `delete NUMBER` removes it. Use `help` to see every command and its format inside the application. Invalid commands produce a specific correction instead of terminating the program. The `bye` command ends the conversation regardless of capitalization.
 
@@ -89,13 +89,13 @@ Lines beginning with `>` represent user input; Green Chonk does not print the `>
 _____________________________________________________________
 
                  Green Chonk is waking up...
-                   Hello! I'm Green Chonk.
-             Ready to chomp through your tasks!
-                   What can I do for you?
+       Hello! I'm Green Chonk—part bear, part pear.
+        Hand me your tasks, and I'll keep them safe.
+          Type help whenever you need a paw.
 
 _____________________________________________________________
 > todo buy milk
-Chomped this task:
+Chomped and packed this task:
   [T][ ] buy milk
 Green Chonk is now carrying 1 task.
 > help
@@ -117,11 +117,11 @@ Here are the commands Green Chonk understands:
   bye
 Dates: yyyy-MM-dd, d/M/yyyy, or d MMM yyyy (e.g., 2026-08-28, 28/8/2026, 28 Aug 2026).
 > deadline finish report /by 2026-08-28
-Chomped this task:
+Chomped and packed this task:
   [D][ ] finish report (by: Aug 28 2026)
 Green Chonk is now carrying 2 tasks.
 > event project meeting /from 2026-08-29 /to 2026-08-30
-Chomped this task:
+Chomped and packed this task:
   [E][ ] project meeting (from: Aug 29 2026 to: Aug 30 2026)
 Green Chonk is now carrying 3 tasks.
 > list
@@ -133,7 +133,7 @@ Here are the tasks Green Chonk is carrying:
 Here are the tasks scheduled for 2026-08-29:
 3.[E][ ] project meeting (from: Aug 29 2026 to: Aug 30 2026)
 > mark 2
-Nice! Green Chonk marked this task as done:
+High paw! Green Chonk marked this task as done:
   [D][X] finish report (by: Aug 28 2026)
 > list
 Here are the tasks Green Chonk is carrying:
@@ -171,7 +171,7 @@ Oops! Green Chonk couldn't chomp that:
 > bye
 
 _____________________________________________________________
-      Bye! I'm rolling off for now. See you again soon!
+ Task backpack zipped! I'm rolling off for now. See you soon!
 _____________________________________________________________
 ~~~
 

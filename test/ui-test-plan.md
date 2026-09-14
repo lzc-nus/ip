@@ -27,16 +27,18 @@ Run `./gradlew run` and verify the graphical interface manually:
 
 1. The welcome dialog appears with Green Chonk's transparent-background mascot in a resizable window, and the
    command field receives keyboard focus.
-2. Pressing Enter and clicking **CHOMP** both add the user command and Green Chonk's response.
-3. A blank or invalid command appears as a visually distinct error response, and the header status changes to
+2. The welcome, task confirmations, help, errors, and farewell consistently use Green Chonk's bear-and-pear
+   identity without referring to the placeholder name `Duke`.
+3. Pressing Enter and clicking **CHOMP** both add the user command and Green Chonk's response.
+4. A blank or invalid command appears as a visually distinct error response, and the header status changes to
    `NEEDS A RETRY` without crashing the app.
-4. A successful command restores the header status to `READY`; `bye` changes it to `ROLLING OFF` before exit.
-5. A multi-line response keeps each fixed-size avatar aligned with the bottom edge of its message bubble.
-6. Resizing the window changes the available bubble width without stretching avatars or clipping text.
-7. Repeated commands keep the newest dialog visible by scrolling the conversation automatically.
-8. `bye` displays the farewell response and then closes the window.
-9. Restarting the GUI restores tasks created in the previous session.
-10. Starting the GUI with `./gradlew run` does not print a restricted native-access warning.
+5. A successful command restores the header status to `READY`; `bye` changes it to `ROLLING OFF` before exit.
+6. A multi-line response keeps each fixed-size avatar aligned with the bottom edge of its message bubble.
+7. Resizing the window changes the available bubble width without stretching avatars or clipping text.
+8. Repeated commands keep the newest dialog visible by scrolling the conversation automatically.
+9. `bye` displays the farewell response and then closes the window.
+10. Restarting the GUI restores tasks created in the previous session.
+11. Starting the GUI with `./gradlew run` does not print a restricted native-access warning.
 
 The automated cases below continue through the command-line interface because they exercise the same parser,
 commands, task list, and storage without depending on a display server.
@@ -143,9 +145,9 @@ Also seed the data file with an event whose ending date is before its starting d
         "bye"
       ],
       "expected": [
-        "Chomped this task:\n  [T][ ] borrow book\nGreen Chonk is now carrying 1 task.",
-        "Chomped this task:\n  [D][ ] return book (by: Aug 30 2026)\nGreen Chonk is now carrying 2 tasks.",
-        "Chomped this task:\n  [E][ ] project meeting (from: Aug 31 2026 to: Sep 01 2026)\nGreen Chonk is now carrying 3 tasks.",
+        "Chomped and packed this task:\n  [T][ ] borrow book\nGreen Chonk is now carrying 1 task.",
+        "Chomped and packed this task:\n  [D][ ] return book (by: Aug 30 2026)\nGreen Chonk is now carrying 2 tasks.",
+        "Chomped and packed this task:\n  [E][ ] project meeting (from: Aug 31 2026 to: Sep 01 2026)\nGreen Chonk is now carrying 3 tasks.",
         "Here are the tasks Green Chonk is carrying:\n1.[T][ ] borrow book\n2.[D][ ] return book (by: Aug 30 2026)\n3.[E][ ] project meeting (from: Aug 31 2026 to: Sep 01 2026)"
       ]
     },
@@ -162,7 +164,7 @@ Also seed the data file with an event whose ending date is before its starting d
       ],
       "expected": [
         "[D][ ] submit report (by: Aug 28 2026)",
-        "Nice! Green Chonk marked this task as done:\n  [D][X] submit report (by: Aug 28 2026)",
+        "High paw! Green Chonk marked this task as done:\n  [D][X] submit report (by: Aug 28 2026)",
         "Here are the tasks Green Chonk is carrying:\n1.[D][X] submit report (by: Aug 28 2026)",
         "OK, Green Chonk marked this task as not done yet:\n  [D][ ] submit report (by: Aug 28 2026)",
         "Here are the tasks Green Chonk is carrying:\n1.[D][ ] submit report (by: Aug 28 2026)"
@@ -284,7 +286,7 @@ Also seed the data file with an event whose ending date is before its starting d
       ],
       "expected": [
         "An event's end date cannot be before its start date. Try /to 2026-12-29 or later.",
-        "Chomped this task:\n  [E][ ] same-day (from: Aug 28 2026 to: Aug 28 2026)\nGreen Chonk is now carrying 1 task.",
+        "Chomped and packed this task:\n  [E][ ] same-day (from: Aug 28 2026 to: Aug 28 2026)\nGreen Chonk is now carrying 1 task.",
         "Here are the tasks Green Chonk is carrying:\n1.[E][ ] same-day (from: Aug 28 2026 to: Aug 28 2026)"
       ]
     },
