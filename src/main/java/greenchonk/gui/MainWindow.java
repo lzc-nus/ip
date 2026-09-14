@@ -4,6 +4,7 @@ import greenchonk.GreenChonk;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
@@ -27,6 +28,9 @@ public class MainWindow extends AnchorPane {
     @FXML
     private TextField userInput;
 
+    @FXML
+    private Label statusLabel;
+
     private GreenChonk greenChonk;
 
     /**
@@ -45,7 +49,7 @@ public class MainWindow extends AnchorPane {
      */
     public void setGreenChonk(GreenChonk greenChonk) {
         this.greenChonk = greenChonk;
-        dialogContainer.getChildren().add(DialogBox.getGreenChonkDialog(WELCOME_MESSAGE));
+        dialogContainer.getChildren().add(DialogBox.getWelcomeDialog(WELCOME_MESSAGE));
     }
 
     /**
@@ -60,6 +64,7 @@ public class MainWindow extends AnchorPane {
             dialogContainer.getChildren().add(DialogBox.getUserDialog(input));
         }
         dialogContainer.getChildren().add(createResponseDialog(response));
+        updateStatus(response, input);
         userInput.clear();
         userInput.requestFocus();
 
@@ -67,6 +72,26 @@ public class MainWindow extends AnchorPane {
             PauseTransition exitPause = new PauseTransition(EXIT_DELAY);
             exitPause.setOnFinished(event -> Platform.exit());
             exitPause.play();
+        }
+    }
+
+    /**
+     * Updates the compact header status to reflect the latest exchange.
+     *
+     * @param response the response returned by the application engine.
+     * @param input the submitted command.
+     */
+    private void updateStatus(String response, String input) {
+        statusLabel.getStyleClass().removeAll("status-ready", "status-error", "status-exit");
+        if (response.startsWith("Oops!")) {
+            statusLabel.setText("NEEDS A RETRY");
+            statusLabel.getStyleClass().add("status-error");
+        } else if (input.equalsIgnoreCase("bye")) {
+            statusLabel.setText("ROLLING OFF");
+            statusLabel.getStyleClass().add("status-exit");
+        } else {
+            statusLabel.setText("READY");
+            statusLabel.getStyleClass().add("status-ready");
         }
     }
 

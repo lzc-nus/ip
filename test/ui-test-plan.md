@@ -25,15 +25,18 @@ Run these tests after each application code change using the project-local `test
 
 Run `./gradlew run` and verify the graphical interface manually:
 
-1. The welcome dialog appears with Green Chonk's picture in a resizable window, and the command field receives
-   keyboard focus.
+1. The welcome dialog appears with Green Chonk's transparent-background mascot in a resizable window, and the
+   command field receives keyboard focus.
 2. Pressing Enter and clicking **CHOMP** both add the user command and Green Chonk's response.
-3. A blank or invalid command appears as a visually distinct error response without crashing the app.
-4. A multi-line response keeps each fixed-size avatar aligned with the bottom edge of its message bubble.
-5. Repeated commands keep the newest dialog visible by scrolling the conversation automatically.
-6. `bye` displays the farewell response and then closes the window.
-7. Restarting the GUI restores tasks created in the previous session.
-8. Starting the GUI with `./gradlew run` does not print a restricted native-access warning.
+3. A blank or invalid command appears as a visually distinct error response, and the header status changes to
+   `NEEDS A RETRY` without crashing the app.
+4. A successful command restores the header status to `READY`; `bye` changes it to `ROLLING OFF` before exit.
+5. A multi-line response keeps each fixed-size avatar aligned with the bottom edge of its message bubble.
+6. Resizing the window changes the available bubble width without stretching avatars or clipping text.
+7. Repeated commands keep the newest dialog visible by scrolling the conversation automatically.
+8. `bye` displays the farewell response and then closes the window.
+9. Restarting the GUI restores tasks created in the previous session.
+10. Starting the GUI with `./gradlew run` does not print a restricted native-access warning.
 
 The automated cases below continue through the command-line interface because they exercise the same parser,
 commands, task list, and storage without depending on a display server.
