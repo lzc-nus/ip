@@ -16,22 +16,21 @@
          xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <Label fx:id="dialog"
-               maxWidth="370.0"
                minHeight="-Infinity"
                styleClass="dialog-bubble"
                wrapText="true" />
         <StackPane fx:id="avatar"
-                   maxHeight="46.0"
-                   maxWidth="46.0"
-                   minHeight="46.0"
-                   minWidth="46.0"
-                   prefHeight="46.0"
-                   prefWidth="46.0"
+                   maxHeight="42.0"
+                   maxWidth="42.0"
+                   minHeight="42.0"
+                   minWidth="42.0"
+                   prefHeight="42.0"
+                   prefWidth="42.0"
                    styleClass="avatar">
             <children>
                 <ImageView fx:id="avatarImage"
-                           fitHeight="44.0"
-                           fitWidth="44.0"
+                           fitHeight="40.0"
+                           fitWidth="40.0"
                            managed="false"
                            preserveRatio="true"
                            smooth="false"

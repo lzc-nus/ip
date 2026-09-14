@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Objects;
 
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -22,9 +23,12 @@ import javafx.scene.shape.Circle;
  */
 public class DialogBox extends HBox {
     private static final String USER_AVATAR_TEXT = "YOU";
-    private static final double AVATAR_RADIUS = 22.0;
+    private static final double AVATAR_RADIUS = 20.0;
+    private static final double MINIMUM_BUBBLE_WIDTH = 220.0;
+    private static final double BUBBLE_WIDTH_RATIO = 0.76;
+    private static final double NON_BUBBLE_WIDTH = 66.0;
     private static final Image GREEN_CHONK_IMAGE = new Image(Objects.requireNonNull(
-            DialogBox.class.getResourceAsStream("/images/green-chonk.png")));
+            DialogBox.class.getResourceAsStream("/images/green-chonk-transparent.png")));
 
     @FXML
     private Label dialog;
@@ -48,6 +52,8 @@ public class DialogBox extends HBox {
             throw new IllegalStateException("Unable to load the dialog layout.", exception);
         }
         dialog.setText(text);
+        dialog.maxWidthProperty().bind(Bindings.max(MINIMUM_BUBBLE_WIDTH,
+                widthProperty().multiply(BUBBLE_WIDTH_RATIO).subtract(NON_BUBBLE_WIDTH)));
         avatarImage.setClip(new Circle(AVATAR_RADIUS, AVATAR_RADIUS, AVATAR_RADIUS));
     }
 
@@ -76,11 +82,24 @@ public class DialogBox extends HBox {
     public static DialogBox getGreenChonkDialog(String text) {
         DialogBox dialogBox = new DialogBox(text);
         dialogBox.avatarImage.setImage(GREEN_CHONK_IMAGE);
+        dialogBox.avatarImage.setAccessibleText("Green Chonk mascot");
         dialogBox.avatarImage.setManaged(true);
         dialogBox.avatarImage.setVisible(true);
         dialogBox.avatar.getStyleClass().add("green-chonk-avatar");
         dialogBox.dialog.getStyleClass().add("green-chonk-bubble");
         dialogBox.flip();
+        return dialogBox;
+    }
+
+    /**
+     * Creates a welcoming Green Chonk dialog with a distinct introductory style.
+     *
+     * @param text the welcome message to display.
+     * @return the configured welcome dialog.
+     */
+    public static DialogBox getWelcomeDialog(String text) {
+        DialogBox dialogBox = getGreenChonkDialog(text);
+        dialogBox.dialog.getStyleClass().add("welcome-bubble");
         return dialogBox;
     }
 
