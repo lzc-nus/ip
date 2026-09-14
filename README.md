@@ -2,6 +2,9 @@
 
 Green Chonk is a part-bear, part-pear JavaFX task companion with a focused chat interface and a playful personality. It keeps the original command-line interface as a testable fallback, saves typed tasks between sessions, and exits when the user types bye.
 
+See the [Green Chonk User Guide](https://lzc-nus.github.io/ip/) for the
+download instructions and complete command reference.
+
 The current version supports todos, deadlines, and events. Deadlines and events accept ISO dates such as `2026-08-28`, day/month/year dates such as `28/8/2026`, and English text dates such as `28 Aug 2026`. They display in a friendly form such as `Aug 28 2026`. Each task type displays its own icon alongside its completion status. The `list` command displays numbered tasks, `find KEYWORD` searches task descriptions, `schedule DATE` finds deadlines and events occurring on a date, and `edit` changes one task detail without recreating the task. The `mark NUMBER` command completes a task, `unmark NUMBER` makes it incomplete again, and `delete NUMBER` removes it. Use `help` to see every command and its format inside the application. Invalid commands produce a specific correction instead of terminating the program. The `bye` command ends the conversation regardless of capitalization.
 
 ## Requirements
@@ -226,7 +229,8 @@ src/
     │           └── Ui.java
     └── resources/
         ├── images/
-        │   └── green-chonk.png
+        │   ├── green-chonk.png
+        │   └── green-chonk-transparent.png
         └── view/
             ├── DialogBox.fxml
             ├── MainWindow.fxml
@@ -234,3 +238,10 @@ src/
 ~~~
 
 Keep Java source files under src/main/java, which is the source directory expected by the project setup.
+
+## Acknowledgements
+
+This project builds on the [SE-EDU Duke project
+template](https://github.com/se-edu/duke). See the product [User
+Guide](docs/README.md#acknowledgements) for the complete tool and asset
+credits.
