@@ -64,6 +64,16 @@ Also seed the data file with an event whose ending date is before its starting d
   "main_class": "greenchonk.GreenChonk",
   "cases": [
     {
+      "name": "reject-duplicate-edits",
+      "aim": "Reject an edit that duplicates another task, even with a different status, but allow unchanged details.",
+      "inputs": ["todo read book", "todo buy milk", "mark 2", "edit 1 /description buy milk", "edit 1 /description read book", "list", "bye"],
+      "expected": [
+        "Green Chonk is already carrying a task with those details.",
+        "Green Chonk updated this task:",
+        "1.[T][ ] read book\n2.[T][X] buy milk"
+      ]
+    },
+    {
       "name": "show-command-help",
       "aim": "Verify help lists every command and the required date format without changing the task list.",
       "inputs": [

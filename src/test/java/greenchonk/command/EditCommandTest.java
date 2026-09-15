@@ -167,4 +167,50 @@ class EditCommandTest {
         assertNull(ui.getEditedOriginalTask());
         assertNull(ui.getEditedTask());
     }
+
+    @Test
+    void execute_duplicateDescription_originalTasksPreservedWithoutSaving() {
+        Todo originalTask = new Todo("read book");
+        Todo existingTask = new Todo("buy milk");
+        existingTask.markAsDone();
+        TaskList tasks = new TaskList(List.of(originalTask, existingTask));
+        RecordingStorage storage = new RecordingStorage();
+        RecordingUi ui = new RecordingUi();
+
+        assertThrows(GreenChonkException.class, () ->
+                EditCommand.editDescription(1, "buy milk").execute(tasks, ui, storage));
+
+        assertSame(originalTask, tasks.get(0));
+        assertSame(existingTask, tasks.get(1));
+        assertEquals(0, storage.getSaveCount());
+        assertNull(ui.getEditedTask());
+    }
+
+    @Test
+    void execute_duplicateDate_originalDeadlinePreservedWithoutSaving() {
+        Deadline originalTask = new Deadline("submit report", AUGUST_28);
+        TaskList tasks = new TaskList(List.of(originalTask,
+                new Deadline("submit report", AUGUST_30)));
+        RecordingStorage storage = new RecordingStorage();
+
+        assertThrows(GreenChonkException.class, () ->
+                EditCommand.editDueDate(1, AUGUST_30).execute(tasks, new RecordingUi(), storage));
+
+        assertSame(originalTask, tasks.get(0));
+        assertEquals(0, storage.getSaveCount());
+    }
+
+    @Test
+    void execute_unchangedDescription_taskRemainsValid() throws GreenChonkException {
+        Todo originalTask = new Todo("read book");
+        originalTask.markAsDone();
+        TaskList tasks = new TaskList(List.of(originalTask));
+
+        EditCommand.editDescription(1, "read book")
+                .execute(tasks, new RecordingUi(), new RecordingStorage());
+
+        assertEquals("read book", tasks.get(0).getDescription());
+        assertTrue(tasks.get(0).isDone());
+        assertEquals(1, tasks.size());
+    }
 }

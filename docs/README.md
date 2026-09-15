@@ -21,8 +21,8 @@ invalid, and saves every successful change between sessions.
 
 5. Type `help` in the command box whenever you need a reminder.
 
-Green Chonk creates `data/greenchonk.txt` beside the JAR. Keep that file if you
-move the app and want to retain your tasks.
+Green Chonk creates `data/greenchonk.txt` in the folder you run it from. Keep
+that file if you move the app and want to retain your tasks.
 
 > **Command conventions:** command words are case-insensitive, and harmless
 > leading, trailing, or repeated whitespace is accepted. Text written in
@@ -175,9 +175,9 @@ if you are unsure.
 ## Duplicate and invalid input protection
 
 Green Chonk rejects an exact duplicate when its type and details match an
-existing task. Completion status does not make a duplicate unique. A todo and
-a deadline may share a description because they represent different task
-types.
+existing task, including when editing a task. Completion status does not make
+a duplicate unique. A todo and a deadline may share a description because
+they represent different task types.
 
 An invalid command does not modify the task list. Green Chonk explains what is
 wrong and usually includes a valid example. Common cases include:

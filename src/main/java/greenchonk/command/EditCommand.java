@@ -102,6 +102,11 @@ public class EditCommand extends Command {
         Task originalTask = tasks.get(taskIndex);
         Task editedTask = createEditedTask(originalTask);
 
+        if (!originalTask.hasSameDetails(editedTask) && tasks.containsEquivalent(editedTask)) {
+            throw new GreenChonkException(
+                    "Green Chonk is already carrying a task with those details.");
+        }
+
         Task replacedTask = tasks.replace(taskIndex, editedTask);
         assert replacedTask == originalTask
                 : "The edited task must replace the task selected by the user";
