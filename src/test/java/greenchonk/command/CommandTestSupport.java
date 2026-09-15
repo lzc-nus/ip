@@ -52,10 +52,10 @@ final class CommandTestSupport {
         private TaskStatus updatedStatus;
         private int taskCount;
         private int remainingTaskCount;
-        private boolean goodbyeShown;
-        private boolean helpShown;
-        private boolean findHeaderShown;
-        private boolean noMatchingTasksShown;
+        private boolean isGoodbyeShown;
+        private boolean isHelpShown;
+        private boolean isFindHeaderShown;
+        private boolean isNoMatchingTasksShown;
         private TaskList listedTasks;
         private LocalDate scheduleDate;
         private LocalDate emptyScheduleDate;
@@ -95,19 +95,19 @@ final class CommandTestSupport {
         }
 
         boolean isGoodbyeShown() {
-            return goodbyeShown;
+            return isGoodbyeShown;
         }
 
         boolean isHelpShown() {
-            return helpShown;
+            return isHelpShown;
         }
 
         boolean isFindHeaderShown() {
-            return findHeaderShown;
+            return isFindHeaderShown;
         }
 
         boolean isNoMatchingTasksShown() {
-            return noMatchingTasksShown;
+            return isNoMatchingTasksShown;
         }
 
         TaskList getListedTasks() {
@@ -132,12 +132,12 @@ final class CommandTestSupport {
 
         @Override
         public void showGoodbye() {
-            goodbyeShown = true;
+            isGoodbyeShown = true;
         }
 
         @Override
         public void showHelp() {
-            helpShown = true;
+            isHelpShown = true;
         }
 
         @Override
@@ -187,12 +187,12 @@ final class CommandTestSupport {
 
         @Override
         public void showFindHeader() {
-            findHeaderShown = true;
+            isFindHeaderShown = true;
         }
 
         @Override
         public void showNoMatchingTasks() {
-            noMatchingTasksShown = true;
+            isNoMatchingTasksShown = true;
         }
     }
 }
